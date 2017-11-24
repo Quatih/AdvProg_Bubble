@@ -5,19 +5,20 @@
 #include "Scoreboard.h"
 #include "SoundPlayer.h"
 #include <vector>
-#include "Map.h"
 #include "Menu.h"
-
-class GameObject;
-class CollisionHandler;
+#include "Map.h"
 
 class GameEngine {
-		GameObject * player;
-		std::vector<GameComponent> components;
+	GameObject * player;
+	std::vector<GameObject> objects;
+	Menu * menu;
+	SoundPlayer * sPlayer;
+	Scoreboard * scoreboard;
+	Map * map;
 		
-		GameEngine(){
-
-		};
-		~GameEngine(){
-		};
+	GameEngine(){
+	};
+	~GameEngine(){
+			
+	};
 };

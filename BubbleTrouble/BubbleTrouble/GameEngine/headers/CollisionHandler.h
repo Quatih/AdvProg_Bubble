@@ -3,6 +3,4 @@
 
 class CollisionHandler : public GameComponent {
 public:
-
-	
 };

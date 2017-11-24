@@ -143,6 +143,7 @@
     <ClInclude Include="GameEngine\headers\Vector2D.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="GameEngine\source\GameObject.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

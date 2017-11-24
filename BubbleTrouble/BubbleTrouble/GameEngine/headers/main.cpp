@@ -1,5 +1,5 @@
 #include "SDL.h"
-#include <iostream>
+#include "GameEngine.h"
 
 int main(int /*argc*/, char ** /*argv*/) {
 
@@ -9,8 +9,7 @@ int main(int /*argc*/, char ** /*argv*/) {
 	SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
 	SDL_RenderClear(renderer);
 	SDL_RenderPresent(renderer);
-
-	SDL_Delay(30000);
+	SDL_Delay(3000);
 
 	return 0;
 }

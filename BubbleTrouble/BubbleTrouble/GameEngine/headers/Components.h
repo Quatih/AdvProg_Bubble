@@ -8,3 +8,4 @@
 #include "SoundHandler.h"
 #include "MovementHandler.h"
 #include "SpriteHandler.h"
+#include "MouseHandler.h"

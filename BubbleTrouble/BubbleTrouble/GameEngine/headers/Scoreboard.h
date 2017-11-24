@@ -3,7 +3,6 @@
 class Scoreboard
 {
 public:
-	Scoreboard();
-	~Scoreboard();
+
 };
 
