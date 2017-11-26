@@ -77,7 +77,7 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
-      <WarningLevel>Level3</WarningLevel>
+      <WarningLevel>Level4</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
     </ClCompile>
@@ -96,7 +96,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
-      <WarningLevel>Level3</WarningLevel>
+      <WarningLevel>Level4</WarningLevel>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
@@ -124,14 +124,15 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="GameEngine\GameEngine.h" />
     <ClInclude Include="GameEngine\headers\CollisionHandler.h" />
     <ClInclude Include="GameEngine\headers\Components.h" />
     <ClInclude Include="GameEngine\headers\GameComponent.h" />
-    <ClInclude Include="GameEngine\headers\GameEngine.h" />
     <ClInclude Include="GameEngine\headers\GameObject.h" />
     <ClInclude Include="GameEngine\headers\KeyboardHandler.h" />
     <ClInclude Include="GameEngine\headers\Map.h" />
     <ClInclude Include="GameEngine\headers\Menu.h" />
+    <ClInclude Include="GameEngine\headers\MouseHandler.h" />
     <ClInclude Include="GameEngine\headers\MovementHandler.h" />
     <ClInclude Include="GameEngine\headers\PhysicsHandler.h" />
     <ClInclude Include="GameEngine\headers\Scoreboard.h" />
@@ -143,6 +144,7 @@
     <ClInclude Include="GameEngine\headers\Vector2D.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="GameEngine\headers\CollisionHandler.cpp" />
     <ClCompile Include="GameEngine\source\GameObject.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>

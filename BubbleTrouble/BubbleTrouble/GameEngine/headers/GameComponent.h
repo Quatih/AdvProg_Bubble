@@ -1,15 +1,12 @@
 #pragma once
-#include "GameObject.h"
-#include "Components.h"
 
-enum ComponentIds { VECTOR, TILE, COLLISION, KEYBOARD, MOUSE, MOVEMENT, SOUND, TEXTURE, SPRITE };
+class GameObject;
 
 class GameComponent{
 public:
 	GameObject * owner;
-	ComponentIds ID;
-
-	virtual ~GameComponent() {};
+	//enum ComponentIDs { VECTOR, TILE, COLLISION, KEYBOARD, MOUSE, MOVEMENT, SOUND, TEXTURE, SPRITE } componentID;
+	virtual ~GameComponent() = default;
 	
 	virtual void init() {};
 	virtual void update() {};

@@ -2,19 +2,30 @@
 #include "GameComponent.h"
 #include "Components.h"
 #include <vector>
+#include <algorithm>
+#include <array>
+#include <memory>
 
+
+
+const std::size_t maxComponents = 10;
 
 class GameObject {
+private:
+	std::array<GameComponent*, maxComponents> components;
+	bool valid;
+
 public:
-	/// Keep unique IDs for different component types.
 	
-	std::vector<GameComponent> components;
+	GameObject();
+	~GameObject();
 
+	void update();
+	bool isValid() const { return valid; };
+	void destroy() { valid = false; };
 
-	bool enabled = true;
-	
 	template <typename T, typename... Ts>
 	T& addComponent(Ts&&... args);
 
-	void update();
+	template <typename T> T& getComponent();
 };
