@@ -28,8 +28,8 @@ public:
 		player = new GameObject();
 
 		player->addComponent<TileHandler>();
-		player->getComponent<TileHandler>().init();
+		player->getComponent<TileHandler>()->init();
 		auto comp = player->getComponent<TileHandler>();
-		comp.init();
+		comp->init();
 	}
 };
