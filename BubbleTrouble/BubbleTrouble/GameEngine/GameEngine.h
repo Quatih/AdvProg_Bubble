@@ -28,7 +28,7 @@ public:
 		player = new GameObject();
 		player->addComponent<TileHandler>();
 		player->addComponent<Vector2D<float>>(0.1f, 0.2f);
-		std::cout << player->getComponent<Vector2D<float>>()->x;
+		std::cout << player->getComponent<Vector2D<float>>()->x <<  "  " <<player->getComponent<Vector2D<float>>()->y << std::endl;
 	}
 
 	/// Deletes invalidated game objects
