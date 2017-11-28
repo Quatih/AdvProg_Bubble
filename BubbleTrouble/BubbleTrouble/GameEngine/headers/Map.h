@@ -28,7 +28,7 @@ public:
 	}
 
 	void loadMap(std::string path, int x, int y) {
-		char tileType;
+		/*char tileType;
 		std::fstream file;
 		file.open(path);
 
@@ -36,7 +36,7 @@ public:
 			for (int i = 0; i < x; i++) {
 				
 			}
-		}
+		}*/
 	}
 
 };
