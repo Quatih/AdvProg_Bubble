@@ -1,10 +1,8 @@
 #include "../headers/GameObject.h"
 
 
-
-
 GameObject::GameObject() {
-	std::cout << "Gameobject created";
+	std::cout << "Gameobject created\n";
 	valid = true;
 }
 
@@ -14,9 +12,14 @@ GameObject::~GameObject() {
 	}
 }
 
-
 void GameObject::update() {
-	for (auto& comps : components) {
+	for (GameComponent * comps : components) {
 		comps->update();
+	}
+}
+
+void GameObject::draw() {
+	for (GameComponent * comps : components) {
+		comps->draw();
 	}
 }

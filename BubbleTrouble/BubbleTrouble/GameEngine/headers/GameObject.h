@@ -28,14 +28,14 @@ private:
 	}
 
 public:
-	
+
 	GameObject();
 	~GameObject();
 
 	void update();
 	bool isValid() const { return valid; };
 	void destroy() { valid = false; };
-
+	void draw();
 	/// Add component of type T with arguments Ts to this GameObject
 	template <typename T, typename... Ts>
 	void addComponent(Ts&&... args)

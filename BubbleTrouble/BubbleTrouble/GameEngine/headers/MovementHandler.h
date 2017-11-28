@@ -5,5 +5,5 @@
 
 class MovementHandler : public GameComponent {
 public:
-	Vector2D * vect;
+	Vector2D<float> * vect;
 };
