@@ -34,7 +34,6 @@ public:
 		SDL_ShowWindow(window);
 		player = new GameObject();
 		player->addComponent<TileHandler>();
-
 	}
 
 	/// Deletes invalidated game objects
