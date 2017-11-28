@@ -13,12 +13,17 @@ private:
 	GameObject * player;
 	std::vector<GameObject*> bubbles;
 	Map * map;
+	SDL_Window * window;
 public:
-	static SDL_Renderer * Renderer;
+	SDL_Renderer * renderer;
 
-	GameEngine(){
+	GameEngine(std::string title, int winposx, int winposy, int winwidth, int winheight, SDL_WindowFlags flag){
+		SDL_Init(SDL_INIT_EVERYTHING);
+		window = SDL_CreateWindow(title.c_str(), winposx, winposy, winwidth, winheight, flag);
+		renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
 		std::cout << "Game Engine Constructed.\n";
 	};
+
 	~GameEngine(){
 		delete player;
 		bubbles.clear();
