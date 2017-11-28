@@ -3,5 +3,11 @@
 
 class KeyboardHandler : public GameComponent {
 public:
+	KeyboardHandler() {
 
+	}
+
+	void update() {
+
+	}
 };

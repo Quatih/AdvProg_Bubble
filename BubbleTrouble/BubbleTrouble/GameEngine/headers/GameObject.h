@@ -49,6 +49,7 @@ public:
 		comp->init();
 	}
 
+	/// Return pointer to the stored component of type T
 	template <typename T> T* getComponent() {
 		return dynamic_cast<T*>(components[getComponentID<T>()]);
 	}

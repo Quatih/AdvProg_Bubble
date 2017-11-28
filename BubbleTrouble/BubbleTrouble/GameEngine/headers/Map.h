@@ -28,15 +28,15 @@ public:
 	}
 
 	void loadMap(std::string path, int x, int y) {
-		//char tileType;
-		//std::fstream file;
-		//file.open(path);
+		/*char tileType;
+		std::fstream file;
+		file.open(path);
 
-		//for (int j = 0; j < y; j++) {
-		//	for (int i = 0; i < x; i++) {
-		//		
-		//	}
-		//}
+		for (int j = 0; j < y; j++) {
+			for (int i = 0; i < x; i++) {
+				
+			}
+		}*/
 	}
 
 };
