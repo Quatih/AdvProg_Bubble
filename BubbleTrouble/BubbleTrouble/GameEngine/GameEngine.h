@@ -12,7 +12,7 @@ class GameEngine {
 private:
 	GameObject * player;
 	std::vector<GameObject*> bubbles;
-	std::vector<GameObject*> spikes;
+	Map * map;
 public:
 	static SDL_Renderer * Renderer;
 
@@ -21,15 +21,24 @@ public:
 	};
 	~GameEngine(){
 		delete player;
+		bubbles.clear();
 	};
 
 	void init() {
-		
 		player = new GameObject();
-
 		player->addComponent<TileHandler>();
-		player->getComponent<TileHandler>()->init();
-		auto comp = player->getComponent<TileHandler>();
-		comp->init();
+		player->addComponent<Vector2D<float>>(0.1f, 0.2f);
+		std::cout << player->getComponent<Vector2D<float>>()->x;
+	}
+
+	/// Deletes invalidated game objects
+	void clean() {
+		for (auto bubble = bubbles.begin(); bubble != bubbles.end(); ++bubble) {
+			if (!(*bubble)->isValid()) {
+				auto thisbubble = bubble;
+				--bubble;
+				bubbles.erase(thisbubble);
+			}
+		}
 	}
 };

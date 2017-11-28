@@ -10,4 +10,5 @@
 #include "SpriteHandler.h"
 #include "MouseHandler.h"
 
-enum ComponentIDs { VECTOR, TILE, COLLISION, KEYBOARD, MOUSE, MOVEMENT, SOUND, TEXTURE, SPRITE };
+
+//enum ComponentIDs { VECTOR, TILE, COLLISION, KEYBOARD, MOUSE, MOVEMENT, SOUND, TEXTURE, SPRITE };
