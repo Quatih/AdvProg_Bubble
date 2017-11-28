@@ -4,6 +4,11 @@
 
 class TileHandler : public GameComponent {
 public:
- TextureHandler * texture;
+	TileHandler() {
+	}
+	void init() {
+		std::cout << "TileHandler init\n";
+	}
+	TextureHandler * texture;
 
 };

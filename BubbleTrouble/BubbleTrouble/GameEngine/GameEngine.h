@@ -11,6 +11,8 @@
 class GameEngine {
 private:
 	GameObject * player;
+
+
 public:
 
 	GameEngine(){
@@ -26,5 +28,7 @@ public:
 
 		player->addComponent<TileHandler>();
 		player->getComponent<TileHandler>().init();
+		auto comp = player->getComponent<TileHandler>();
+		comp.init();
 	}
 };
