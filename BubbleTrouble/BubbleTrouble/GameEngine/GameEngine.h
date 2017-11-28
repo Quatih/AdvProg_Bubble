@@ -27,13 +27,14 @@ public:
 	~GameEngine(){
 		delete player;
 		bubbles.clear();
+		
 	};
 
 	void init() {
+		SDL_ShowWindow(window);
 		player = new GameObject();
 		player->addComponent<TileHandler>();
-		player->addComponent<Vector2D<float>>(0.1f, 0.2f);
-		std::cout << player->getComponent<Vector2D<float>>()->x;
+
 	}
 
 	/// Deletes invalidated game objects

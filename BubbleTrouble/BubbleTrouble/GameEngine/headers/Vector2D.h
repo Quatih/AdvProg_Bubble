@@ -1,7 +1,6 @@
 #pragma once
-#include "GameComponent.h"
 
-template<typename T> class Vector2D : public GameComponent{
+template<typename T> class Vector2D {
 public:
 	T x;
 	T y;
