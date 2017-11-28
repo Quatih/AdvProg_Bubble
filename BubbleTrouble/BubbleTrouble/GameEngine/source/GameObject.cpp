@@ -16,6 +16,7 @@ void GameObject::update() {
 	for (GameComponent * comps : components) {
 		comps->update();
 	}
+
 }
 
 void GameObject::draw() {
