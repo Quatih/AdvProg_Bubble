@@ -21,6 +21,7 @@ private:
 		return ID++;
 	}
 
+	/// Purpose is to keep a unique ID to the template component of type T
 	template <typename T> std::size_t getComponentID() {
 		static std::size_t ID = getUniqueID();
 		return ID;
@@ -39,9 +40,11 @@ public:
 	template <typename T, typename... Ts>
 	T& addComponent(Ts&&... args)
 	{
-		/// Do this to forward arguments made to addcomponent to the newly created component
+		/// Forward arguments made to addcomponent to the newly created component
 		T* comp = new T(std::forward<Ts>(args)...);
 		comp->owner = this;
+
+		/// Add the component to the array at the unique location of this template type
 		components[getComponentID<T>()] = comp;
 		comp->init();
 		return *comp;

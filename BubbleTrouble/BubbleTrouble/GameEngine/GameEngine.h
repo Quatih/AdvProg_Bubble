@@ -11,12 +11,13 @@
 class GameEngine {
 private:
 	GameObject * player;
-
-
+	std::vector<GameObject*> bubbles;
+	std::vector<GameObject*> spikes;
 public:
+	static SDL_Renderer * Renderer;
 
 	GameEngine(){
-		std::cout << "Constructed.\n";
+		std::cout << "Game Engine Constructed.\n";
 	};
 	~GameEngine(){
 		delete player;
