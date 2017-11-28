@@ -15,6 +15,8 @@ int main(int /*argc*/, char ** /*argv*/) {
 	SDL_RenderPresent(renderer);
 	Game->init();
 	SDL_Delay(10000);
+	///
+
 
 	return 0;
 }
