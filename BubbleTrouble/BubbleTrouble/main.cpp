@@ -6,31 +6,35 @@
 
 int main(int /*argc*/, char ** /*argv*/) {
 
-	GameEngine * Game = new GameEngine("title", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 600, 480, SDL_WINDOW_HIDDEN);
+	GameEngine * Game = new GameEngine("Bubble Trouble", SDL_WINDOWPOS_CENTERED, 
+		SDL_WINDOWPOS_CENTERED,  1280, 720, SDL_WINDOW_HIDDEN);
 
 	Game->init();
 	bool quit = false;
 
 	//Event handler
-	SDL_Event e;
-
+	
+	const int frameDelay = 1000 / 60;
+	Uint32 frameStart;
+	int frameTime;
 	//While application is running
-	while (!quit)
+	while (Game->isRunning())
 	{
+		frameStart = SDL_GetTicks();
 		//Handle events on queue
-		while (SDL_PollEvent(&e) != 0)
+
+		Game->handleEvents();
+		Game->update();
+		Game->cleanObjects();
+		Game->render();
+
+		frameTime = SDL_GetTicks() - frameStart;
+		if (frameDelay > frameTime)
 		{
-			//User requests quit
-			if (e.type == SDL_QUIT)
-			{
-				quit = true;
-			}
+			SDL_Delay(frameDelay - frameTime);
 		}
-
-		Game->draw();
-
 	}
-	///
-	//SDL_Delay(30000);
+
+	Game->quit();
 	return 0;
 }

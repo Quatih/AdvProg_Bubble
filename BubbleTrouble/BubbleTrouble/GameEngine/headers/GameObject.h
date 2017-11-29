@@ -1,18 +1,29 @@
 #pragma once
-#include "GameComponent.h"
-#include "Components.h"
 #include <vector>
 #include <algorithm>
 #include <array>
 #include <memory>
+#include <iostream>
+#include "SDL.h"
 
+class GameObject;
 
+class GameComponent {
+public:
+	GameObject * owner;
+	virtual ~GameComponent() = default;
+
+	virtual void init() {};
+	virtual void update() {};
+	virtual void draw() {};
+	
+};
 
 const std::size_t maxComponents = 10;
 
 class GameObject {
 private:
-	std::array<GameComponent*, maxComponents> components;
+	std::vector<GameComponent*> components;
 	bool valid;
 
 	std::size_t getUniqueID() {
@@ -29,7 +40,9 @@ private:
 
 public:
 
-	GameObject();
+	SDL_Rect default_rect, render_rect;
+
+	GameObject(int height, int width, int posX, int posY);
 	~GameObject();
 
 	void update();
@@ -45,7 +58,8 @@ public:
 		comp->owner = this;
 
 		/// Add the component to the array at the unique location of this template type
-		components[getComponentID<T>()] = comp;
+		//componentArray[getComponentID<T>()] = comp;
+		components.push_back(comp);
 		comp->init();
 	}
 

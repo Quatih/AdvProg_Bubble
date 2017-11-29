@@ -1,12 +1,12 @@
 #pragma once
 #include "headers\GameObject.h"
-#include "headers\GameComponent.h"
 #include "headers\Components.h"
 #include "headers\Scoreboard.h"
 #include "headers\SoundPlayer.h"
 #include <vector>
 #include "headers\Menu.h"
 #include "headers\Map.h"
+#include "SDL.h"
 #include "SDL_image.h"
 
 class GameEngine {
@@ -15,50 +15,65 @@ private:
 	std::vector<GameObject*> bubbles;
 	Map * map;
 	SDL_Window * window;
-
+	SDL_Event events;
+	bool running;
 
 public:
+
 	SDL_Renderer * renderer;
-	SDL_Rect srcrect, destrect;
+
 	GameEngine(std::string title, int winposx, int winposy, int winwidth, int winheight, SDL_WindowFlags flag){
 		SDL_Init(SDL_INIT_EVERYTHING);
 		window = SDL_CreateWindow(title.c_str(), winposx, winposy, winwidth, winheight, flag);
 		renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
 		std::cout << "Game Engine Constructed.\n";
+		running = true;
 	};
 
 	~GameEngine(){
 		delete player;
 		bubbles.clear();
-		
+		running = false;
 	};
+
+	bool isRunning() {
+		return running;
+	}
 
 	void init() {
 		SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
 		SDL_ShowWindow(window);
-		SDL_RenderClear(renderer);
-		SDL_RenderPresent(renderer);
-		player = new GameObject();
-		player->addComponent<TileHandler>();
-		player->addComponent<TextureHandler>(renderer);
-		player->getComponent<TextureHandler>()->loadTexture("C:/Users/hvati/source/repos/AdvProg_Bubble/BubbleTrouble/BubbleTrouble/assets/enemy.png");
-		player->getComponent<TextureHandler>()->loadTexture("assets/weirdguy.png");
 
-		srcrect.h = 128;
-		srcrect.w = 128;
-		srcrect.x = 0;
-		srcrect.y = 0;
-		destrect = srcrect;
+		player = new GameObject(64, 64, 0, 0);
+		player->addComponent<MovementHandler>(0.0f, 0.0f);
+		player->getComponent<MovementHandler>()->setVelocity(0.0f, 0.0f);
+		player->addComponent<TileHandler>(renderer, "assets/weirdguy.png");
+		player->addComponent<KeyboardHandler>(&events);
+
 	}
-	void draw() {
-		SDL_RenderClear(renderer);
+	void update() {
+		player->update();
+	}
 
-		SDL_RenderCopyEx(renderer, player->getComponent<TextureHandler>()->getTexture(), &srcrect, &destrect, NULL, NULL, SDL_FLIP_NONE);
+	void render() {
+		SDL_RenderClear(renderer);
+		player->draw();
 		SDL_RenderPresent(renderer);
+	}
+
+	void handleEvents() {
+
+		SDL_PollEvent(&events);
+
+		///User requests quit
+		if (events.type == SDL_QUIT)
+		{
+			running = false;
+		}
 	}
 
 	/// Deletes invalidated game objects
-	void clean() {
+	void cleanObjects() {
 		for (auto bubble = bubbles.begin(); bubble != bubbles.end(); ++bubble) {
 			if (!(*bubble)->isValid()) {
 				auto thisbubble = bubble;
@@ -66,5 +81,10 @@ public:
 				bubbles.erase(thisbubble);
 			}
 		}
+	}
+	void quit() {
+		SDL_DestroyWindow(window);
+		SDL_DestroyRenderer(renderer);
+		SDL_Quit();
 	}
 };

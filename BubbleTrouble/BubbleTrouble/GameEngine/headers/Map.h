@@ -1,5 +1,5 @@
 #pragma once
-#include "GameComponent.h"
+#include "GameObject.h"
 #include "TileHandler.h"
 #include "TextureHandler.h"
 #include <vector>
@@ -27,16 +27,17 @@ public:
 		}
 	}
 
-	void loadMap(std::string path, int x, int y) {
-		//char tileType;
-		//std::fstream file;
-		//file.open(path);
+	//void loadMap(std::string path, int x, int y) {
+	//	/*char tileType;
+	//	std::fstream file;
+	//	file.open(path);
 
-		//for (int j = 0; j < y; j++) {
-		//	for (int i = 0; i < x; i++) {
-		//		
-		//	}
-		//}
-	}
+	//	for (int j = 0; j < y; j++) {
+	//		for (int i = 0; i < x; i++) {
+	//			
+	//		}
+	//	}*/
+
+	//}
 
 };

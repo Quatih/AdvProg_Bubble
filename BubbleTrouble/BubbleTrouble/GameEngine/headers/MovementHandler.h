@@ -1,5 +1,5 @@
 #pragma once
-#include "GameComponent.h"
+#include "GameObject.h"
 #include "Vector2D.h"
 #include "PhysicsHandler.h"
 
@@ -11,6 +11,7 @@ public:
 	MovementHandler(float x, float y) {
 		position = new Vector2D <float>(x, y);
 		velocity = new Vector2D <float>();
+		std::cout << "MovementHandler init\n";
 	};
 
 	MovementHandler() {
@@ -21,6 +22,10 @@ public:
 	void update() override {
 		position->x = position->x + velocity->x;
 		position->y = position->y + velocity->y;
+		owner->render_rect.x = (int)position->x;
+		owner->render_rect.y = (int)position->y;
+
+		std::cout << "pos(" << position->x << ", " << position->y << ")\n";
 	}
 
 	void setVelocity(float x, float y) {
@@ -29,6 +34,9 @@ public:
 	}
 
 	void init() override {
+
+	}
+	void draw() override {
 
 	}
 };

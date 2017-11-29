@@ -21,9 +21,6 @@
     <ClInclude Include="GameEngine\headers\Components.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="GameEngine\headers\GameComponent.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="GameEngine\headers\GameObject.h">
       <Filter>Header Files</Filter>
     </ClInclude>
