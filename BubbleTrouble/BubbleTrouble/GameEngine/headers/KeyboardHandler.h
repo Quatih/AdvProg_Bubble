@@ -6,8 +6,7 @@ public:
 	KeyboardHandler() {
 
 	}
+	void init() override;
 
-	void update() {
-
-	}
+	void update() override;
 };

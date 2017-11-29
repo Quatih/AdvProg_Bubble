@@ -18,6 +18,9 @@ int main(int /*argc*/, char ** /*argv*/) {
 	//Event handler
 	SDL_Event e_xOut;
 
+	KeyboardHandler *key = new KeyboardHandler();
+	key->init();
+	key->update();
 	//While application is running
 	while (!quit)
 	{
@@ -29,6 +32,15 @@ int main(int /*argc*/, char ** /*argv*/) {
 			{
 				quit = true;
 			}
+			else if (e_xOut.type == SDL_KEYDOWN)
+			{
+				key->update();
+			}
+			//std::cout << "I am always here\n";
+			
+			
+			
+			
 		}
 
 	}
