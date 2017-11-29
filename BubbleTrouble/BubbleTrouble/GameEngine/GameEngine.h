@@ -3,6 +3,7 @@
 #include "headers\Components.h"
 #include "headers\Scoreboard.h"
 #include "headers\SoundPlayer.h"
+#include "headers\KeyboardHandler.h"
 #include <vector>
 #include "headers\Menu.h"
 #include "headers\Map.h"
