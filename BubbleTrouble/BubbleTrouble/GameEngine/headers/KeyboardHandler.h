@@ -79,9 +79,5 @@ public:
 			movement->velocity.y = 0;
 		}
 
-		//Normalize
-		if (movement->velocity.y != 0 && movement->velocity.y != 0) {
-
-		}
 	}
 };
