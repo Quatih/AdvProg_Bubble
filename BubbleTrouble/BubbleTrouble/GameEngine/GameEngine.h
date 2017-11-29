@@ -19,7 +19,7 @@ private:
 	SDL_Window * window;
 	SDL_Event events;
 	bool running;
-
+	SDL_Rect playZone;
 
 public:
 
@@ -28,9 +28,13 @@ public:
 	GameEngine(std::string title, int winposx, int winposy, int winwidth, int winheight, SDL_WindowFlags flag){
 		SDL_Init(SDL_INIT_EVERYTHING);
 		window = SDL_CreateWindow(title.c_str(), winposx, winposy, winwidth, winheight, flag);
-		renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED );
+		renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
 		std::cout << "Game Engine Constructed.\n";
 		running = true;
+		playZone.x = 0;
+		playZone.y = 0;
+		playZone.h = winheight;
+		playZone.w = winwidth;
 	};
 
 	~GameEngine(){
@@ -44,7 +48,7 @@ public:
 	}
 
 	void init() {
-		SDL_SetRenderDrawColor(renderer, 0, 0, 255, 255);
+		SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
 		SDL_ShowWindow(window);
 
 		int width, height;
@@ -57,36 +61,24 @@ public:
 		player->addComponent<TileHandler>(renderer, "assets/square_B.png");
 		player->addComponent<KeyboardHandler>(&events, 2.0f, true);
 
-		player->addComponent<CollisionHandler>(0, 0, width, height);
+		player->addComponent<CollisionHandler>(&playZone, false);
 
-		bubbles.push_back(new GameObject(32, 32, 1));
-		bubbles[0]->addComponent<MovementHandler>(100.0f, 0.0f);
-		bubbles[0]->addComponent<TileHandler>(renderer, "assets/white_ball.png");
-		bubbles[0]->addComponent<CollisionHandler>(0, 0, width, height);
-		bubbles[0]->getComponent<MovementHandler>()->setVelocity(2, 0);
-		bubbles[0]->getComponent<MovementHandler>()->acceleration.x = 0.0;
-		bubbles[0]->getComponent<MovementHandler>()->acceleration.y = 0.1;
-		bubbles.push_back(new GameObject(32, 32, 1));
-		bubbles[1]->addComponent<MovementHandler>(1000.0f, 400.0f);
-		bubbles[1]->addComponent<TileHandler>(renderer, "assets/white_ball.png");
-		bubbles[1]->addComponent<CollisionHandler>(0, 0, width, height);
-		bubbles[1]->getComponent<MovementHandler>()->setVelocity(6, 0);
-		bubbles[1]->getComponent<MovementHandler>()->acceleration.x = 0.0;
-		bubbles[1]->getComponent<MovementHandler>()->acceleration.y = 0.2;
+
+		addBubble(32, 100, height / 2, 2.5f, 0.2f, RED);
+		addBubble(48, 300, height / 3, 2.5f, 0.2f, GREEN);
+		addBubble(16, 600, height / 4, 2.5f, 0.2f, BLUE);
 	}
 	void update() {
-
-
 		player->update();
 		for (auto bubble : bubbles) {
 			bubble->update();
 		}
-		//for (auto bubble : bubbles) {
-		//	if (collidesWithCirlce((player->render_rect), (bubble->render_rect))) {
-		//		std::cout << "Collides with bubble\n";
-		//		bubble->destroy();
-		//	}			
-		//}
+		for (auto bubble : bubbles) {
+			if (collidesWithCircle((player->render_rect), (bubble->render_rect))) {
+				std::cout << "Collides with bubble\n";
+				bubble->destroy();
+			}			
+		}
 
 	}
 
@@ -132,5 +124,18 @@ public:
 		SDL_DestroyWindow(window);
 		SDL_DestroyRenderer(renderer);
 		SDL_Quit();
+	}
+
+	void addBubble(int radius, int posX, int posY, float velocity, float acceleration, Color color) {
+		std::size_t i = bubbles.size();
+		bubbles.push_back(new GameObject(512, 512, (float)radius*2/512));
+
+		bubbles[i]->addComponent<MovementHandler>((float) posX, (float) posY);
+		bubbles[i]->addComponent<TileHandler>(renderer, "assets/Ball.png");
+		bubbles[i]->getComponent<TileHandler>()->applyColor(color);
+		bubbles[i]->addComponent<CollisionHandler>(&playZone, true);
+		bubbles[i]->getComponent<MovementHandler>()->setVelocity(velocity, 0);
+		bubbles[i]->getComponent<MovementHandler>()->acceleration.x = 0.0;
+		bubbles[i]->getComponent<MovementHandler>()->acceleration.y = acceleration;
 	}
 };
