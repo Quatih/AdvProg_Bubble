@@ -155,7 +155,6 @@
     <ClInclude Include="GameEngine\headers\Vector2D.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="GameEngine\headers\CollisionHandler.cpp" />
     <ClCompile Include="GameEngine\source\GameObject.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>

@@ -49,6 +49,5 @@ public:
 	}
 
 	void update() override {
-
 	}
 };
