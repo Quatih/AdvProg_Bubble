@@ -44,30 +44,29 @@ public:
 		SDL_SetRenderDrawColor(renderer, 0, 0, 255, 255);
 		SDL_ShowWindow(window);
 
-		player = new GameObject(64, 64, 0, 0);
+		player = new GameObject(32, 32, 1.5);
 		player->addComponent<MovementHandler>(0.0f, 0.0f);
 		player->getComponent<MovementHandler>()->setVelocity(0.0f, 0.0f);
-		player->addComponent<TileHandler>(renderer, "assets/weirdguy.png");
-		player->addComponent<KeyboardHandler>(&events);
-		player->addComponent<CollisionHandler>();
 
-		bubbles.push_back(new GameObject(32, 32, 100, 0));
-		bubbles[0]->addComponent<MovementHandler>(0.0f, 0.0f);
+		player->addComponent<TileHandler>(renderer, "assets/square_B.png");
+		player->addComponent<KeyboardHandler>(&events);
+
+		bubbles.push_back(new GameObject(32, 32, 1));
+		bubbles[0]->addComponent<MovementHandler>(100.0f, 0.0f);
 		bubbles[0]->addComponent<TileHandler>(renderer, "assets/white_ball.png");
 
 	}
 	void update() {
+
+
 		player->update();
 		for (auto bubble : bubbles) {
 			bubble->update();
 		}
 		for (auto bubble : bubbles) {
-
-				if (player->getComponent<CollisionHandler>()->collidesWithCirlce(bubble->render_rect)) {
-					std::cout << "Collides with bubble";
-				}
-			
-			
+			if (collidesWithCirlce(&(player->render_rect), &(bubble->render_rect))) {
+				std::cout << "Collides with bubble";
+			}			
 		}
 
 	}

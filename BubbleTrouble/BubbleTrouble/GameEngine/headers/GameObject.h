@@ -42,7 +42,7 @@ public:
 
 	SDL_Rect default_rect, render_rect;
 
-	GameObject(int height, int width, int posX, int posY);
+	GameObject(int height, int width, float scale);
 	~GameObject();
 
 	void update();
@@ -56,11 +56,10 @@ public:
 		/// Forward arguments made to addcomponent to the newly created component
 		T* comp = new T(std::forward<Ts>(args)...);
 		comp->owner = this;
-
 		/// Add the component to the array at the unique location of this template type
-		//componentArray[getComponentID<T>()] = comp;
 		components.push_back(comp);
 		comp->init();
+
 	}
 
 	/// Return pointer to the stored component of type T
