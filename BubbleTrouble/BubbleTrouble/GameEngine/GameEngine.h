@@ -64,7 +64,6 @@ public:
 	void handleEvents() {
 
 		SDL_PollEvent(&events);
-
 		///User requests quit
 		if (events.type == SDL_QUIT)
 		{
