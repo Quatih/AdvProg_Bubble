@@ -1,4 +1,4 @@
-#include "GameComponent.h"
+#include "GameObject.h"
 
 class MouseHandler : public GameComponent {
 

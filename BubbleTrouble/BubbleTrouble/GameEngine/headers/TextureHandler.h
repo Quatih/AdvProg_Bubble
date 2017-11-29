@@ -1,7 +1,14 @@
 #pragma once
-#include "GameComponent.h"
+#include "GameObject.h"
+#include "SDL_image.h"
 
-class TextureHandler : public GameComponent {
+
+class TextureHandler {
+private:
+
 public:
+	SDL_Renderer * global_renderer;
+	SDL_Texture * texture;
+
 
 };

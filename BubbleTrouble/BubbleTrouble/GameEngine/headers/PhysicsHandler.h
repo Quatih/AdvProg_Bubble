@@ -1,5 +1,5 @@
 #pragma once
-#include "GameComponent.h"
+#include "GameObject.h"
 #include "MovementHandler.h"
 #include "Vector2D.h"
 
