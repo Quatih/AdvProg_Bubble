@@ -6,8 +6,8 @@ GameObject::GameObject(int height, int width, float scale) {
 	default_rect.w = width;
 	default_rect.x = 0;
 	default_rect.y = 0;
-	render_rect.h = (float)height*scale;
-	render_rect.w = (float)width*scale;
+	render_rect.h = (int)((float)height*scale);
+	render_rect.w = (int)((float)width*scale);
 	render_rect.x = 0;
 	render_rect.y = 0;
 

@@ -8,7 +8,7 @@
 #include "MovementHandler.h"
 #include "SpriteHandler.h"
 #include "MouseHandler.h"
+#include "CollisionHandler.h"
 
-#include "CollisionChecks.h"
 
 //enum ComponentIDs { VECTOR, TILE, COLLISION, KEYBOARD, MOUSE, MOVEMENT, SOUND, TEXTURE, SPRITE };

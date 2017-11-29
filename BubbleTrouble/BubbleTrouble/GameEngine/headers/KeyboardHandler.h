@@ -8,9 +8,15 @@ class KeyboardHandler : public GameComponent {
 public:
 	MovementHandler *movement;
 	SDL_Event *events;
+	float velocity;
+	bool yfreedom;
 	bool keydown[256] = { false };
-	KeyboardHandler(SDL_Event *events) {
+	KeyboardHandler(SDL_Event *events, float velocity, bool freedom) {
 		this->events = events;
+		this->velocity = velocity;
+		yfreedom = freedom;
+		std::cout << "Keyboard init\n";
+
 	}
 
 
@@ -36,6 +42,9 @@ public:
 
 				keydown[SDLK_s] = true;
 			}
+			if (events->key.keysym.sym == SDLK_SPACE) {
+
+			}
 		}
 		else if (events->type == SDL_KEYUP)
 		{
@@ -57,27 +66,30 @@ public:
 			movement->velocity.x = 0;
 		}
 		else if (keydown[SDLK_a]) {
-			movement->velocity.x = -1;
+			movement->velocity.x = -1 * velocity;
 		}
 		else if (keydown[SDLK_d]) {
-			movement->velocity.x = 1;
+			movement->velocity.x = 1 * velocity;
 		}
 		else {
 			movement->velocity.x = 0;
 		}
 
-		if (keydown[SDLK_w] && keydown[SDLK_s]) {
-			movement->velocity.y = 0;
-		}
-		else if (keydown[SDLK_w]) {
-			movement->velocity.y = -1;
-		}
-		else if (keydown[SDLK_s]) {
-			movement->velocity.y = 1;
-		}
-		else {
-			movement->velocity.y = 0;
-		}
 
+		if (yfreedom) {
+			if (keydown[SDLK_w] && keydown[SDLK_s]) {
+
+				movement->velocity.y = 0;
+			}
+			else if (keydown[SDLK_w]) {
+				movement->velocity.y = -1*velocity;
+			}
+			else if (keydown[SDLK_s]) {
+				movement->velocity.y = 1*velocity;
+			}
+			else {
+				movement->velocity.y = 0;
+			}
+		}
 	}
 };

@@ -14,10 +14,12 @@ class GameEngine {
 private:
 	GameObject * player;
 	std::vector<GameObject*> bubbles;
+	GameObject * spike;
 	Map * map;
 	SDL_Window * window;
 	SDL_Event events;
 	bool running;
+
 
 public:
 
@@ -26,7 +28,7 @@ public:
 	GameEngine(std::string title, int winposx, int winposy, int winwidth, int winheight, SDL_WindowFlags flag){
 		SDL_Init(SDL_INIT_EVERYTHING);
 		window = SDL_CreateWindow(title.c_str(), winposx, winposy, winwidth, winheight, flag);
-		renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+		renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED );
 		std::cout << "Game Engine Constructed.\n";
 		running = true;
 	};
@@ -45,17 +47,32 @@ public:
 		SDL_SetRenderDrawColor(renderer, 0, 0, 255, 255);
 		SDL_ShowWindow(window);
 
-		player = new GameObject(32, 32, 1.5);
-		player->addComponent<MovementHandler>(0.0f, 0.0f);
+		int width, height;
+		SDL_GetWindowSize(window, &width, &height);
+
+		player = new GameObject(32, 32, 1.5); //height-player->render_rect.h
+		player->addComponent<MovementHandler>(1.0f, 1.0f);
 		player->getComponent<MovementHandler>()->setVelocity(0.0f, 0.0f);
 
 		player->addComponent<TileHandler>(renderer, "assets/square_B.png");
-		player->addComponent<KeyboardHandler>(&events);
+		player->addComponent<KeyboardHandler>(&events, 2.0f, true);
+
+		player->addComponent<CollisionHandler>(0, 0, width, height);
 
 		bubbles.push_back(new GameObject(32, 32, 1));
 		bubbles[0]->addComponent<MovementHandler>(100.0f, 0.0f);
 		bubbles[0]->addComponent<TileHandler>(renderer, "assets/white_ball.png");
-
+		bubbles[0]->addComponent<CollisionHandler>(0, 0, width, height);
+		bubbles[0]->getComponent<MovementHandler>()->setVelocity(2, 0);
+		bubbles[0]->getComponent<MovementHandler>()->acceleration.x = 0.0;
+		bubbles[0]->getComponent<MovementHandler>()->acceleration.y = 0.1;
+		bubbles.push_back(new GameObject(32, 32, 1));
+		bubbles[1]->addComponent<MovementHandler>(1000.0f, 400.0f);
+		bubbles[1]->addComponent<TileHandler>(renderer, "assets/white_ball.png");
+		bubbles[1]->addComponent<CollisionHandler>(0, 0, width, height);
+		bubbles[1]->getComponent<MovementHandler>()->setVelocity(6, 0);
+		bubbles[1]->getComponent<MovementHandler>()->acceleration.x = 0.0;
+		bubbles[1]->getComponent<MovementHandler>()->acceleration.y = 0.2;
 	}
 	void update() {
 
@@ -64,11 +81,12 @@ public:
 		for (auto bubble : bubbles) {
 			bubble->update();
 		}
-		for (auto bubble : bubbles) {
-			if (collidesWithCirlce(&(player->render_rect), &(bubble->render_rect))) {
-				std::cout << "Collides with bubble";
-			}			
-		}
+		//for (auto bubble : bubbles) {
+		//	if (collidesWithCirlce((player->render_rect), (bubble->render_rect))) {
+		//		std::cout << "Collides with bubble\n";
+		//		bubble->destroy();
+		//	}			
+		//}
 
 	}
 
@@ -93,11 +111,20 @@ public:
 
 	/// Deletes invalidated game objects
 	void cleanObjects() {
-		for (auto bubble = bubbles.begin(); bubble != bubbles.end(); ++bubble) {
+		for (std::vector<GameObject*>::iterator bubble = bubbles.begin(); bubble != bubbles.end();) {
 			if (!(*bubble)->isValid()) {
-				auto thisbubble = bubble;
-				--bubble;
-				bubbles.erase(thisbubble);
+				std::vector<GameObject*>::iterator thisbubble = bubble;
+				if (bubble == bubbles.begin()) {
+					bubbles.erase(thisbubble);
+					bubble = bubbles.begin();
+				}
+				else {
+					--bubble;
+					bubbles.erase(thisbubble);
+				}
+			}
+			else {
+				bubble++;
 			}
 		}
 	}

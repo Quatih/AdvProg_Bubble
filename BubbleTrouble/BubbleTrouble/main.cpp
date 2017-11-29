@@ -27,12 +27,11 @@ int main(int /*argc*/, char ** /*argv*/) {
 		Game->update();
 		Game->cleanObjects();
 		Game->render();
-
 		frameTime = SDL_GetTicks() - frameStart;
-		if (frameDelay > frameTime)
-		{
+		if (frameDelay > frameTime){
 			SDL_Delay(frameDelay - frameTime);
 		}
+
 	}
 
 	Game->quit();

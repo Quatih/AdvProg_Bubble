@@ -138,6 +138,7 @@
   <ItemGroup>
     <ClInclude Include="GameEngine\GameEngine.h" />
     <ClInclude Include="GameEngine\headers\CollisionChecks.h" />
+    <ClInclude Include="GameEngine\headers\CollisionHandler.h" />
     <ClInclude Include="GameEngine\headers\Components.h" />
     <ClInclude Include="GameEngine\headers\GameObject.h" />
     <ClInclude Include="GameEngine\headers\KeyboardHandler.h" />

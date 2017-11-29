@@ -24,6 +24,7 @@ const std::size_t maxComponents = 10;
 class GameObject {
 private:
 	std::vector<GameComponent*> components;
+	std::array<GameComponent*, maxComponents> componentArray;
 	bool valid;
 
 	std::size_t getUniqueID() {
@@ -58,12 +59,18 @@ public:
 		comp->owner = this;
 		/// Add the component to the array at the unique location of this template type
 		components.push_back(comp);
-		comp->init();
+		componentArray[getComponentID<T>()] = comp;
 
+		comp->init();
+	}
+	
+	template <typename T> bool hasComponent() {
+		
+		return (componentArray[getComponentID<T>()] != nullptr);
 	}
 
 	/// Return pointer to the stored component of type T
 	template <typename T> T* getComponent() {
-		return dynamic_cast<T*>(components[getComponentID<T>()]);
+		return static_cast<T*>(componentArray[getComponentID<T>()]);
 	}
 };
