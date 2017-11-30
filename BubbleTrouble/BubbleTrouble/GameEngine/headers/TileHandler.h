@@ -3,14 +3,12 @@
 #include "TextureHandler.h"
 #include "MovementHandler.h"
 
-
-
-
 struct Color {
 	Uint8 red;
 	Uint8 green;
 	Uint8 blue;
 };
+
 Color const RED = { 255, 0, 0 };
 Color const GREEN = { 0, 255, 0 };
 Color const BLUE = { 0, 0, 255 };
@@ -28,7 +26,9 @@ class TileHandler : public GameComponent {
 		this->path = path;
 		this->renderer = renderer;
 	}
-
+	TileHandler() {
+		SDL_DestroyTexture(texture);
+	}
 	void update() override{
 		
 	}

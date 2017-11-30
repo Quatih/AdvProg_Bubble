@@ -6,24 +6,24 @@
 
 class KeyboardHandler : public GameComponent {
 public:
+	GameObject * spike;
 	MovementHandler *movement;
 	SDL_Event *events;
 	float velocity;
-	bool yfreedom;
+	bool freedom;
 	bool keydown[256] = { false };
-	KeyboardHandler(SDL_Event *events, float velocity, bool freedom) {
+	KeyboardHandler(SDL_Event *events, float velocity, bool freedom, GameObject * spike) {
 		this->events = events;
 		this->velocity = velocity;
-		yfreedom = freedom;
+		this->freedom = freedom;
+		this->spike = spike;
 		std::cout << "Keyboard init\n";
 
 	}
 
-
 	void init() override {
 		movement = owner->getComponent<MovementHandler>();
 	}
-
 	void update() override {
 
 		if (events->type == SDL_KEYDOWN)
@@ -43,7 +43,7 @@ public:
 				keydown[SDLK_s] = true;
 			}
 			if (events->key.keysym.sym == SDLK_SPACE) {
-
+				keydown[SDLK_SPACE] = true;
 			}
 		}
 		else if (events->type == SDL_KEYUP)
@@ -60,6 +60,9 @@ public:
 			if (events->key.keysym.sym == SDLK_s) {
 				keydown[SDLK_s] = false;
 			}
+			if (events->key.keysym.sym == SDLK_SPACE) {
+				keydown[SDLK_SPACE] = false;
+			}
 		}
 
 		if (keydown[SDLK_a] && keydown[SDLK_d]) {
@@ -75,10 +78,17 @@ public:
 			movement->velocity.x = 0;
 		}
 
+		if (keydown[SDLK_SPACE] && !spike->isValid()) {
+			spike->setValid();
+			spike->render_rect.x = owner->render_rect.x + owner->render_rect.w / 2 - spike->render_rect.w;
+			spike->render_rect.y = owner->render_rect.y + owner->render_rect.h;
 
-		if (yfreedom) {
+			spike->getComponent<MovementHandler>()->position.x = (float)spike->render_rect.x;
+			spike->getComponent<MovementHandler>()->position.y = (float)spike->render_rect.y;
+		}
+
+		if (freedom) {
 			if (keydown[SDLK_w] && keydown[SDLK_s]) {
-
 				movement->velocity.y = 0;
 			}
 			else if (keydown[SDLK_w]) {

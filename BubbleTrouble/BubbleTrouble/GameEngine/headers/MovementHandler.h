@@ -8,11 +8,16 @@ public:
 	Vector2D<float> position;
 	Vector2D<float> velocity;
 	Vector2D<float> acceleration;
+
 	const float framedelay = 1 / 60;
 
 	MovementHandler(float posX, float posY) {
 		position.x = posX;
 		position.y = posY;
+		velocity.x = 0;
+		velocity.y = 0;
+		acceleration.x = 0;
+		acceleration.y = 0;
 		std::cout << "MovementHandler init\n";
 	};
 
@@ -21,6 +26,8 @@ public:
 		position.y = posY;
 		velocity.x = velocityX;
 		velocity.y = velocityY;
+		acceleration.x = 0;
+		acceleration.y = 0;
 		std::cout << "MovementHandler init\n";
 	};
 
@@ -35,8 +42,13 @@ public:
 	};
 
 	void update() override {
-		velocity += acceleration;
-		position += velocity;
+		//velocity += acceleration;
+		velocity.x += acceleration.x;
+		velocity.y += acceleration.y;
+		position.x += velocity.x;
+		position.y += velocity.y;
+
+		//position += velocity;
 
 		owner->render_rect.x = (int)position.x;
 		owner->render_rect.y = (int)position.y;

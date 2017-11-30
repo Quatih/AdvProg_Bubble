@@ -16,7 +16,6 @@ public:
 	virtual void init() {};
 	virtual void update() {};
 	virtual void draw() {};
-	
 };
 
 const std::size_t maxComponents = 10;
@@ -40,14 +39,15 @@ private:
 	}
 
 public:
-
+	int pops;
 	SDL_Rect default_rect, render_rect;
 
-	GameObject(int height, int width, float scale);
+	GameObject(int width, int height, float scale);
 	~GameObject();
 
 	void update();
-	bool isValid() const { return valid; };
+	void setValid() { valid = true; }
+	bool isValid() { return valid; };
 	void destroy() { valid = false; };
 	void draw();
 	/// Add component of type T with arguments Ts to this GameObject
@@ -65,7 +65,6 @@ public:
 	}
 	
 	template <typename T> bool hasComponent() {
-		
 		return (componentArray[getComponentID<T>()] != nullptr);
 	}
 
