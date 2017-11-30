@@ -12,6 +12,7 @@ public:
 	float velocity;
 	bool freedom;
 	bool keydown[256] = { false };
+
 	KeyboardHandler(SDL_Event *events, float velocity, bool freedom, GameObject * spike) {
 		this->events = events;
 		this->velocity = velocity;
@@ -78,15 +79,17 @@ public:
 			movement->velocity.x = 0;
 		}
 
+		/// Turn spike on and change its position to the player's position.
 		if (keydown[SDLK_SPACE] && !spike->isValid()) {
 			spike->setValid();
-			spike->render_rect.x = owner->render_rect.x + owner->render_rect.w / 2 - spike->render_rect.w;
-			spike->render_rect.y = owner->render_rect.y + owner->render_rect.h;
+			spike->render_rect.x = owner->render_rect.x + owner->render_rect.w / 2 - spike->render_rect.w/2;
+			spike->render_rect.y = owner->render_rect.y + owner->render_rect.h/2;
 
 			spike->getComponent<MovementHandler>()->position.x = (float)spike->render_rect.x;
 			spike->getComponent<MovementHandler>()->position.y = (float)spike->render_rect.y;
 		}
 
+		/// For testing purposes, allows up and down movement
 		if (freedom) {
 			if (keydown[SDLK_w] && keydown[SDLK_s]) {
 				movement->velocity.y = 0;

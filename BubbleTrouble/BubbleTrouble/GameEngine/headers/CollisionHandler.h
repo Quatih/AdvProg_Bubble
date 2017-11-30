@@ -21,7 +21,8 @@ public:
 	}
 
 	void update() {
-		
+		/// Check if the current object's postion intersects with the playerZone.
+
 		if (object->x < playZone->x) {
 			mover->position.x = (float) playZone->x + 1;
 			if(adjust_velocity) mover->velocity.x = mover->velocity.x * -1;
