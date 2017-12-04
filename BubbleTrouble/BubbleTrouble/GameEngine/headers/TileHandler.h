@@ -3,22 +3,34 @@
 #include "TextureHandler.h"
 #include "MovementHandler.h"
 
-	class TileHandler : public GameComponent {
-	public:
+struct Color {
+	Uint8 red;
+	Uint8 green;
+	Uint8 blue;
+};
 
+Color const RED = { 255, 0, 0 };
+Color const GREEN = { 0, 255, 0 };
+Color const BLUE = { 0, 0, 255 };
+Color const WHITE = { 255, 255, 255 };
+Color const BLACK = { 0, 0, 0 };
+
+class TileHandler : public GameComponent {
+	public:
+	
 	SDL_Texture * texture;
 	SDL_Renderer * renderer;
 	std::string path;
 
-
 	TileHandler(SDL_Renderer * renderer, std::string path) {
 		this->path = path;
 		this->renderer = renderer;
-
 	}
-
+	TileHandler() {
+		SDL_DestroyTexture(texture);
+	}
 	void update() override{
-
+		
 	}
 
 	void init() override {
@@ -28,6 +40,9 @@
 	void draw() override {
 		SDL_RenderCopyEx(renderer, texture, &(owner->default_rect), &(owner->render_rect), NULL, NULL, SDL_FLIP_NONE);
 	} 
+	void applyColor(Color applied) {
+		SDL_SetTextureColorMod(texture, applied.red, applied.green, applied.blue);
+	}
 
 private:
 	void loadTexture() {

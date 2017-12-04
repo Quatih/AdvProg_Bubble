@@ -16,7 +16,6 @@ public:
 	virtual void init() {};
 	virtual void update() {};
 	virtual void draw() {};
-	
 };
 
 const std::size_t maxComponents = 10;
@@ -24,6 +23,7 @@ const std::size_t maxComponents = 10;
 class GameObject {
 private:
 	std::vector<GameComponent*> components;
+	std::array<GameComponent*, maxComponents> componentArray;
 	bool valid;
 
 	std::size_t getUniqueID() {
@@ -39,14 +39,15 @@ private:
 	}
 
 public:
-
+	int pops;
 	SDL_Rect default_rect, render_rect;
 
-	GameObject(int height, int width, int posX, int posY);
+	GameObject(int width, int height, float scale);
 	~GameObject();
 
 	void update();
-	bool isValid() const { return valid; };
+	void setValid() { valid = true; }
+	bool isValid() { return valid; };
 	void destroy() { valid = false; };
 	void draw();
 	/// Add component of type T with arguments Ts to this GameObject
@@ -56,15 +57,19 @@ public:
 		/// Forward arguments made to addcomponent to the newly created component
 		T* comp = new T(std::forward<Ts>(args)...);
 		comp->owner = this;
-
 		/// Add the component to the array at the unique location of this template type
-		//componentArray[getComponentID<T>()] = comp;
 		components.push_back(comp);
+		componentArray[getComponentID<T>()] = comp;
+
 		comp->init();
+	}
+	
+	template <typename T> bool hasComponent() {
+		return (componentArray[getComponentID<T>()] != nullptr);
 	}
 
 	/// Return pointer to the stored component of type T
 	template <typename T> T* getComponent() {
-		return dynamic_cast<T*>(components[getComponentID<T>()]);
+		return static_cast<T*>(componentArray[getComponentID<T>()]);
 	}
 };

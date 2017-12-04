@@ -137,6 +137,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="GameEngine\GameEngine.h" />
+    <ClInclude Include="GameEngine\headers\CollisionChecks.h" />
     <ClInclude Include="GameEngine\headers\CollisionHandler.h" />
     <ClInclude Include="GameEngine\headers\Components.h" />
     <ClInclude Include="GameEngine\headers\GameObject.h" />
@@ -155,9 +156,7 @@
     <ClInclude Include="GameEngine\headers\Vector2D.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="GameEngine\headers\CollisionHandler.cpp" />
     <ClCompile Include="GameEngine\source\GameObject.cpp" />
-    <ClCompile Include="GameEngine\source\KeyboardHandler.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

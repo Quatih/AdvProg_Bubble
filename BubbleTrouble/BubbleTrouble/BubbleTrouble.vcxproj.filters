@@ -15,9 +15,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="GameEngine\headers\CollisionHandler.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="GameEngine\headers\Components.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -66,18 +63,18 @@
     <ClInclude Include="GameEngine\GameEngine.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="GameEngine\headers\CollisionChecks.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GameEngine\headers\CollisionHandler.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="GameEngine\source\GameObject.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GameEngine\headers\CollisionHandler.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GameEngine\source\KeyboardHandler.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

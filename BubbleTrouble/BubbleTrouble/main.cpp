@@ -7,16 +7,16 @@
 int main(int /*argc*/, char ** /*argv*/) {
 
 	GameEngine * Game = new GameEngine("Bubble Trouble", SDL_WINDOWPOS_CENTERED, 
-		SDL_WINDOWPOS_CENTERED,  1280, 720, SDL_WINDOW_HIDDEN);
+		SDL_WINDOWPOS_CENTERED,  1024, 600, SDL_WINDOW_HIDDEN);
 
-	Game->init();
-	bool quit = false;
+	Game->init(); 
 
 	//Event handler
 	
 	const int frameDelay = 1000 / 60;
 	Uint32 frameStart;
 	int frameTime;
+
 	//While application is running
 	while (Game->isRunning())
 	{
@@ -27,12 +27,11 @@ int main(int /*argc*/, char ** /*argv*/) {
 		Game->update();
 		Game->cleanObjects();
 		Game->render();
-
 		frameTime = SDL_GetTicks() - frameStart;
-		if (frameDelay > frameTime)
-		{
+		if (frameDelay > frameTime){
 			SDL_Delay(frameDelay - frameTime);
 		}
+
 	}
 
 	Game->quit();

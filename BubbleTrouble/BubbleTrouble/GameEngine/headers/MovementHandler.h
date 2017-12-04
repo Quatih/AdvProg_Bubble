@@ -5,38 +5,60 @@
 
 class MovementHandler : public GameComponent {
 public:
-	Vector2D<float> * position;
-	Vector2D<float> * velocity;
+	Vector2D<float> position;
+	Vector2D<float> velocity;
+	Vector2D<float> acceleration;
 
-	MovementHandler(float x, float y) {
-		position = new Vector2D <float>(x, y);
-		velocity = new Vector2D <float>();
+	const float framedelay = 1 / 60;
+
+	MovementHandler(float posX, float posY) {
+		position.x = posX;
+		position.y = posY;
+		velocity.x = 0;
+		velocity.y = 0;
+		acceleration.x = 0;
+		acceleration.y = 0;
 		std::cout << "MovementHandler init\n";
 	};
 
-	MovementHandler() {
-		delete position;
-		delete velocity;
-	}
+	MovementHandler(float posX, float posY, float velocityX, float velocityY) {
+		position.x = posX;
+		position.y = posY;
+		velocity.x = velocityX;
+		velocity.y = velocityY;
+		acceleration.x = 0;
+		acceleration.y = 0;
+		std::cout << "MovementHandler init\n";
+	};
+
+	MovementHandler(float posX, float posY, float velocityX, float velocityY, float accelX, float accelY) {
+		position.x = posX;
+		position.y = posY;
+		velocity.x = velocityX;
+		velocity.y = velocityY;
+		acceleration.x = accelX;
+		acceleration.y = accelY;
+		std::cout << "MovementHandler init\n";
+	};
 
 	void update() override {
-		position->x = position->x + velocity->x;
-		position->y = position->y + velocity->y;
-		owner->render_rect.x = (int)position->x;
-		owner->render_rect.y = (int)position->y;
+		//velocity += acceleration;
+		velocity.x += acceleration.x;
+		velocity.y += acceleration.y;
+		position.x += velocity.x;
+		position.y += velocity.y;
 
-		std::cout << "pos(" << position->x << ", " << position->y << ")\n";
+		//position += velocity;
+
+		owner->render_rect.x = (int)position.x;
+		owner->render_rect.y = (int)position.y;
+
+		//std::cout << "pos(" << position.x << ", " << position.y << ")\n";
 	}
 
 	void setVelocity(float x, float y) {
-		velocity->x = x;
-		velocity->y = y;
+		velocity.x = x;
+		velocity.y = y;
 	}
 
-	void init() override {
-
-	}
-	void draw() override {
-
-	}
 };

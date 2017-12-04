@@ -5,6 +5,5 @@
 
 class PhysicsHandler : public GameComponent {
 public:
-	Vector2D<float> * vect;
-	
+
 };
