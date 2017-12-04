@@ -55,13 +55,13 @@ public:
 	}
 
 	void init() {
-		SDL_SetRenderDrawColor(renderer, 200, 255, 255, 255);
+		SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
 		SDL_ShowWindow(window);
 
 		int width, height;
 		SDL_GetWindowSize(window, &width, &height);
 
-		player = new GameObject(9, 28, 4); //height-player->render_rect.h
+		player = new GameObject(9, 28, 4); 
 		spike = new GameObject(15, 800, 1);
 		player->addComponent<MovementHandler>((float)playZone.w/2, (float)playZone.h, 0.0f, 0.0f, 0.0f, 0.0f);
 		player->getComponent<MovementHandler>()->setVelocity(0.0f, 0.0f);
@@ -114,9 +114,9 @@ public:
 					std::cout << "Bubble popped\n";
 					if (bubble->pops > 0) {
 						int cindex = rand() % bubbleTextures.size();
-						tempbubbles.push_back(addBubble(bubble->render_rect.h / 4, bubble->render_rect.x, bubble->render_rect.y, bubble->getComponent<MovementHandler>()->velocity.x,
+						tempbubbles.push_back(addBubble(bubble->render_rect.h / 3, bubble->render_rect.x, bubble->render_rect.y, bubble->getComponent<MovementHandler>()->velocity.x,
 							(float)-abs(bubble->getComponent<MovementHandler>()->velocity.y*0.8), bubble->getComponent<MovementHandler>()->acceleration.y, bubble->pops - 1, bubbleTextures[cindex]));
-						tempbubbles.push_back(addBubble(bubble->render_rect.h / 4, bubble->render_rect.x, bubble->render_rect.y, -bubble->getComponent<MovementHandler>()->velocity.x,
+						tempbubbles.push_back(addBubble(bubble->render_rect.h / 3, bubble->render_rect.x, bubble->render_rect.y, -bubble->getComponent<MovementHandler>()->velocity.x,
 							(float)-abs(bubble->getComponent<MovementHandler>()->velocity.y*0.8), bubble->getComponent<MovementHandler>()->acceleration.y, bubble->pops - 1, bubbleTextures[cindex]));
 					}
 					break;

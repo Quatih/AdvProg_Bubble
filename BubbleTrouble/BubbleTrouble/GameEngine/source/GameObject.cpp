@@ -22,7 +22,7 @@ GameObject::~GameObject() {
 void GameObject::update() {
 	if (isValid()) {
 		for (auto & comps : components) {
-			comps->update();d
+			comps->update();
 		}
 	}
 }
