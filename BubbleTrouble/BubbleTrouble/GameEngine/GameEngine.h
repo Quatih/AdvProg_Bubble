@@ -3,7 +3,7 @@
 #include "headers\Components.h"
 #include "headers\Scoreboard.h"
 #include "headers\SoundPlayer.h"
-#include "headers\KeyboardHandler.h"
+#include "headers\TextureLoader.h"
 #include <vector>
 #include "headers\Menu.h"
 #include "headers\Map.h"
@@ -24,6 +24,8 @@ private:
 	SDL_Rect spikeZone;
 
 	const Color colorarray[4] = { RED, GREEN, BLUE, BLACK };
+	std::vector<TextureLoader*> bubbleTextures;
+
 public:
 
 	SDL_Renderer * renderer;
@@ -45,6 +47,7 @@ public:
 		bubbles.clear();
 		running = false;
 		delete spike;
+		bubbleTextures.clear();
 	};
 
 	bool isRunning() {
@@ -52,13 +55,13 @@ public:
 	}
 
 	void init() {
-		SDL_SetRenderDrawColor(renderer, 200, 255, 255, 255);
+		SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
 		SDL_ShowWindow(window);
 
 		int width, height;
 		SDL_GetWindowSize(window, &width, &height);
 
-		player = new GameObject(9, 28, 4); //height-player->render_rect.h
+		player = new GameObject(9, 28, 4); 
 		spike = new GameObject(15, 800, 1);
 		player->addComponent<MovementHandler>((float)playZone.w/2, (float)playZone.h, 0.0f, 0.0f, 0.0f, 0.0f);
 		player->getComponent<MovementHandler>()->setVelocity(0.0f, 0.0f);
@@ -76,6 +79,10 @@ public:
 		spike->addComponent<CollisionHandler>(&spikeZone, false);
 		spike->destroy();
 
+		for (int i = 0; i < 4; i++) {
+			bubbleTextures.push_back(new TextureLoader(renderer, "assets/BallWithBorder.png"));
+			bubbleTextures[i]->applyColor(colorarray[i]);
+		}
 
 		for (int i = 0; i < 4; i++) {
 			generateRandomBubble();
@@ -106,11 +113,11 @@ public:
 					bubble->destroy();
 					std::cout << "Bubble popped\n";
 					if (bubble->pops > 0) {
-						int cindex = rand() % 4;
-						tempbubbles.push_back(addBubble(bubble->render_rect.h / 4, bubble->render_rect.x, bubble->render_rect.y, bubble->getComponent<MovementHandler>()->velocity.x,
-							(float)-abs(bubble->getComponent<MovementHandler>()->velocity.y*0.8), bubble->getComponent<MovementHandler>()->acceleration.y, bubble->pops - 1, colorarray[cindex]));
-						tempbubbles.push_back(addBubble(bubble->render_rect.h / 4, bubble->render_rect.x, bubble->render_rect.y, -bubble->getComponent<MovementHandler>()->velocity.x,
-							(float)-abs(bubble->getComponent<MovementHandler>()->velocity.y*0.8), bubble->getComponent<MovementHandler>()->acceleration.y, bubble->pops - 1, colorarray[cindex]));
+						int cindex = rand() % bubbleTextures.size();
+						tempbubbles.push_back(addBubble(bubble->render_rect.h / 3, bubble->render_rect.x, bubble->render_rect.y, bubble->getComponent<MovementHandler>()->velocity.x,
+							(float)-abs(bubble->getComponent<MovementHandler>()->velocity.y*0.8), bubble->getComponent<MovementHandler>()->acceleration.y, bubble->pops - 1, bubbleTextures[cindex]));
+						tempbubbles.push_back(addBubble(bubble->render_rect.h / 3, bubble->render_rect.x, bubble->render_rect.y, -bubble->getComponent<MovementHandler>()->velocity.x,
+							(float)-abs(bubble->getComponent<MovementHandler>()->velocity.y*0.8), bubble->getComponent<MovementHandler>()->acceleration.y, bubble->pops - 1, bubbleTextures[cindex]));
 					}
 					break;
 				}
@@ -179,16 +186,15 @@ public:
 
 	void inline generateRandomBubble() {
 		bubbles.push_back(addBubble(rand() % 50 + 10, rand() % playZone.w, rand() % (playZone.h / 2) + 100,
-			((rand() % 100) *0.005f + 1.5f), 0, (rand() % 100) *0.001f +0.01f, rand() % 5, colorarray[rand() % 4]));
+			((rand() % 100) *0.005f + 1.5f), 0, (rand() % 100) *0.001f +0.01f, rand() % 5, bubbleTextures[rand() % bubbleTextures.size()]));
 	}
 
-	GameObject * addBubble(int radius, int posX, int posY, float velocityX, float velocityY, float acceleration, int pops, Color color) {
+	GameObject * addBubble(int radius, int posX, int posY, float velocityX, float velocityY, float acceleration, int pops, TextureLoader * texture) {
 		std::size_t i = bubbles.size();
 		GameObject *bubble = new GameObject(512, 512, (float)radius*2/512);
 
 		bubble->addComponent<MovementHandler>((float) posX, (float) posY);
-		bubble->addComponent<TileHandler>(renderer, "assets/white_ball.png");
-		bubble->getComponent<TileHandler>()->applyColor(color);
+		bubble->addComponent<TileHandler>(renderer, texture);
 		bubble->addComponent<CollisionHandler>(&playZone, true);
 		bubble->getComponent<MovementHandler>()->setVelocity(velocityX, velocityY);
 		bubble->getComponent<MovementHandler>()->acceleration.x = 0.0;

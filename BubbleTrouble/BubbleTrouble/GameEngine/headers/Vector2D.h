@@ -15,7 +15,6 @@ public:
 		this->y = y;
 	}
 
-
 	friend Vector2D& operator+(Vector2D& lhs, const Vector2D& rhs)
 	{
 		Vector2D out;

@@ -158,7 +158,7 @@
     <ClInclude Include="GameEngine\headers\SoundHandler.h" />
     <ClInclude Include="GameEngine\headers\SoundPlayer.h" />
     <ClInclude Include="GameEngine\headers\SpriteHandler.h" />
-    <ClInclude Include="GameEngine\headers\TextureHandler.h" />
+    <ClInclude Include="GameEngine\headers\TextureLoader.h" />
     <ClInclude Include="GameEngine\headers\TileHandler.h" />
     <ClInclude Include="GameEngine\headers\Vector2D.h" />
   </ItemGroup>

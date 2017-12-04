@@ -15,9 +15,7 @@ GameObject::GameObject(int width, int height, float scale) {
 }
 
 GameObject::~GameObject() {
-	for (GameComponent * comps : componentArray) {
-		delete comps;
-	}
+
 	components.clear();
 }
 

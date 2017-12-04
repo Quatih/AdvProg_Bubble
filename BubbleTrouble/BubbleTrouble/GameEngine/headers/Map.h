@@ -1,7 +1,6 @@
 #pragma once
 #include "GameObject.h"
 #include "TileHandler.h"
-#include "TextureHandler.h"
 #include <vector>
 #include <fstream>
 
