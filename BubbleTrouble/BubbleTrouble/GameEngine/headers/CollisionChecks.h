@@ -13,12 +13,11 @@
 
 /// Checks the collision bounds of two SDL_Rects and returns true if the rectangles collide.
 bool collidesWithRect(const SDL_Rect check, const SDL_Rect other) {
-	if (check.x + check.w >= other.x &&
-		other.x + other.w >= check.x &&
-		check.y + check.h >= other.y &&
-		other.y + other.h >= check.y) {
+	if (check.x + check.w >= other.x && other.x + other.w >= check.x &&
+		check.y + check.h >= other.y && other.y + other.h >= check.y) {
 		return true;
 	}
+	else{ }
 	return false;
 }
 

@@ -3,8 +3,6 @@
 #include "headers/Components.h"
 #include "headers/TextureLoader.h"
 #include <vector>
-#include "headers/Menu.h"
-#include "headers/Map.h"
 #include <random>
 
 #ifdef __linux__ 
@@ -67,32 +65,25 @@ public:
 		SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
 		SDL_ShowWindow(window);
 
-		player = new GameObject(9, 28, 4); 
-		spike = new GameObject(15, 800, 1);
-
-
-		player->addComponent<MovementHandler>((float)playZone.w/2, (float)playZone.h, 0.0f, 0.0f, 0.0f, 0.0f);
-
-		player->addComponent<TileHandler>(renderer, "assets/weirdguy2.png");
+		player = new GameObject(); 
+		spike = new GameObject();
 
 		player->addComponent<KeyboardHandler>(&events, 3.5f, false, spike);
-
+		player->addComponent<MovementHandler>((float)playZone.w / 2, (float)playZone.h);
+		player->addComponent<TileHandler>(renderer, "assets/weirdguy2.png", 4.0f);
 		player->addComponent<CollisionHandler>(&playZone, false);
-		
-		spike->addComponent<MovementHandler>(0.0f, 0.0f, 0.0f, -4.5f, 0.0f, 0.0f);
-		spike->addComponent<TileHandler>(renderer, "assets/spike4.png");
+		spike->addComponent<MovementHandler>(0.0f, 0.0f, 0.0f, -4.8f, 0.0f, 0.0f);
+		spike->addComponent<TileHandler>(renderer, "assets/spike4.png", 1.0f);
 
-		spikeZone = playZone;
-		spikeZone.h = 2000;
-		spikeZone.w = 2000;
-		spike->addComponent<CollisionHandler>(&spikeZone, false);
 		spike->destroy();
 
+		player->init();
+		spike->init();
+
 		for (int i = 0; i < 4; i++) {
-			bubbleTextures.push_back(new TextureLoader(renderer, "assets/BallWithBorder.png"));
+			bubbleTextures.push_back(new TextureLoader(renderer, "assets/WhiteBall_256x256.png"));
 			bubbleTextures[i]->applyColor(colorarray[i]);
 		}
-
 		for (int i = 0; i < 4; i++) {
 			generateRandomBubble();
 		}
@@ -128,7 +119,7 @@ public:
 						tempbubbles.push_back(addBubble(bubble->render_rect.h / 3, bubble->render_rect.x, bubble->render_rect.y, -bubble->getComponent<MovementHandler>()->velocity.x,
 							(float)-abs(bubble->getComponent<MovementHandler>()->velocity.y*0.8), bubble->getComponent<MovementHandler>()->acceleration.y, bubble->pops - 1, bubbleTextures[cindex]));
 					}
-					break;
+					break; //Break so that we pop only one bubble.
 				}
 			}
 
@@ -200,15 +191,13 @@ public:
 
 	GameObject * addBubble(int radius, int posX, int posY, float velocityX, float velocityY, float acceleration, int pops, TextureLoader * texture) {
 		std::size_t i = bubbles.size();
-		GameObject *bubble = new GameObject(512, 512, (float)radius*2/512);
-
-		bubble->addComponent<MovementHandler>((float) posX, (float) posY);
-		bubble->addComponent<TileHandler>(renderer, texture);
+		GameObject *bubble = new GameObject();
+		bubble->addComponent<MovementHandler>((float) posX, (float) posY, velocityX, velocityY, 0.0f, acceleration);
+		bubble->addComponent<TileHandler>(renderer, texture, (float) radius * 2 / texture->getRect().h);
 		bubble->addComponent<CollisionHandler>(&playZone, true);
-		bubble->getComponent<MovementHandler>()->setVelocity(velocityX, velocityY);
-		bubble->getComponent<MovementHandler>()->acceleration.x = 0.0;
-		bubble->getComponent<MovementHandler>()->acceleration.y = acceleration;
+		bubble->init();
 		bubble->pops = pops;
+		
 		return bubble;
 	}
 };

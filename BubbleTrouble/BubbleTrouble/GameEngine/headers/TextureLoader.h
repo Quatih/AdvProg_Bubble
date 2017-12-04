@@ -31,6 +31,7 @@ private:
 	SDL_Renderer * global_renderer;
 	SDL_Texture * texture;
 	std::string path;
+	SDL_Rect img_rect;
 public:
 
 	/// Constructor loads the texture at the passed path
@@ -53,7 +54,14 @@ public:
 		if (loadedSurface == NULL) {
 			std::cout << "Image at path " << "\"" << path.c_str() << "\" failed to load\n";
 		}
+
+		img_rect.h = loadedSurface->clip_rect.h;
+		img_rect.w = loadedSurface->clip_rect.w;
+		img_rect.x = 0;
+		img_rect.y = 0;
+
 		texture = SDL_CreateTextureFromSurface(global_renderer, loadedSurface);
+
 		SDL_FreeSurface(loadedSurface);
 		if (texture == NULL) {
 			std::cout << "Texture from path " << "\"" << path.c_str() << "\" failed to load\n";
@@ -72,6 +80,10 @@ public:
 	/// Apply a color modification on the already loaded texture
 	void applyColor(Color applied) {
 		SDL_SetTextureColorMod(texture, applied.red, applied.green, applied.blue);
+	}
+
+	SDL_Rect & getRect() {
+		return img_rect;
 	}
 
 };

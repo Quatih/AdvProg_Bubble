@@ -1,15 +1,8 @@
 #include "../headers/GameObject.h"
 
 
-GameObject::GameObject(int width, int height, float scale) {
-	default_rect.h = height;
-	default_rect.w = width;
-	default_rect.x = 0;
-	default_rect.y = 0;
-	render_rect.h = (int)(height*scale);
-	render_rect.w = (int)(width*scale);
-	render_rect.x = 0;
-	render_rect.y = 0;
+GameObject::GameObject() {
+
 	pops = 0;
 	valid = true;
 }
@@ -26,6 +19,14 @@ void GameObject::update() {
 		}
 	}
 }
+
+void GameObject::init() {
+	std::cout << "Init components\n";
+	for (auto & comps : components) {
+		comps->init();
+	}
+}
+
 
 void GameObject::draw() {
 	if (isValid()) {

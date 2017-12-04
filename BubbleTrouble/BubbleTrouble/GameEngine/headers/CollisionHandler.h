@@ -2,6 +2,7 @@
 #include "GameObject.h"
 #include "MovementHandler.h"
 #include "CollisionChecks.h"
+
 class CollisionHandler : public GameComponent {
 public:
 	MovementHandler * mover;

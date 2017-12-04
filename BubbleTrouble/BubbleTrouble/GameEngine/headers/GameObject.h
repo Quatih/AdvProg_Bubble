@@ -33,29 +33,26 @@ const std::size_t maxComponents = 10;
 
 class GameObject {
 private:
-	std::vector<GameComponent*> components;
+	std::vector<std::unique_ptr<GameComponent>> components;
+	std::array<GameComponent*, maxComponents> componentsArray;
 	bool valid;
-
-	std::size_t getUniqueID() {
-		/// Maintains value during runtime
-		static std::size_t ID = 0;
-		return ID++;
-	}
+	std::size_t numComponents = 0;
 
 	/// Purpose is to keep a unique ID to the template component of type T
 	template <typename T> std::size_t getComponentID() {
-		static std::size_t ID = getUniqueID();
+		static std::size_t ID = numComponents++;
 		return ID;
 	}
 
 public:
 	int pops;
-	SDL_Rect default_rect, render_rect;
+	SDL_Rect img_rect, render_rect;
 
-	GameObject(int width, int height, float scale);
+	GameObject();
 	~GameObject();
 
 	void update();
+	void init();
 	void setValid() { valid = true; }
 	bool isValid() { return valid; };
 	void destroy() { valid = false; };
@@ -66,19 +63,19 @@ public:
 	{
 		/// Forward arguments made to addcomponent to the newly created component
 		T* comp = new T(std::forward<Ts>(args)...);
+		std::unique_ptr<GameComponent> unique{ comp };
+		components.emplace_back(std::move(unique));
 		comp->owner = this;
+		componentsArray[getComponentID<T>()] = comp;
 		/// Add the component to the array at the unique location of this template type
-		components.push_back(comp);
-
-		comp->init();
 	}
 	
 	template <typename T> bool hasComponent() {
-		return (components[getComponentID<T>()] != nullptr);
+		return (componentsArray[getComponentID<T>()] != nullptr);
 	}
 
 	/// Return pointer to the stored component of type T
 	template <typename T> T* getComponent() {
-		return static_cast<T*>(components[getComponentID<T>()]);
+		return static_cast<T*>(componentsArray[getComponentID<T>()]);
 	}
 };
