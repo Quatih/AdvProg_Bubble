@@ -22,38 +22,34 @@ private:
 	std::string path;
 public:
 
+	/// Constructor loads the texture at the passed path
 	TextureLoader(SDL_Renderer * renderer, std::string path) {
 		global_renderer = renderer;
 		this->path = path;
 		loadTexture();
 	}
 
+	/// Destroy the loaded texture
 	~TextureLoader() {
 		SDL_DestroyTexture(texture);
 	}
 
+
+	/// Load the surface from an image at path, then create a texture from the surface.
 	void loadTexture() {
-		//Load image at specified path
 
 		SDL_Surface* loadedSurface = IMG_Load(path.c_str());
-
-		if (loadedSurface == NULL)
-		{
-			std::cout << "not loaded\n";
+		if (loadedSurface == NULL) {
+			std::cout << "Image at path " << "\"" << path.c_str() << "\" failed to load\n";
 		}
-
-		//Create texture from surface pixels
 		texture = SDL_CreateTextureFromSurface(global_renderer, loadedSurface);
-
-		//Get rid of old loaded surface
 		SDL_FreeSurface(loadedSurface);
-
-		if (texture == NULL)
-		{
-			std::cout << ("Failed to load texture image!\n");
+		if (texture == NULL) {
+			std::cout << "Texture from path " << "\"" << path.c_str() << "\" failed to load\n";
 		}
 	}
 
+	/// Returns a pointer to the texture
 	SDL_Texture * getTexture() {
 		return texture;
 	}
@@ -62,6 +58,7 @@ public:
 		return path;
 	}
 
+	/// Apply a color modification on the already loaded texture
 	void applyColor(Color applied) {
 		SDL_SetTextureColorMod(texture, applied.red, applied.green, applied.blue);
 	}
