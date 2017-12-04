@@ -16,7 +16,7 @@ private:
 	GameObject * player;
 	std::vector<GameObject*> bubbles;
 	GameObject * spike;
-	Map * map;
+
 	SDL_Window * window;
 	SDL_Event events;
 	bool running;
@@ -58,15 +58,13 @@ public:
 		SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
 		SDL_ShowWindow(window);
 
-		int width, height;
-		SDL_GetWindowSize(window, &width, &height);
-
 		player = new GameObject(9, 28, 4); 
 		spike = new GameObject(15, 800, 1);
+
 		player->addComponent<MovementHandler>((float)playZone.w/2, (float)playZone.h, 0.0f, 0.0f, 0.0f, 0.0f);
-		player->getComponent<MovementHandler>()->setVelocity(0.0f, 0.0f);
 
 		player->addComponent<TileHandler>(renderer, "assets/weirdguy2.png");
+
 		player->addComponent<KeyboardHandler>(&events, 3.5f, false, spike);
 		player->addComponent<CollisionHandler>(&playZone, false);
 		

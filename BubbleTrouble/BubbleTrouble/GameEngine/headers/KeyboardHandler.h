@@ -68,13 +68,13 @@ public:
 		//}
 		const Uint8* currentKeyStates = SDL_GetKeyboardState(NULL);
 
-		if (currentKeyStates[SDL_SCANCODE_A] && currentKeyStates[SDL_SCANCODE_D]) {
+		if ((currentKeyStates[SDL_SCANCODE_A] || currentKeyStates[SDL_SCANCODE_LEFT]) && (currentKeyStates[SDL_SCANCODE_D] || currentKeyStates[SDL_SCANCODE_RIGHT])) {
 			movement->velocity.x = 0;
 		}
-		else if (currentKeyStates[SDL_SCANCODE_A]) {
+		else if (currentKeyStates[SDL_SCANCODE_A] || currentKeyStates[SDL_SCANCODE_LEFT]) {
 			movement->velocity.x = -1 * velocity;
 		}
-		else if (currentKeyStates[SDL_SCANCODE_D]) {
+		else if (currentKeyStates[SDL_SCANCODE_D] || currentKeyStates[SDL_SCANCODE_RIGHT]) {
 			movement->velocity.x = 1 * velocity;
 		}
 		else {
@@ -85,7 +85,7 @@ public:
 		if (currentKeyStates[SDL_SCANCODE_SPACE] && !spike->isValid()) {
 			spike->setValid();
 			spike->render_rect.x = owner->render_rect.x + owner->render_rect.w / 2 - spike->render_rect.w/2;
-			spike->render_rect.y = owner->render_rect.y + owner->render_rect.h/2;
+			spike->render_rect.y = owner->render_rect.y + owner->render_rect.h / 2;
 
 			spike->getComponent<MovementHandler>()->position.x = (float)spike->render_rect.x;
 			spike->getComponent<MovementHandler>()->position.y = (float)spike->render_rect.y;

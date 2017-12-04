@@ -9,8 +9,6 @@ public:
 	Vector2D<float> velocity;
 	Vector2D<float> acceleration;
 
-	const float framedelay = 1 / 60;
-
 	MovementHandler(float posX, float posY) {
 		position.x = posX;
 		position.y = posY;
