@@ -1,7 +1,6 @@
 #pragma once
 #include "GameObject.h"
 #include "Vector2D.h"
-#include "PhysicsHandler.h"
 
 class MovementHandler : public GameComponent {
 public:
@@ -57,6 +56,11 @@ public:
 	void setVelocity(float x, float y) {
 		velocity.x = x;
 		velocity.y = y;
+	}
+
+	void setAcceleration(float x, float y) {
+		acceleration.x = x;
+		acceleration.y = y;
 	}
 
 };

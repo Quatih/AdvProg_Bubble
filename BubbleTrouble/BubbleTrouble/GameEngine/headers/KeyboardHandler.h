@@ -25,6 +25,7 @@ public:
 	void init() override {
 		movement = owner->getComponent<MovementHandler>();
 	}
+
 	void update() override {
 
 

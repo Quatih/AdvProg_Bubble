@@ -1,7 +1,7 @@
 #include "SDL.h"
 #include "SDL_image.h"
 #include <iostream>
-#include "GameEngine\GameEngine.h"
+#include "GameEngine/GameEngine.h"
 
 
 int main(int /*argc*/, char ** /*argv*/) {

@@ -1,15 +1,24 @@
 #pragma once
-#include "headers\GameObject.h"
-#include "headers\Components.h"
-#include "headers\Scoreboard.h"
-#include "headers\SoundPlayer.h"
-#include "headers\TextureLoader.h"
+#include "headers/GameObject.h"
+#include "headers/Components.h"
+#include "headers/TextureLoader.h"
 #include <vector>
-#include "headers\Menu.h"
-#include "headers\Map.h"
+#include "headers/Menu.h"
+#include "headers/Map.h"
+#include <random>
+
+#ifdef __linux__ 
+
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_image.h>
+
+#else
+
 #include "SDL.h"
 #include "SDL_image.h"
-#include <random>
+
+#endif
+
 
 class GameEngine {
 private:
@@ -61,11 +70,13 @@ public:
 		player = new GameObject(9, 28, 4); 
 		spike = new GameObject(15, 800, 1);
 
+
 		player->addComponent<MovementHandler>((float)playZone.w/2, (float)playZone.h, 0.0f, 0.0f, 0.0f, 0.0f);
 
 		player->addComponent<TileHandler>(renderer, "assets/weirdguy2.png");
 
 		player->addComponent<KeyboardHandler>(&events, 3.5f, false, spike);
+
 		player->addComponent<CollisionHandler>(&playZone, false);
 		
 		spike->addComponent<MovementHandler>(0.0f, 0.0f, 0.0f, -4.5f, 0.0f, 0.0f);

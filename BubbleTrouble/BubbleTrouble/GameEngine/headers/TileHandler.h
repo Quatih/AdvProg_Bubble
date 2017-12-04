@@ -3,7 +3,6 @@
 #include "TextureLoader.h"
 #include "MovementHandler.h"
 
-
 class TileHandler : public GameComponent {
 
 private:
@@ -40,7 +39,7 @@ public:
 	}
 
 	void draw() override {
-		SDL_RenderCopyEx(renderer, texture->getTexture(), &(owner->default_rect), &(owner->render_rect), NULL, NULL, SDL_FLIP_NONE);
+		SDL_RenderCopyEx(renderer, texture->getTexture(), &(owner->default_rect), &(owner->render_rect), 0, 0, SDL_FLIP_NONE);
 	}
 
 	void applyColor(Color applied) {
