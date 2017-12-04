@@ -1,8 +1,8 @@
 #pragma once
 #include "GameObject.h"
-#include "TextureHandler.h"
+#include "TextureLoader.h"
 
 class SpriteHandler : public GameComponent {
 public:
-	TextureHandler * texture;
+	TextureLoader * texture;
 };

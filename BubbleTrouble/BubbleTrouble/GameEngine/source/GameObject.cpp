@@ -15,16 +15,14 @@ GameObject::GameObject(int width, int height, float scale) {
 }
 
 GameObject::~GameObject() {
-	for (GameComponent * comps : componentArray) {
-		delete comps;
-	}
+
 	components.clear();
 }
 
 void GameObject::update() {
 	if (isValid()) {
 		for (auto & comps : components) {
-			comps->update();
+			comps->update();d
 		}
 	}
 }
