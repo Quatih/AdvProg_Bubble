@@ -44,6 +44,9 @@ public:
 		owner->render_rect = texture->getRect();
 		owner->render_rect.h = (int)(owner->render_rect.h * scale);
 		owner->render_rect.w = (int)(owner->render_rect.w * scale);
+
+		owner->render_rect.x = (int)owner->getComponent<MovementHandler>()->position.x;
+		owner->render_rect.y = (int)owner->getComponent<MovementHandler>()->position.y;
 	}
 
 	void draw() override {

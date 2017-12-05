@@ -11,10 +11,6 @@ public:
 	MovementHandler(float posX, float posY) {
 		position.x = posX;
 		position.y = posY;
-		velocity.x = 0;
-		velocity.y = 0;
-		acceleration.x = 0;
-		acceleration.y = 0;
 		std::cout << "MovementHandler init\n";
 	};
 
@@ -23,8 +19,6 @@ public:
 		position.y = posY;
 		velocity.x = velocityX;
 		velocity.y = velocityY;
-		acceleration.x = 0;
-		acceleration.y = 0;
 		std::cout << "MovementHandler init\n";
 	};
 
@@ -37,6 +31,10 @@ public:
 		acceleration.y = accelY;
 		std::cout << "MovementHandler init\n";
 	};
+
+	void init() override {
+
+	}
 
 	void update() override {
 		//velocity += acceleration;
@@ -53,6 +51,7 @@ public:
 		//std::cout << "pos(" << position.x << ", " << position.y << ")\n";
 	}
 
+
 	void setVelocity(float x, float y) {
 		velocity.x = x;
 		velocity.y = y;
@@ -62,5 +61,4 @@ public:
 		acceleration.x = x;
 		acceleration.y = y;
 	}
-
 };

@@ -29,7 +29,7 @@ public:
 	virtual void draw() {};
 };
 
-const std::size_t maxComponents = 10;
+const std::size_t maxComponents = 5;
 
 class GameObject {
 private:

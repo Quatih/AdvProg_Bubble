@@ -47,6 +47,8 @@ public:
 		playZone.y = 0;
 		playZone.h = winheight;
 		playZone.w = winwidth;
+
+		SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "1");
 	};
 
 	~GameEngine() {
@@ -55,9 +57,12 @@ public:
 		running = false;
 		delete spike;
 		bubbleTextures.clear();
+		SDL_DestroyWindow(window);
+		SDL_DestroyRenderer(renderer);
+		SDL_Quit();
 	};
 
-	bool isRunning() {
+	bool inline isRunning() {
 		return running;
 	}
 
@@ -70,18 +75,17 @@ public:
 
 		player->addComponent<KeyboardHandler>(&events, 3.5f, false, spike);
 		player->addComponent<MovementHandler>((float)playZone.w / 2, (float)playZone.h);
-		player->addComponent<TileHandler>(renderer, "assets/weirdguy2.png", 4.0f);
+		player->addComponent<TileHandler>(renderer, "assets/SuperWeird3.png", 1.0f);
 		player->addComponent<CollisionHandler>(&playZone, false);
 		spike->addComponent<MovementHandler>(0.0f, 0.0f, 0.0f, -4.8f, 0.0f, 0.0f);
 		spike->addComponent<TileHandler>(renderer, "assets/spike4.png", 1.0f);
 
 		spike->destroy();
-
 		player->init();
 		spike->init();
 
 		for (int i = 0; i < 4; i++) {
-			bubbleTextures.push_back(new TextureLoader(renderer, "assets/WhiteBall_256x256.png"));
+			bubbleTextures.push_back(new TextureLoader(renderer, "assets/WhiteBall_128x128.png"));
 			bubbleTextures[i]->applyColor(colorarray[i]);
 		}
 		for (int i = 0; i < 4; i++) {
@@ -147,6 +151,7 @@ public:
 		SDL_RenderPresent(renderer);
 	}
 
+	/// Polls and handles all SDL events
 	void handleEvents() {
 		SDL_PollEvent(&events);
 		///User requests quit
@@ -178,14 +183,10 @@ public:
 		}
 	}
 
-	void quit() {
-		SDL_DestroyWindow(window);
-		SDL_DestroyRenderer(renderer);
-		SDL_Quit();
-	}
+
 
 	void inline generateRandomBubble() {
-		bubbles.push_back(addBubble(rand() % 50 + 10, rand() % playZone.w, rand() % (playZone.h / 2) + 100,
+		bubbles.push_back(addBubble(32, rand() % playZone.w, rand() % (playZone.h / 2) + 100,
 			((rand() % 100) *0.005f + 1.5f), 0, (rand() % 100) *0.001f +0.01f, rand() % 5, bubbleTextures[rand() % bubbleTextures.size()]));
 	}
 

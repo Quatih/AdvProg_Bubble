@@ -32,7 +32,7 @@ int main(int /*argc*/, char ** /*argv*/) {
 			SDL_Delay(frameDelay - frameTime);
 		}
 	}
+	delete Game;
 
-	Game->quit();
 	return 0;
 }
