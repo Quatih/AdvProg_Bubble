@@ -63,7 +63,7 @@ public:
 
 		player = new GameObject(9, 28, 4); 
 		spike = new GameObject(15, 800, 1);
-		player->addComponent<MovementHandler>((float)playZone.w/2, (float)playZone.h, 0.0f, 0.0f, 0.0f, 0.0f);
+		""'player->addComponent<MovementHandler>((float)playZone.w/2, (float)playZone.h, 0.0f, 0.0f, 0.0f, 0.0f);
 		player->getComponent<MovementHandler>()->setVelocity(0.0f, 0.0f);
 
 		player->addComponent<TileHandler>(renderer, "assets/weirdguy2.png");
