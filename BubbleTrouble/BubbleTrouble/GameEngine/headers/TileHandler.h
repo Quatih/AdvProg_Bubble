@@ -62,8 +62,12 @@ public:
 	}
 
 
+	TextureLoader * getTextureLoader() {
+		return texture;
+	}
+
 	/// Apply a color modification to the loaded texture.
 	void applyColor(Color applied) {
-		SDL_SetTextureColorMod(texture->getTexture(), applied.red, applied.green, applied.blue);
+		texture->applyColor(applied);
 	}
 };
