@@ -34,17 +34,23 @@ bool collidesWithCircle(const SDL_Rect check, const SDL_Rect circle) {
 
 	/// Only do the circular calculations if the rectangles collide.
 	if (collidesWithRect(check, circle)) {
-		/// Check for collision to the circle from 10 positions of either sides of the square.
+		/// Check for collision to the circle from either sides of the square.
 
-		for (int j = y; j <= y + h; j += h / 10) {
-			if (sqrt(abs(x - cx)*abs(x - cx) + abs(j - cy)*abs(j - cy)) <= ch / 2 ||
-				sqrt(abs(x + w - cx)*abs(x + w - cx) + abs(j - cy)*abs(j - cy)) <= ch / 2) {
+		for (int j = y; j <= y + h; j += 1) {
+			// Calculate the distance from the center of the circle to the position
+			double dist = sqrt((x - cx)*(x - cx) + (j - cy)*(j - cy));
+			double distw = sqrt((x - cx)*(x - cx) + (j - cy)*(j - cy));
+
+			if (dist <= ch / 2 || distw <= ch / 2) {
 				return true;
 			}
 		}
-		for (int i = x; i <= x + w; i += w / 10) {
-			if (sqrt(abs(i - cx)*abs(i - cx) + abs(y - cy)*abs(y - cy)) <= ch / 2 ||
-				sqrt(abs(i - cx)*abs(i - cx) + abs(y + h - cy)*abs(y + h - cy)) <= ch / 2) {
+		for (int i = x; i <= x + w; i += 1) {
+			// Calculate the distance from the center of the circle to the position
+			double dist = sqrt((i - cx)*(i - cx) + (y - cy)*(y - cy));
+			double disth = sqrt((i - cx)*(i - cx) + (y + h - cy)*(y + h - cy));
+
+			if (dist <= ch / 2 || disth <= ch / 2) {
 				return true;
 			}
 		}

@@ -19,6 +19,7 @@
 
 class GameObject;
 
+/// Base component class for inheritance.
 class GameComponent {
 public:
 	GameObject * owner;
@@ -29,13 +30,18 @@ public:
 	virtual void draw() {};
 };
 
+
 const std::size_t maxComponents = 5;
 
+/// Class used for each individual Game Object which has modularity with components.
+/// 
 class GameObject {
 private:
 	std::vector<std::unique_ptr<GameComponent>> components;
+
+	/// ComponentsArray used in order to be able to return a pointer to the components.
 	std::array<GameComponent*, maxComponents> componentsArray;
-	bool valid;
+	bool valid = true;
 	std::size_t numComponents = 0;
 
 	/// Purpose is to keep a unique ID to the template component of type T
@@ -45,36 +51,64 @@ private:
 	}
 
 public:
-	int pops;
+	int pops = 0;
 	SDL_Rect img_rect, render_rect;
 
-	GameObject();
-	~GameObject();
+	GameObject() {}
 
-	void update();
-	void init();
+	~GameObject() {
+		components.clear();
+	}
+
+	void update() {
+		if (isValid()) {
+			for (auto& comps : components) {
+				comps->update();
+			}
+		}
+	}
+
+	void init() {
+		for (auto& comps : components) {
+			comps->init();
+		}
+	}
+
+	void draw() {
+		if (isValid()) {
+			for (auto& comps : components) {
+				comps->draw();
+			}
+		}
+	}
+
+
 	void setValid() { valid = true; }
-	bool isValid() { return valid; };
-	void destroy() { valid = false; };
-	void draw();
+	void destroy() { valid = false; }
+
+	bool isValid() { return valid; }
+
 	/// Add component of type T with arguments Ts to this GameObject
 	template <typename T, typename... Ts>
-	void addComponent(Ts&&... args)
-	{
+	void addComponent(Ts&&... args)	{
 		/// Forward arguments made to addcomponent to the newly created component
 		T* comp = new T(std::forward<Ts>(args)...);
+	
 		std::unique_ptr<GameComponent> unique{ comp };
 		components.emplace_back(std::move(unique));
 		comp->owner = this;
-		componentsArray[getComponentID<T>()] = comp;
+		
 		/// Add the component to the array at the unique location of this template type
+		componentsArray[getComponentID<T>()] = comp;
 	}
 	
+	/// Returns true if the Object has a component of type T.
 	template <typename T> bool hasComponent() {
 		return (componentsArray[getComponentID<T>()] != nullptr);
 	}
 
-	/// Return pointer to the stored component of type T
+	/// Return pointer to the stored component of type T.
+	/// Returns nullptr if the Object does not contain a component of type T.
 	template <typename T> T* getComponent() {
 		return static_cast<T*>(componentsArray[getComponentID<T>()]);
 	}

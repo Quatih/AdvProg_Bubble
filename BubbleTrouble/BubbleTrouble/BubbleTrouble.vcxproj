@@ -150,13 +150,11 @@
     <ClInclude Include="GameEngine\headers\GameObject.h" />
     <ClInclude Include="GameEngine\headers\KeyboardHandler.h" />
     <ClInclude Include="GameEngine\headers\MovementHandler.h" />
-    <ClInclude Include="GameEngine\headers\SoundPlayer.h" />
     <ClInclude Include="GameEngine\headers\TextureLoader.h" />
     <ClInclude Include="GameEngine\headers\TileHandler.h" />
     <ClInclude Include="GameEngine\headers\Vector2D.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="GameEngine\source\GameObject.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

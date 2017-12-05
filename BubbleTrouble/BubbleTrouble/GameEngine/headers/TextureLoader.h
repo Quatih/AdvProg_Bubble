@@ -13,19 +13,23 @@
 
 #endif
 
+/// Keep track of RGB values.
 struct Color {
 	Uint8 red;
 	Uint8 green;
 	Uint8 blue;
 };
 
+
+
+/// Some basic color values
 Color const RED = { 255, 0, 0 };
 Color const GREEN = { 0, 255, 0 };
 Color const BLUE = { 0, 0, 255 };
 Color const WHITE = { 255, 255, 255 };
 Color const BLACK = { 0, 0, 0 };
 
-
+/// TextureLoader is in charge of loading a texture from an image and freeing it upon destruction.
 class TextureLoader {
 private:
 	SDL_Renderer * global_renderer;
@@ -41,7 +45,7 @@ public:
 		loadTexture();
 	}
 
-	/// Destroy the loaded texture
+	/// Free the loaded texture
 	~TextureLoader() {
 		SDL_DestroyTexture(texture);
 	}
@@ -73,7 +77,8 @@ public:
 		return texture;
 	}
 
-	std::string getPath() {
+	/// Returns the path of the texture;
+	const std::string getPath() {
 		return path;
 	}
 
@@ -82,6 +87,7 @@ public:
 		SDL_SetTextureColorMod(texture, applied.red, applied.green, applied.blue);
 	}
 
+	/// Return an SDL rect of the loaded image's size.
 	SDL_Rect & getRect() {
 		return img_rect;
 	}

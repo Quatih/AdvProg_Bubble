@@ -17,9 +17,10 @@
 
 #endif
 
-
+/// Handles all the game logic
 class GameEngine {
 private:
+
 	GameObject * player;
 	std::vector<GameObject*> bubbles;
 	GameObject * spike;
@@ -31,12 +32,15 @@ private:
 	SDL_Rect spikeZone;
 
 	const Color colorarray[4] = { RED, GREEN, BLUE, BLACK };
+
+	/// Use this to re-use the bubble textures and minimize memory allocation.
 	std::vector<TextureLoader*> bubbleTextures;
 
 public:
 
 	SDL_Renderer * renderer;
 
+	/// Constructor creates the window and renderer
 	GameEngine(std::string title, int winposx, int winposy, int winwidth, int winheight, SDL_WindowFlags flag) {
 		SDL_Init(SDL_INIT_EVERYTHING);
 		window = SDL_CreateWindow(title.c_str(), winposx, winposy, winwidth, winheight, flag);
@@ -48,14 +52,17 @@ public:
 		playZone.h = winheight;
 		playZone.w = winwidth;
 
+		/// Set render quality to 1, so that scaled objects are dithered a little
 		SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "1");
 	};
 
+	/// Free all allocated memory, hopefully.
 	~GameEngine() {
 		delete player;
+		delete spike;
 		bubbles.clear();
 		running = false;
-		delete spike;
+
 		bubbleTextures.clear();
 		SDL_DestroyWindow(window);
 		SDL_DestroyRenderer(renderer);
@@ -66,6 +73,8 @@ public:
 		return running;
 	}
 
+
+	/// Initialize player, spike and bubbles.
 	void init() {
 		SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
 		SDL_ShowWindow(window);
@@ -73,7 +82,7 @@ public:
 		player = new GameObject(); 
 		spike = new GameObject();
 
-		player->addComponent<KeyboardHandler>(&events, 3.5f, false, spike);
+		player->addComponent<KeyboardHandler>(3.5f, false, spike);
 		player->addComponent<MovementHandler>((float)playZone.w / 2, (float)playZone.h);
 		player->addComponent<TileHandler>(renderer, "assets/SuperWeird3.png", 1.0f);
 		player->addComponent<CollisionHandler>(&playZone, false);
@@ -112,7 +121,7 @@ public:
 				spike->destroy();
 			}
 			for (auto bubble : bubbles) {
-				if (collidesWithRect((spike->render_rect), (bubble->render_rect))) {
+				if (collidesWithCircle((spike->render_rect), (bubble->render_rect))) {
 					spike->destroy();
 					bubble->destroy();
 					std::cout << "Bubble popped\n";
@@ -139,9 +148,9 @@ public:
 		}
 	}
 
+	/// Render each object on the screen.
 	void render() {
 		SDL_RenderClear(renderer);
-		
 		spike->draw();
 		player->draw();
 
@@ -184,12 +193,14 @@ public:
 	}
 
 
-
+	/// Generate a random bubble
 	void inline generateRandomBubble() {
-		bubbles.push_back(addBubble(32, rand() % playZone.w, rand() % (playZone.h / 2) + 100,
+		bubbles.push_back(addBubble(rand() % 10 + 32, rand() % playZone.w, rand() % (playZone.h / 2) + 100,
 			((rand() % 100) *0.005f + 1.5f), 0, (rand() % 100) *0.001f +0.01f, rand() % 5, bubbleTextures[rand() % bubbleTextures.size()]));
 	}
 
+
+	/// Add a bubble to the bubble vector and initialize.
 	GameObject * addBubble(int radius, int posX, int posY, float velocityX, float velocityY, float acceleration, int pops, TextureLoader * texture) {
 		std::size_t i = bubbles.size();
 		GameObject *bubble = new GameObject();
