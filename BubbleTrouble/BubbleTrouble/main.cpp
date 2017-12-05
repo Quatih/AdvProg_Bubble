@@ -1,7 +1,7 @@
 #include "SDL.h"
 #include "SDL_image.h"
 #include <iostream>
-#include "GameEngine\GameEngine.h"
+#include "GameEngine/GameEngine.h"
 
 
 int main(int /*argc*/, char ** /*argv*/) {
@@ -31,9 +31,8 @@ int main(int /*argc*/, char ** /*argv*/) {
 		if (frameDelay > frameTime){
 			SDL_Delay(frameDelay - frameTime);
 		}
-
 	}
+	delete Game;
 
-	Game->quit();
 	return 0;
 }

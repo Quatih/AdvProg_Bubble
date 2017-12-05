@@ -4,10 +4,22 @@
 #include <array>
 #include <memory>
 #include <iostream>
+
+#ifdef __linux__ 
+
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_image.h>
+
+#else
+
 #include "SDL.h"
+#include "SDL_image.h"
+
+#endif
 
 class GameObject;
 
+/// Base component class for inheritance.
 class GameComponent {
 public:
 	GameObject * owner;
@@ -18,56 +30,86 @@ public:
 	virtual void draw() {};
 };
 
-const std::size_t maxComponents = 10;
 
+const std::size_t maxComponents = 5;
+
+/// Class used for each individual Game Object which has modularity with components.
+/// 
 class GameObject {
 private:
-	std::vector<GameComponent*> components;
-	bool valid;
+	std::vector<std::unique_ptr<GameComponent>> components;
 
-	std::size_t getUniqueID() {
-		/// Maintains value during runtime
-		static std::size_t ID = 0;
-		return ID++;
-	}
+	/// ComponentsArray used in order to be able to return a pointer to the components.
+	std::array<GameComponent*, maxComponents> componentsArray;
+	bool valid = true;
+	std::size_t numComponents = 0;
 
 	/// Purpose is to keep a unique ID to the template component of type T
 	template <typename T> std::size_t getComponentID() {
-		static std::size_t ID = getUniqueID();
+		static std::size_t ID = numComponents++;
 		return ID;
 	}
 
 public:
-	int pops;
-	SDL_Rect default_rect, render_rect;
+	int pops = 0;
+	SDL_Rect img_rect, render_rect;
 
-	GameObject(int width, int height, float scale);
-	~GameObject();
+	GameObject() {}
 
-	void update();
+	~GameObject() {
+		components.clear();
+	}
+
+	void update() {
+		if (isValid()) {
+			for (auto& comps : components) {
+				comps->update();
+			}
+		}
+	}
+
+	void init() {
+		for (auto& comps : components) {
+			comps->init();
+		}
+	}
+
+	void draw() {
+		if (isValid()) {
+			for (auto& comps : components) {
+				comps->draw();
+			}
+		}
+	}
+
+
 	void setValid() { valid = true; }
-	bool isValid() { return valid; };
-	void destroy() { valid = false; };
-	void draw();
+	void destroy() { valid = false; }
+
+	bool isValid() { return valid; }
+
 	/// Add component of type T with arguments Ts to this GameObject
 	template <typename T, typename... Ts>
-	void addComponent(Ts&&... args)
-	{
+	void addComponent(Ts&&... args)	{
 		/// Forward arguments made to addcomponent to the newly created component
 		T* comp = new T(std::forward<Ts>(args)...);
+	
+		std::unique_ptr<GameComponent> unique{ comp };
+		components.emplace_back(std::move(unique));
 		comp->owner = this;
+		
 		/// Add the component to the array at the unique location of this template type
-		components.push_back(comp);
-
-		comp->init();
+		componentsArray[getComponentID<T>()] = comp;
 	}
 	
+	/// Returns true if the Object has a component of type T.
 	template <typename T> bool hasComponent() {
-		return (components[getComponentID<T>()] != nullptr);
+		return (componentsArray[getComponentID<T>()] != nullptr);
 	}
 
-	/// Return pointer to the stored component of type T
+	/// Return pointer to the stored component of type T.
+	/// Returns nullptr if the Object does not contain a component of type T.
 	template <typename T> T* getComponent() {
-		return static_cast<T*>(components[getComponentID<T>()]);
+		return static_cast<T*>(componentsArray[getComponentID<T>()]);
 	}
 };
