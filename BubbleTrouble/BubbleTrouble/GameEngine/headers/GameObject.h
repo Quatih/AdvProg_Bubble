@@ -34,7 +34,7 @@ public:
 const std::size_t maxComponents = 5;
 
 /// Class used for each individual Game Object which has modularity with components.
-/// 
+
 class GameObject {
 private:
 	std::vector<std::unique_ptr<GameComponent>> components;
@@ -81,7 +81,6 @@ public:
 			}
 		}
 	}
-
 
 	void setValid() { valid = true; }
 	void destroy() { valid = false; }

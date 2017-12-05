@@ -28,6 +28,7 @@ int main(int /*argc*/, char ** /*argv*/) {
 		Game->cleanObjects();
 		Game->render();
 		frameTime = SDL_GetTicks() - frameStart;
+		
 		if (frameDelay > frameTime){
 			SDL_Delay(frameDelay - frameTime);
 		}

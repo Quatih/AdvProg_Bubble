@@ -39,7 +39,7 @@ bool collidesWithCircle(const SDL_Rect check, const SDL_Rect circle) {
 		for (int j = y; j <= y + h; j += 1) {
 			// Calculate the distance from the center of the circle to the position
 			double dist = sqrt((x - cx)*(x - cx) + (j - cy)*(j - cy));
-			double distw = sqrt((x - cx)*(x - cx) + (j - cy)*(j - cy));
+			double distw = sqrt((x + w - cx)*(x + w - cx) + (j - cy)*(j - cy));
 
 			if (dist <= ch / 2 || distw <= ch / 2) {
 				return true;

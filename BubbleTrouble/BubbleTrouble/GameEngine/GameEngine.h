@@ -2,8 +2,11 @@
 #include "headers/GameObject.h"
 #include "headers/Components.h"
 #include "headers/TextureLoader.h"
+#include "headers/CollisionChecks.h"
+#include "headers/RandomInterface.h"
 #include <vector>
 #include <random>
+#include <ctime>
 
 #ifdef __linux__ 
 
@@ -21,6 +24,7 @@
 class GameEngine {
 private:
 
+
 	GameObject * player;
 	std::vector<GameObject*> bubbles;
 	GameObject * spike;
@@ -28,7 +32,7 @@ private:
 	SDL_Window * window;
 	SDL_Event events;
 	bool running;
-	SDL_Rect playZone; 
+	SDL_Rect playZone;
 	SDL_Rect spikeZone;
 
 	const Color colorarray[4] = { RED, GREEN, BLUE, BLACK };
@@ -37,7 +41,6 @@ private:
 	std::vector<TextureLoader*> bubbleTextures;
 
 public:
-
 	SDL_Renderer * renderer;
 
 	/// Constructor creates the window and renderer
@@ -76,15 +79,16 @@ public:
 
 	/// Initialize player, spike and bubbles.
 	void init() {
+
 		SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
 		SDL_ShowWindow(window);
 
-		player = new GameObject(); 
+		player = new GameObject();
 		spike = new GameObject();
 
 		player->addComponent<KeyboardHandler>(3.5f, false, spike);
 		player->addComponent<MovementHandler>((float)playZone.w / 2, (float)playZone.h);
-		player->addComponent<TileHandler>(renderer, "assets/SuperWeird3.png", 1.0f);
+		player->addComponent<TileHandler>(renderer, "assets/SuperWeird2.png", 1.0f);
 		player->addComponent<CollisionHandler>(&playZone, false);
 		spike->addComponent<MovementHandler>(0.0f, 0.0f, 0.0f, -4.8f, 0.0f, 0.0f);
 		spike->addComponent<TileHandler>(renderer, "assets/spike4.png", 1.0f);
@@ -102,7 +106,9 @@ public:
 		}
 	}
 
+	/// Updates the game state, all objects.
 	void update() {
+
 		player->update();
 		for (auto bubble : bubbles) {
 			bubble->update();
@@ -113,7 +119,7 @@ public:
 			if (collidesWithCircle((player->render_rect), (bubble->render_rect))) {
 				std::cout << "Collides with bubble\n";
 			}
-		} 
+		}
 		if (spike->isValid()) {
 			std::vector<GameObject*> tempbubbles;
 			/// If the spike has reached the top, destroy it.
@@ -126,21 +132,23 @@ public:
 					bubble->destroy();
 					std::cout << "Bubble popped\n";
 					if (bubble->pops > 0) {
-						int cindex = rand() % bubbleTextures.size();
+						int cindex = intInRange(0, (int)bubbleTextures.size() - 1);
 						tempbubbles.push_back(addBubble(bubble->render_rect.h / 3, bubble->render_rect.x, bubble->render_rect.y, bubble->getComponent<MovementHandler>()->velocity.x,
-							(float)-abs(bubble->getComponent<MovementHandler>()->velocity.y*0.8), bubble->getComponent<MovementHandler>()->acceleration.y, bubble->pops - 1, bubbleTextures[cindex]));
+							(float)-abs(bubble->getComponent<MovementHandler>()->velocity.y*0.65), bubble->getComponent<MovementHandler>()->acceleration.y, bubble->pops - 1, bubbleTextures[cindex]));
 						tempbubbles.push_back(addBubble(bubble->render_rect.h / 3, bubble->render_rect.x, bubble->render_rect.y, -bubble->getComponent<MovementHandler>()->velocity.x,
-							(float)-abs(bubble->getComponent<MovementHandler>()->velocity.y*0.8), bubble->getComponent<MovementHandler>()->acceleration.y, bubble->pops - 1, bubbleTextures[cindex]));
+							(float)-abs(bubble->getComponent<MovementHandler>()->velocity.y*0.65), bubble->getComponent<MovementHandler>()->acceleration.y, bubble->pops - 1, bubbleTextures[cindex]));
 					}
 					break; //Break so that we pop only one bubble.
 				}
 			}
 
-			/// add them in later so that they're not iterated over in the previos loop.
+			/// add the bubbles in later so that they're not iterated over in the previous loop.
 			for (auto bubble : tempbubbles) {
 				bubbles.push_back(bubble);
 			}
 		}
+
+		/// Reset the board if all the bubbles are popped.
 		if (bubbles.empty()) {
 			for (int i = 0; i < 5; i++) {
 				generateRandomBubble();
@@ -174,7 +182,7 @@ public:
 	void cleanObjects() {
 		for (std::vector<GameObject*>::iterator bubble = bubbles.begin(); bubble != bubbles.end();) {
 			if (!(*bubble)->isValid()) {
-				
+
 				if (bubble == bubbles.begin()) {
 					bubbles.erase(bubble);
 					bubble = bubbles.begin();
@@ -195,14 +203,19 @@ public:
 
 	/// Generate a random bubble
 	void inline generateRandomBubble() {
-		bubbles.push_back(addBubble(rand() % 10 + 32, rand() % playZone.w, rand() % (playZone.h / 2) + 100,
-			((rand() % 100) *0.005f + 1.5f), 0, (rand() % 100) *0.001f +0.01f, rand() % 5, bubbleTextures[rand() % bubbleTextures.size()]));
+		bubbles.push_back(addBubble(intInRange(20, 32), 
+			intInRange(0, playZone.w), 
+			intInRange((int)(playZone.h/3.0f), 
+			(int)(playZone.h/2.0f)),
+			floatInRangePositiveOrNegative(1.3f, 1.75f),
+			0.0f, 
+			floatInRange(0.04f, 0.06f), 
+			intInRange(1, 3), 
+			bubbleTextures[intInRange(0, (int)bubbleTextures.size()-1)]));
 	}
-
 
 	/// Add a bubble to the bubble vector and initialize.
 	GameObject * addBubble(int radius, int posX, int posY, float velocityX, float velocityY, float acceleration, int pops, TextureLoader * texture) {
-		std::size_t i = bubbles.size();
 		GameObject *bubble = new GameObject();
 		bubble->addComponent<MovementHandler>((float) posX, (float) posY, velocityX, velocityY, 0.0f, acceleration);
 		bubble->addComponent<TileHandler>(renderer, texture, (float) radius * 2 / texture->getRect().h);
