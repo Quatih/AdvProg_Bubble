@@ -90,14 +90,14 @@ public:
 	/// Add component of type T with arguments Ts to this GameObject
 	template <typename T, typename... Ts>
 	void addComponent(Ts&&... args)	{
-		/// Forward arguments made to addcomponent to the newly created component
+		// Forward arguments made to addcomponent to the newly created component
 		T* comp = new T(std::forward<Ts>(args)...);
 	
 		std::unique_ptr<GameComponent> unique{ comp };
 		components.emplace_back(std::move(unique));
 		comp->owner = this;
 		
-		/// Add the component to the array at the unique location of this template type
+		// Add the component to the array at the unique location of this template type
 		componentsArray[getComponentID<T>()] = comp;
 	}
 	

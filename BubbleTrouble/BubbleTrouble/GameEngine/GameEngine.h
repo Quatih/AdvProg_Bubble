@@ -24,7 +24,6 @@
 class GameEngine {
 private:
 
-
 	GameObject * player;
 	std::vector<GameObject*> bubbles;
 	GameObject * spike;
@@ -35,6 +34,7 @@ private:
 	SDL_Rect playZone;
 	SDL_Rect spikeZone;
 
+	/// Used for random access of color.
 	const Color colorarray[4] = { RED, GREEN, BLUE, BLACK };
 
 	/// Use this to re-use the bubble textures and minimize memory allocation.
@@ -55,7 +55,7 @@ public:
 		playZone.h = winheight;
 		playZone.w = winwidth;
 
-		/// Set render quality to 1, so that scaled objects are dithered a little
+		// Set render quality to 1, so that scaled objects are dithered a little
 		SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "1");
 	};
 
@@ -88,7 +88,7 @@ public:
 
 		player->addComponent<KeyboardHandler>(3.5f, false, spike);
 		player->addComponent<MovementHandler>((float)playZone.w / 2, (float)playZone.h);
-		player->addComponent<TileHandler>(renderer, "assets/SuperWeird2.png", 1.0f);
+		player->addComponent<TileHandler>(renderer, "assets/SuperWeird3.png", 3.0f);
 		player->addComponent<CollisionHandler>(&playZone, false);
 		spike->addComponent<MovementHandler>(0.0f, 0.0f, 0.0f, -4.8f, 0.0f, 0.0f);
 		spike->addComponent<TileHandler>(renderer, "assets/spike4.png", 1.0f);
@@ -117,12 +117,12 @@ public:
 
 		for (auto bubble : bubbles) {
 			if (collidesWithCircle((player->render_rect), (bubble->render_rect))) {
-				std::cout << "Collides with bubble\n";
+				//std::cout << "Collides with bubble\n";
 			}
 		}
 		if (spike->isValid()) {
 			std::vector<GameObject*> tempbubbles;
-			/// If the spike has reached the top, destroy it.
+			// If the spike has reached the top, destroy it.
 			if (spike->render_rect.y <= 1) {
 				spike->destroy();
 			}
@@ -142,7 +142,7 @@ public:
 				}
 			}
 
-			/// add the bubbles in later so that they're not iterated over in the previous loop.
+			// add the bubbles in later so that they're not iterated over in the previous loop.
 			for (auto bubble : tempbubbles) {
 				bubbles.push_back(bubble);
 			}
@@ -171,7 +171,7 @@ public:
 	/// Polls and handles all SDL events
 	void handleEvents() {
 		SDL_PollEvent(&events);
-		///User requests quit
+		// User requests quit
 		if (events.type == SDL_QUIT)
 		{
 			running = false;

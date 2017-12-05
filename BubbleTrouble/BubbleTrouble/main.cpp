@@ -10,14 +10,12 @@ int main(int /*argc*/, char ** /*argv*/) {
 		SDL_WINDOWPOS_CENTERED,  1024, 600, SDL_WINDOW_HIDDEN);
 
 	Game->init(); 
-
-	//Event handler
 	
 	const int frameDelay = 1000 / 60;
 	Uint32 frameStart;
 	int frameTime;
 
-	//While application is running
+	/// Main game loop
 	while (Game->isRunning())
 	{
 		frameStart = SDL_GetTicks();

@@ -5,7 +5,7 @@ std::random_device random;
 std::mt19937 rng(random());
 
 
-
+/// Returns a pseudorandom float in the given range.
 const float floatInRange(const float lower_range, const float upper_range) {
 	std::uniform_real_distribution<float> uni(lower_range, upper_range);
 	//float r = lower_range + (float)rand() *(upper_range - lower_range) / ((float)RAND_MAX + 1.0f);
@@ -22,6 +22,7 @@ const float floatInRangePositiveOrNegative(const float lower_range, const float 
 	return r;
 }
 
+/// Returns a pseudorandom integer in the given range.
 const int intInRange(const int lower_range, const int upper_range) {
 	std::uniform_int_distribution<int> uni(lower_range, upper_range);
 	//int r = lower_range + rand() *(upper_range - lower_range) / (RAND_MAX + 1);

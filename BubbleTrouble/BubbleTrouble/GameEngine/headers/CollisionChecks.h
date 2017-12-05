@@ -34,7 +34,7 @@ bool collidesWithCircle(const SDL_Rect check, const SDL_Rect circle) {
 
 	/// Only do the circular calculations if the rectangles collide.
 	if (collidesWithRect(check, circle)) {
-		/// Check for collision to the circle from either sides of the square.
+		// Check for collision to the circle from either sides of the square.
 
 		for (int j = y; j <= y + h; j += 1) {
 			// Calculate the distance from the center of the circle to the position
