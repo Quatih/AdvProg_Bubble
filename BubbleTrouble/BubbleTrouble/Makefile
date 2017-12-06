@@ -1,4 +1,4 @@
-OBJS = *.cpp
+OBJS = main.cpp GameEngine/source/GameObject.cpp
 
 CC = g++
 
