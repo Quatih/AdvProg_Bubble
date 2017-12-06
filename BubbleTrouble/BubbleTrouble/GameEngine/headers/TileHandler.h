@@ -2,6 +2,8 @@
 #include "GameObject.h"
 #include "TextureLoader.h"
 
+
+/// Takes care of loading and rendering the texture for the objects
 class TileHandler : public GameComponent {
 
 private:

@@ -3,6 +3,8 @@
 #include "MovementHandler.h"
 #include <cmath>
 
+
+/// Handles all keyboard input for the player
 class KeyboardHandler : public GameComponent {
 public:
 	GameObject * spike;

@@ -147,7 +147,7 @@ public:
 			}
 		}
 
-		/// Reset the board if all the bubbles are popped.
+		// Re-populate the board if all the bubbles are popped.
 		if (bubbles.empty()) {
 			for (int i = 0; i < 5; i++) {
 				generateRandomBubble();

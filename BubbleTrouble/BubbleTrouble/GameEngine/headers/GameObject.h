@@ -31,13 +31,13 @@ public:
 };
 
 
-const std::size_t maxComponents = 5;
+const std::size_t maxComponents = 10;
 
 /// Class used for each individual Game Object which has modularity with components.
 
 class GameObject {
 private:
-	std::vector<std::unique_ptr<GameComponent>> components;
+	std::vector<GameComponent *> components;
 
 	/// ComponentsArray used in order to be able to return a pointer to the components.
 	std::array<GameComponent*, maxComponents> componentsArray;
@@ -92,9 +92,7 @@ public:
 	void addComponent(Ts&&... args)	{
 		// Forward arguments made to addcomponent to the newly created component
 		T* comp = new T(std::forward<Ts>(args)...);
-	
-		std::unique_ptr<GameComponent> unique{ comp };
-		components.emplace_back(std::move(unique));
+		components.push_back(comp);
 		comp->owner = this;
 		
 		// Add the component to the array at the unique location of this template type

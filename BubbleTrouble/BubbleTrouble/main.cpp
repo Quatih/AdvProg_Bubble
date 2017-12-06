@@ -6,8 +6,9 @@
 
 int main(int /*argc*/, char ** /*argv*/) {
 
-	GameEngine * Game = new GameEngine("Bubble Trouble", SDL_WINDOWPOS_CENTERED, 
-		SDL_WINDOWPOS_CENTERED,  1024, 600, SDL_WINDOW_HIDDEN);
+
+	std::unique_ptr<GameEngine> Game{ new GameEngine("Bubble Trouble", SDL_WINDOWPOS_CENTERED,
+		SDL_WINDOWPOS_CENTERED,  1024, 600, SDL_WINDOW_HIDDEN) };
 
 	Game->init(); 
 	
@@ -31,7 +32,7 @@ int main(int /*argc*/, char ** /*argv*/) {
 			SDL_Delay(frameDelay - frameTime);
 		}
 	}
-	delete Game;
+
 
 	return 0;
 }
