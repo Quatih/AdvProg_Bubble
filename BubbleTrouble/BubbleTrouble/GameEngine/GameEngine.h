@@ -87,7 +87,7 @@ public:
 
 		player->addComponent<KeyboardHandler>(3.5f, false, spike);
 		player->addComponent<MovementHandler>((float)playZone.w / 2, (float)playZone.h);
-		player->addComponent<TileHandler>(renderer, "assets/SuperWeird3.png", 1.0f);
+		player->addComponent<TileHandler>(renderer, "assets/duder2.png", 1.0f);
 		player->addComponent<CollisionHandler>(&playZone, false);
 		spike->addComponent<MovementHandler>(0.0f, 0.0f, 0.0f, -4.8f, 0.0f, 0.0f);
 		spike->addComponent<TileHandler>(renderer, "assets/spike4.png", 1.0f);
