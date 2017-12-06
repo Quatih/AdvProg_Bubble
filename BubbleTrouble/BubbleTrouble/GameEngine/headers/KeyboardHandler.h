@@ -35,7 +35,7 @@ public:
 			movement->velocity.x = -1 * velocity;
 		}
 		else if (currentKeyStates[SDL_SCANCODE_D] || currentKeyStates[SDL_SCANCODE_RIGHT]) {
-			movement->velocity.x = 1 * velocity;
+			movement->velocity.x = velocity;
 		}
 		else {
 			movement->velocity.x = 0;
@@ -60,10 +60,16 @@ public:
 				movement->velocity.y = -1*velocity;
 			}
 			else if (currentKeyStates[SDL_SCANCODE_S] || currentKeyStates[SDL_SCANCODE_DOWN]) {
-				movement->velocity.y = 1*velocity;
+				movement->velocity.y = velocity;
 			}
 			else {
 				movement->velocity.y = 0;
+			}
+			
+			// Normalize the speed to the velocity
+			if (movement->velocity.y != 0 && movement->velocity.x != 0) {
+				movement->velocity.x = sqrt(velocity*velocity / 2) * movement->velocity.x / velocity;
+				movement->velocity.y = sqrt(velocity*velocity / 2) * movement->velocity.y / velocity;
 			}
 		}
 	}
