@@ -1,5 +1,4 @@
 #pragma once
-#include "GameObject.h"
 
 #ifdef __linux__ 
 

@@ -1,7 +1,6 @@
 #pragma once
 #include "GameObject.h"
 #include "MovementHandler.h"
-#include "TileHandler.h"
 #include <cmath>
 
 class KeyboardHandler : public GameComponent {
@@ -52,13 +51,13 @@ public:
 
 		// For testing purposes, allows up and down movement
 		if (freedom) {
-			if (currentKeyStates[SDL_SCANCODE_W] && currentKeyStates[SDL_SCANCODE_S]) {
+			if ((currentKeyStates[SDL_SCANCODE_W] || currentKeyStates[SDL_SCANCODE_UP]) && (currentKeyStates[SDL_SCANCODE_S] || currentKeyStates[SDL_SCANCODE_DOWN])) {
 				movement->velocity.y = 0;
 			}
-			else if (currentKeyStates[SDL_SCANCODE_W]) {
+			else if (currentKeyStates[SDL_SCANCODE_W] || currentKeyStates[SDL_SCANCODE_UP]) {
 				movement->velocity.y = -1*velocity;
 			}
-			else if (currentKeyStates[SDL_SCANCODE_S]) {
+			else if (currentKeyStates[SDL_SCANCODE_S] || currentKeyStates[SDL_SCANCODE_DOWN]) {
 				movement->velocity.y = 1*velocity;
 			}
 			else {

@@ -2,7 +2,6 @@
 #include "GameObject.h"
 #include "Vector2D.h"
 
-
 /// Keeps track of the object's position, velocity and acceleration.
 class MovementHandler : public GameComponent {
 public:
@@ -34,7 +33,7 @@ public:
 	};
 
 	void init() override {
-		std::cout << "MovementHandler init\n";
+		//std::cout << "MovementHandler init\n";
 	}
 
 

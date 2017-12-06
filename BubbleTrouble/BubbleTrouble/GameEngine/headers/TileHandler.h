@@ -1,7 +1,6 @@
 #pragma once
 #include "GameObject.h"
 #include "TextureLoader.h"
-#include "MovementHandler.h"
 
 class TileHandler : public GameComponent {
 

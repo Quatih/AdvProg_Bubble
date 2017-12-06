@@ -1,7 +1,6 @@
 #pragma once
 #include "headers/GameObject.h"
 #include "headers/Components.h"
-#include "headers/TextureLoader.h"
 #include "headers/CollisionChecks.h"
 #include "headers/RandomInterface.h"
 #include <vector>
@@ -56,7 +55,7 @@ public:
 		playZone.w = winwidth;
 
 		// Set render quality to 1, so that scaled objects are dithered a little
-		SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "1");
+		//SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "1");
 	};
 
 	/// Free all allocated memory, hopefully.
@@ -74,7 +73,7 @@ public:
 
 	bool inline isRunning() {
 		return running;
-	}
+	} 
 
 
 	/// Initialize player, spike and bubbles.
@@ -88,7 +87,7 @@ public:
 
 		player->addComponent<KeyboardHandler>(3.5f, false, spike);
 		player->addComponent<MovementHandler>((float)playZone.w / 2, (float)playZone.h);
-		player->addComponent<TileHandler>(renderer, "assets/SuperWeird3.png", 3.0f);
+		player->addComponent<TileHandler>(renderer, "assets/SuperWeird3.png", 1.0f);
 		player->addComponent<CollisionHandler>(&playZone, false);
 		spike->addComponent<MovementHandler>(0.0f, 0.0f, 0.0f, -4.8f, 0.0f, 0.0f);
 		spike->addComponent<TileHandler>(renderer, "assets/spike4.png", 1.0f);
@@ -132,7 +131,7 @@ public:
 					bubble->destroy();
 					std::cout << "Bubble popped\n";
 					if (bubble->pops > 0) {
-						int cindex = intInRange(0, (int)bubbleTextures.size() - 1);
+						int cindex = randInt(0, (int)bubbleTextures.size() - 1);
 						tempbubbles.push_back(addBubble(bubble->render_rect.h / 3, bubble->render_rect.x, bubble->render_rect.y, bubble->getComponent<MovementHandler>()->velocity.x,
 							(float)-abs(bubble->getComponent<MovementHandler>()->velocity.y*0.65), bubble->getComponent<MovementHandler>()->acceleration.y, bubble->pops - 1, bubbleTextures[cindex]));
 						tempbubbles.push_back(addBubble(bubble->render_rect.h / 3, bubble->render_rect.x, bubble->render_rect.y, -bubble->getComponent<MovementHandler>()->velocity.x,
@@ -203,15 +202,15 @@ public:
 
 	/// Generate a random bubble
 	void inline generateRandomBubble() {
-		bubbles.push_back(addBubble(intInRange(20, 32), 
-			intInRange(0, playZone.w), 
-			intInRange((int)(playZone.h/3.0f), 
+		bubbles.push_back(addBubble(randInt(20, 32), 
+			randInt(0, playZone.w), 
+			randInt((int)(playZone.h/3.0f), 
 			(int)(playZone.h/2.0f)),
-			floatInRangePositiveOrNegative(1.3f, 1.75f),
+			randFloatPosNeg(1.3f, 1.75f),
 			0.0f, 
-			floatInRange(0.04f, 0.06f), 
-			intInRange(1, 3), 
-			bubbleTextures[intInRange(0, (int)bubbleTextures.size()-1)]));
+			randFloat(0.04f, 0.06f), 
+			randInt(1, 3), 
+			bubbleTextures[randInt(0, (int)bubbleTextures.size()-1)]));
 	}
 
 	/// Add a bubble to the bubble vector and initialize.
