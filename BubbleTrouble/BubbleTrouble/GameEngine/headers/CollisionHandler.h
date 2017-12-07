@@ -1,7 +1,7 @@
 #pragma once
 #include "GameObject.h"
 #include "MovementHandler.h"
-
+#include "CollisionChecks.h"
 /// Handles collision of the object to a specific zone rectangle, playZone.
 class CollisionHandler : public GameComponent {
 public:
@@ -31,18 +31,25 @@ public:
 			if(adjust_velocity) mover->velocity.x *= -1;
 		}
 		if (objectRect->x + objectRect->w > playZone->x + playZone->w) {
-			mover->position.x = (float)playZone->x + (float)playZone->w - objectRect->w;
+			mover->position.x = (float)(playZone->x + playZone->w - objectRect->w);
 			if (adjust_velocity) mover->velocity.x *= -1;
 		}
+
 		if (objectRect->y < playZone->y) {
 			mover->position.y = (float)playZone->y;
 			if (adjust_velocity) mover->velocity.y *= -1;
 		}
 		if (objectRect->y + objectRect->h > playZone->y + playZone->h) {
-			mover->position.y = (float)playZone->y + (float)playZone->h - objectRect->h;
+			mover->position.y = (float)(playZone->y + playZone->h - objectRect->h);
 			if (adjust_velocity) mover->velocity.y *= -1;		
 		}
+
 		objectRect->x = (int)mover->position.x;
 		objectRect->y = (int)mover->position.y;
+	}
+
+	/// Returns true if the object collides with the playerZone.
+	bool collidesWithZone() {
+		return collidesWithRect(*playZone, *objectRect);
 	}
 };

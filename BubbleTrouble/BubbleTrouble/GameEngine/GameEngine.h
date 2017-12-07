@@ -30,7 +30,10 @@ private:
 	SDL_Window * window;
 	SDL_Event events;
 	bool running;
+
+	/// Rectangle for the playingZone objects can be within
 	SDL_Rect playZone;
+	/// The zone the Spike can be within
 	SDL_Rect spikeZone;
 
 	/// Used for random access of color.
@@ -89,6 +92,8 @@ public:
 		player->addComponent<MovementHandler>((float)playZone.w / 2, (float)playZone.h);
 		player->addComponent<TileHandler>(renderer, "assets/duder3.png", 1.0f);
 		player->addComponent<CollisionHandler>(&playZone, false);
+
+
 		spike->addComponent<MovementHandler>(0.0f, 0.0f, 0.0f, -4.8f, 0.0f, 0.0f);
 		spike->addComponent<TileHandler>(renderer, "assets/spike4.png", 1.0f);
 
@@ -112,7 +117,7 @@ public:
 		for (auto bubble : bubbles) {
 			bubble->update();
 		}
-		spike->update();
+
 
 		for (auto bubble : bubbles) {
 			if (collidesWithCircle((player->render_rect), (bubble->render_rect))) {
@@ -120,22 +125,39 @@ public:
 			}
 		}
 		if (spike->isValid()) {
-			std::vector<GameObject*> tempbubbles;
-			// If the spike has reached the top, destroy it.
-			if (spike->render_rect.y <= 1) {
+			spike->update();
+
+			//If the spike has reached the top, destroy it.
+			if (spike->render_rect.y < playZone.y) {
 				spike->destroy();
 			}
+
+			std::vector<GameObject*> tempbubbles;
 			for (auto bubble : bubbles) {
 				if (collidesWithCircle((spike->render_rect), (bubble->render_rect))) {
+
 					spike->destroy();
 					bubble->destroy();
 					std::cout << "Bubble popped\n";
 					if (bubble->pops > 0) {
 						int cindex = randInt(0, (int)bubbleTextures.size() - 1);
-						tempbubbles.push_back(addBubble(bubble->render_rect.h / 3, bubble->render_rect.x, bubble->render_rect.y, bubble->getComponent<MovementHandler>()->velocity.x,
-							(float)-abs(bubble->getComponent<MovementHandler>()->velocity.y*0.65), bubble->getComponent<MovementHandler>()->acceleration.y, bubble->pops - 1, bubbleTextures[cindex]));
-						tempbubbles.push_back(addBubble(bubble->render_rect.h / 3, bubble->render_rect.x, bubble->render_rect.y, -bubble->getComponent<MovementHandler>()->velocity.x,
-							(float)-abs(bubble->getComponent<MovementHandler>()->velocity.y*0.65), bubble->getComponent<MovementHandler>()->acceleration.y, bubble->pops - 1, bubbleTextures[cindex]));
+						tempbubbles.push_back(
+							addBubble(bubble->render_rect.h / 3, 
+							bubble->render_rect.x, bubble->render_rect.y, 
+								bubble->getComponent<MovementHandler>()->velocity.x,
+								-abs(bubble->getComponent<MovementHandler>()->velocity.y*0.65f), 
+								bubble->getComponent<MovementHandler>()->acceleration.y, 
+								bubble->pops - 1, 
+								bubbleTextures[cindex])
+						);
+						tempbubbles.push_back(
+							addBubble(bubble->render_rect.h / 3, 
+							bubble->render_rect.x, bubble->render_rect.y, 
+							-bubble->getComponent<MovementHandler>()->velocity.x,
+							-abs(bubble->getComponent<MovementHandler>()->velocity.y*0.65f), 
+							bubble->getComponent<MovementHandler>()->acceleration.y, 
+							bubble->pops - 1, bubbleTextures[cindex])
+						);
 					}
 					break; //Break so that we pop only one bubble.
 				}
@@ -149,7 +171,7 @@ public:
 
 		// Re-populate the board if all the bubbles are popped.
 		if (bubbles.empty()) {
-			for (int i = 0; i < 5; i++) {
+			for (int i = 0; i < 4; i++) {
 				generateRandomBubble();
 			}
 		}
@@ -171,8 +193,7 @@ public:
 	void handleEvents() {
 		SDL_PollEvent(&events);
 		// User requests quit
-		if (events.type == SDL_QUIT)
-		{
+		if (events.type == SDL_QUIT) {
 			running = false;
 		}
 	}
@@ -181,17 +202,7 @@ public:
 	void cleanObjects() {
 		for (std::vector<GameObject*>::iterator bubble = bubbles.begin(); bubble != bubbles.end();) {
 			if (!(*bubble)->isValid()) {
-
-				if (bubble == bubbles.begin()) {
-					bubbles.erase(bubble);
-					bubble = bubbles.begin();
-				}
-				else {
-					std::vector<GameObject*>::iterator thisbubble = bubble;
-					delete *thisbubble;
-					--bubble;
-					bubbles.erase(thisbubble);
-				}
+				bubble = bubbles.erase(bubble);
 			}
 			else {
 				bubble++;
@@ -210,7 +221,8 @@ public:
 			0.0f, 
 			randFloat(0.04f, 0.06f), 
 			randInt(1, 3), 
-			bubbleTextures[randInt(0, (int)bubbleTextures.size()-1)]));
+			bubbleTextures[randInt(0, (int)bubbleTextures.size()-1)])
+		);
 	}
 
 	/// Add a bubble to the bubble vector and initialize.
