@@ -30,17 +30,15 @@ public:
 	virtual void draw() {};
 };
 
-
-const std::size_t maxComponents = 10;
-
-
 enum ObjectType { Object_Player, Object_Spike, Object_Bubble };
+
+const std::size_t maxComponents = 5;
 
 /// Class used for each individual Game Object which has modularity with components.
 
 class GameObject {
 private:
-	std::vector<GameComponent *> components;
+	std::vector<std::unique_ptr<GameComponent>> components;
 
 	/// ComponentsArray used in order to be able to return a pointer to the components.
 	std::array<GameComponent*, maxComponents> componentsArray;
@@ -57,6 +55,7 @@ public:
 	int pops = 0;
 	SDL_Rect img_rect, render_rect;
 	ObjectType type;
+
 	GameObject(ObjectType type) {
 		this->type = type;
 	}
@@ -94,16 +93,18 @@ public:
 
 	/// Add component of type T with arguments Ts to this GameObject
 	template <typename T, typename... Ts>
-	void addComponent(Ts&&... args)	{
-		// Forward arguments made to addcomponent to the newly created component
+	void addComponent(Ts&&... args) {
+		/// Forward arguments made to addcomponent to the newly created component
 		T* comp = new T(std::forward<Ts>(args)...);
-		components.push_back(comp);
+
+		std::unique_ptr<GameComponent> unique{ comp };
+		components.emplace_back(std::move(unique));
 		comp->owner = this;
-		
-		// Add the component to the array at the unique location of this template type
+
+		/// Add the component to the array at the unique location of this template type
 		componentsArray[getComponentID<T>()] = comp;
 	}
-	
+
 	/// Returns true if the Object has a component of type T.
 	template <typename T> bool hasComponent() {
 		return (componentsArray[getComponentID<T>()] != nullptr);

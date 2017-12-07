@@ -221,7 +221,7 @@ public:
 			0.0f, 
 			randFloat(0.04f, 0.06f), 
 			randInt(1, 3), 
-			bubbleTextures[randInt(0, (int)bubbleTextures.size()-1)])
+			bubbleTextures[randInt<std::size_t>(0, bubbleTextures.size() - 1)])
 		);
 	}
 

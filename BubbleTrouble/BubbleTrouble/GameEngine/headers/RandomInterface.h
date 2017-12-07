@@ -45,6 +45,13 @@ const int randInt(const int min, const int max) {
 	return uni(rng);
 }
 
+/// Returns a pseudorandom integer in the given range.
+template <typename T> const T randInt(const T min, const T max) {
+	std::uniform_int_distribution<T> uni(min, max);
+	//int r = min + rand() *(max - min) / (RAND_MAX + 1);
+	return uni(rng);
+}
+
 /// Returns a pseudorandom negative or positive float in the range provided
 const int randIntPosNeg(const int min, const int max) {
 	std::uniform_int_distribution<int> uni(-(max - min), max - min);
@@ -54,3 +61,4 @@ const int randIntPosNeg(const int min, const int max) {
 	else r -= min;
 	return r;
 }
+
