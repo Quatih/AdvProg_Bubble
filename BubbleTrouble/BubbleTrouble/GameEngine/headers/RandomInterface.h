@@ -1,8 +1,8 @@
 #include <random>
 #include <ctime>
 
-std::random_device random;
-std::mt19937 rng(random());
+std::random_device random_dev;
+std::mt19937 rng(random_dev());
 
 /// Returns a pseudorandom float in the given range.
 const float randFloat(const float min, const float max) {

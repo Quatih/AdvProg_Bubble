@@ -1,5 +1,3 @@
-#include "SDL.h"
-#include "SDL_image.h"
 #include <iostream>
 #include "GameEngine/GameEngine.h"
 
@@ -21,14 +19,13 @@ int main(int /*argc*/, char ** /*argv*/) {
 	while (Game->isRunning())
 	{
 		frameStart = SDL_GetTicks();
-		//Handle events on queue
 
+		//Handle events on queue
 		Game->handleEvents();
 		Game->update();
 		Game->cleanObjects();
 		Game->render();
 		frameTime = SDL_GetTicks() - frameStart;
-		std::cout << frameTime << std::endl;
 		if (frameDelay > frameTime){
 			SDL_Delay(frameDelay - frameTime);
 		}
