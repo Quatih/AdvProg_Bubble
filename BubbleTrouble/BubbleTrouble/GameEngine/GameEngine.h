@@ -49,7 +49,7 @@ public:
 	GameEngine(std::string title, int winposx, int winposy, int winwidth, int winheight, SDL_WindowFlags flag) {
 		SDL_Init(SDL_INIT_EVERYTHING);
 		window = SDL_CreateWindow(title.c_str(), winposx, winposy, winwidth, winheight, flag);
-		renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+		renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED );
 		std::cout << "Game Engine Constructed.\n";
 		running = true;
 		playZone.x = 0;
@@ -140,7 +140,7 @@ public:
 					bubble->destroy();
 					std::cout << "Bubble popped\n";
 					if (bubble->pops > 0) {
-						int cindex = randInt(0, (int)bubbleTextures.size() - 1);
+						std::size_t cindex = randInt<std::size_t>(0, bubbleTextures.size() - 1);
 						tempbubbles.push_back(
 							addBubble(bubble->render_rect.h / 3, 
 							bubble->render_rect.x, bubble->render_rect.y, 

@@ -11,10 +11,11 @@ int main(int /*argc*/, char ** /*argv*/) {
 		SDL_WINDOWPOS_CENTERED,  1024, 600, SDL_WINDOW_HIDDEN) };
 
 	Game->init(); 
-	
-	const int frameDelay = 1000 / 60;
+	const Uint32 FRAMES_PER_SECOND = 20;
+	const Uint32 frameDelay = 1000 / 60;
 	Uint32 frameStart;
-	int frameTime;
+	Uint32 frameTime;
+
 
 	/// Main game loop
 	while (Game->isRunning())
@@ -27,7 +28,7 @@ int main(int /*argc*/, char ** /*argv*/) {
 		Game->cleanObjects();
 		Game->render();
 		frameTime = SDL_GetTicks() - frameStart;
-		
+		std::cout << frameTime << std::endl;
 		if (frameDelay > frameTime){
 			SDL_Delay(frameDelay - frameTime);
 		}
