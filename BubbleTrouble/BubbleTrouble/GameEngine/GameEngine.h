@@ -85,18 +85,18 @@ public:
 		SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
 		SDL_ShowWindow(window);
 
-		player = new GameObject();
-		spike = new GameObject();
+		player = new GameObject(Object_Player);
+		spike = new GameObject(Object_Spike);
 
 		player->addComponent<KeyboardHandler>(3.5f, false, spike);
 		player->addComponent<MovementHandler>((float)playZone.w / 2, (float)playZone.h);
 		player->addComponent<TileHandler>(renderer, "assets/duder3.png", 1.0f);
-		player->addComponent<CollisionHandler>(&playZone, false);
+		player->addComponent<CollisionHandler>(&playZone);
 
 
 		spike->addComponent<MovementHandler>(0.0f, 0.0f, 0.0f, -4.8f, 0.0f, 0.0f);
 		spike->addComponent<TileHandler>(renderer, "assets/spike4.png", 1.0f);
-
+		spike->addComponent<CollisionHandler>(&playZone);
 		spike->destroy();
 		player->init();
 		spike->init();
@@ -227,10 +227,10 @@ public:
 
 	/// Add a bubble to the bubble vector and initialize.
 	GameObject * addBubble(int radius, int posX, int posY, float velocityX, float velocityY, float acceleration, int pops, TextureLoader * texture) {
-		GameObject *bubble = new GameObject();
+		GameObject *bubble = new GameObject(Object_Bubble);
 		bubble->addComponent<MovementHandler>((float) posX, (float) posY, velocityX, velocityY, 0.0f, acceleration);
 		bubble->addComponent<TileHandler>(renderer, texture, (float) radius * 2 / texture->getRect().h);
-		bubble->addComponent<CollisionHandler>(&playZone, true);
+		bubble->addComponent<CollisionHandler>(&playZone);
 		bubble->init();
 		bubble->pops = pops;
 		

@@ -33,6 +33,9 @@ public:
 
 const std::size_t maxComponents = 10;
 
+
+enum ObjectType { Object_Player, Object_Spike, Object_Bubble };
+
 /// Class used for each individual Game Object which has modularity with components.
 
 class GameObject {
@@ -53,8 +56,10 @@ private:
 public:
 	int pops = 0;
 	SDL_Rect img_rect, render_rect;
-
-	GameObject() {}
+	ObjectType type;
+	GameObject(ObjectType type) {
+		this->type = type;
+	}
 
 	~GameObject() {
 		components.clear();
