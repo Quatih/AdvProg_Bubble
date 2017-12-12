@@ -15,10 +15,9 @@ private:
 		loadedTexture = true;
 	}
 
-	float scale = 0.0f;
+	float scale = 1.0f;
 	TextureLoader * texture;
 	SDL_Renderer * renderer;
-
 public:
 
 	TileHandler(SDL_Renderer * renderer, TextureLoader* texture, float scale) {
@@ -61,7 +60,6 @@ public:
 	void draw() override {
 		SDL_RenderCopyEx(renderer, texture->getTexture(), &(owner->img_rect), &(owner->render_rect), 0, 0, SDL_FLIP_NONE);
 	}
-
 
 	TextureLoader * getTextureLoader() {
 		return texture;

@@ -72,12 +72,12 @@ public:
 	}
 
 	/// Returns a pointer to the texture
-	SDL_Texture * getTexture() {
+	SDL_Texture * getTexture() const {
 		return texture;
 	}
 
 	/// Returns the path of the texture;
-	const std::string getPath() {
+	const std::string getPath() const{
 		return path;
 	}
 
@@ -87,7 +87,7 @@ public:
 	}
 
 	/// Return an SDL rect of the loaded image's size.
-	SDL_Rect & getRect() {
+	const SDL_Rect & getRect() const {
 		return img_rect;
 	}
 

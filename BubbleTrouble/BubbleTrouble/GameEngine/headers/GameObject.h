@@ -32,7 +32,7 @@ public:
 
 enum ObjectType { Object_Player, Object_Spike, Object_Bubble };
 
-const std::size_t maxComponents = 5;
+const std::size_t maxComponents = 10;
 
 /// Class used for each individual Game Object which has modularity with components.
 
@@ -47,6 +47,7 @@ private:
 
 	/// Purpose is to keep a unique ID to the template component of type T
 	template <typename T> std::size_t getComponentID() {
+		// Since ID is static, it is stored at run-time, so each different typename T has a different ID
 		static std::size_t ID = numComponents++;
 		return ID;
 	}
@@ -89,7 +90,7 @@ public:
 	void setValid() { valid = true; }
 	void destroy() { valid = false; }
 
-	bool isValid() { return valid; }
+	bool isValid() const { return valid; }
 
 	/// Add component of type T with arguments Ts to this GameObject
 	template <typename T, typename... Ts>

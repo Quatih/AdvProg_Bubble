@@ -74,7 +74,7 @@ public:
 		SDL_Quit();
 	};
 
-	bool inline isRunning() {
+	bool inline isRunning() const {
 		return running;
 	} 
 
@@ -144,11 +144,11 @@ public:
 						tempbubbles.push_back(
 							addBubble(bubble->render_rect.h / 3, 
 							bubble->render_rect.x, bubble->render_rect.y, 
-								bubble->getComponent<MovementHandler>()->velocity.x,
-								-abs(bubble->getComponent<MovementHandler>()->velocity.y*0.65f), 
-								bubble->getComponent<MovementHandler>()->acceleration.y, 
-								bubble->pops - 1, 
-								bubbleTextures[cindex])
+							bubble->getComponent<MovementHandler>()->velocity.x,
+							-abs(bubble->getComponent<MovementHandler>()->velocity.y*0.65f), 
+							bubble->getComponent<MovementHandler>()->acceleration.y, 
+							bubble->pops - 1, 
+							bubbleTextures[cindex])
 						);
 						tempbubbles.push_back(
 							addBubble(bubble->render_rect.h / 3, 
@@ -156,7 +156,8 @@ public:
 							-bubble->getComponent<MovementHandler>()->velocity.x,
 							-abs(bubble->getComponent<MovementHandler>()->velocity.y*0.65f), 
 							bubble->getComponent<MovementHandler>()->acceleration.y, 
-							bubble->pops - 1, bubbleTextures[cindex])
+							bubble->pops - 1, 
+							bubbleTextures[cindex])
 						);
 					}
 					break; //Break so that we pop only one bubble.
