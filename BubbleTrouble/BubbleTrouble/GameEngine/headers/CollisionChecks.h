@@ -23,17 +23,17 @@ bool collidesWithRect(const SDL_Rect check, const SDL_Rect other) {
 
 
 /// Checks the collision bounds of a rectangle and a circle, using the distance from the center of the circle.
-bool collidesWithCircle(const SDL_Rect check, const SDL_Rect circle) {
+bool collidesWithCircle(const SDL_Rect rect, const SDL_Rect circle) {
 	int cx = circle.x + circle.w / 2;
 	int cy = circle.y + circle.h / 2;
 	double ch = circle.h;
-	int x = check.x;
-	int y = check.y;
-	int h = check.h;
-	int w = check.w;
+	int x = rect.x;
+	int y = rect.y;
+	int h = rect.h;
+	int w = rect.w;
 
 	/// Only do the circular calculations if the rectangles collide.
-	if (collidesWithRect(check, circle)) {
+	if (collidesWithRect(rect, circle)) {
 		// Check for collision to the circle from either sides of the square.
 
 		for (int j = y; j <= y + h; j += 1) {
