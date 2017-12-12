@@ -30,7 +30,7 @@ public:
 	virtual void draw() {};
 };
 
-enum ObjectType { Object_Player, Object_Spike, Object_Bubble };
+enum ObjectType { Object_Player, Object_Spike, Object_Bubble, Object_Explosive };
 
 const std::size_t maxComponents = 10;
 

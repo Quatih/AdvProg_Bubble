@@ -10,7 +10,7 @@ int main(int /*argc*/, char ** /*argv*/) {
 
 	Game->init(); 
 	const Uint32 FRAMES_PER_SECOND = 20;
-	const Uint32 frameDelay = 1000 / 60;
+	const Uint32 frameDelay = 1000 /60;
 	Uint32 frameStart;
 	Uint32 frameTime;
 
