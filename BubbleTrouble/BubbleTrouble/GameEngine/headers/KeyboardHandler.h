@@ -1,6 +1,8 @@
 #pragma once
 #include "GameObject.h"
 #include "MovementHandler.h"
+#include "SoundHandler.h"
+#include "SDL_mixer.h"
 #include <cmath>
 
 
@@ -43,6 +45,13 @@ public:
 
 		// Turn spike on and change its position to the player's position.
 		if (currentKeyStates[SDL_SCANCODE_SPACE] && !spike->isValid()) {
+
+			if (Mix_PlayMusic(spike->getComponent<SoundHandler>()->test, 1) == -1)
+			{
+				std::cout << "failed music";
+
+			}
+
 			spike->setValid();
 			spike->render_rect.x = owner->render_rect.x + owner->render_rect.w / 2 - spike->render_rect.w/2;
 			spike->render_rect.y = owner->render_rect.y + owner->render_rect.h / 2;
