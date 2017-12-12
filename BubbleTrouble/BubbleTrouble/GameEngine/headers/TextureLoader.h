@@ -20,7 +20,6 @@ struct Color {
 };
 
 
-
 /// Some basic color values
 Color const RED = { 255, 0, 0 };
 Color const GREEN = { 0, 255, 0 };

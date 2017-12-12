@@ -9,11 +9,11 @@ int main(int /*argc*/, char ** /*argv*/) {
 		SDL_WINDOWPOS_CENTERED,  1024, 600, SDL_WINDOW_HIDDEN) };
 
 	Game->init(); 
-	const Uint32 FRAMES_PER_SECOND = 20;
 	const Uint32 frameDelay = 1000 / 60;
 	Uint32 frameStart;
 	Uint32 frameTime;
 
+	Game->start();
 
 	/// Main game loop
 	while (Game->isRunning())

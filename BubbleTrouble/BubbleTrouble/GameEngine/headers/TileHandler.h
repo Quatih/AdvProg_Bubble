@@ -61,7 +61,7 @@ public:
 		SDL_RenderCopyEx(renderer, texture->getTexture(), &(owner->img_rect), &(owner->render_rect), 0, 0, SDL_FLIP_NONE);
 	}
 
-	TextureLoader * getTextureLoader() {
+	TextureLoader * getTextureLoader() const {
 		return texture;
 	}
 

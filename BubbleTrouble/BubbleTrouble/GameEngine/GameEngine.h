@@ -8,23 +8,12 @@
 #include <random>
 #include <ctime>
 
-#ifdef __linux__ 
-
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_image.h>
-
-#else
-
-#include "SDL.h"
-#include "SDL_image.h"
-#include "SDL_mixer.h"
-
-#endif
+enum GameState {G_Init, G_Menu, G_MenuOptions, G_LevelSelect,  G_Infinite, G_Level1, G_Level2};
 
 /// Handles all the game logic
 class GameEngine {
 private:
-
+	GameState currentState;
 	GameObject * player;
 	std::vector<GameObject*> bubbles;
 	GameObject * spike;
@@ -83,7 +72,7 @@ public:
 
 	/// Initialize player, spike and bubbles.
 	void init() {
-
+		currentState = G_Init;
 		SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
 		SDL_ShowWindow(window);
 
@@ -231,6 +220,10 @@ public:
 			randInt(1, 3), 
 			bubbleTextures[randInt<std::size_t>(0, bubbleTextures.size() - 1)])
 		);
+	}
+
+	void start() {
+		currentState = G_Menu;
 	}
 
 	/// Add a bubble to the bubble vector and initialize.
