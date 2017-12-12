@@ -3,6 +3,8 @@
 #include "headers/Components.h"
 #include "headers/CollisionChecks.h"
 #include "headers/RandomInterface.h"
+#include "headers/SoundHandler.h"
+#include "SDL_mixer.h"
 #include <vector>
 #include <random>
 #include <ctime>
@@ -26,6 +28,9 @@ private:
 	GameObject * player;
 	std::vector<GameObject*> bubbles;
 	GameObject * spike;
+	//GameObject* explosion;
+
+
 
 	SDL_Window * window;
 	SDL_Event events;
@@ -73,7 +78,7 @@ public:
 
 	bool inline isRunning() {
 		return running;
-	} 
+	}
 
 
 	/// Initialize player, spike and bubbles.
@@ -84,6 +89,7 @@ public:
 
 		player = new GameObject();
 		spike = new GameObject();
+		//explosion = new GameObject();
 
 		player->addComponent<KeyboardHandler>(3.5f, false, spike);
 		player->addComponent<MovementHandler>((float)playZone.w / 2, (float)playZone.h);
@@ -91,10 +97,15 @@ public:
 		player->addComponent<CollisionHandler>(&playZone, false);
 		spike->addComponent<MovementHandler>(0.0f, 0.0f, 0.0f, -4.8f, 0.0f, 0.0f);
 		spike->addComponent<TileHandler>(renderer, "assets/spike4.png", 1.0f);
-
+		//explosion->addComponent<TileHandler>(renderer, "assets/collision.png", 0.3f);
+		//explosion->addComponent<MovementHandler>(0.0f, 0.0f, 0.0f, -4.8f, 0.0f, 0.0f);
+		spike->addComponent<SoundHandler>("assets/scratch.wav");
+		
 		spike->destroy();
 		player->init();
 		spike->init();
+		//explosion->init();
+
 
 		for (int i = 0; i < 4; i++) {
 			bubbleTextures.push_back(new TextureLoader(renderer, "assets/WhiteBall_128x128.png"));
@@ -113,10 +124,12 @@ public:
 			bubble->update();
 		}
 		spike->update();
+		
 
 		for (auto bubble : bubbles) {
 			if (collidesWithCircle((player->render_rect), (bubble->render_rect))) {
-				//std::cout << "Collides with bubble\n";
+				std::cout << "Collides with player\n";
+
 			}
 		}
 		if (spike->isValid()) {
@@ -127,8 +140,25 @@ public:
 			}
 			for (auto bubble : bubbles) {
 				if (collidesWithCircle((spike->render_rect), (bubble->render_rect))) {
+					Mix_HaltMusic();
+					if (Mix_PlayMusic(bubble->getComponent<SoundHandler>()->test, 1) == -1)
+					{
+						std::cout << "failed music";
+					}
+					//render explosive icon for some time.
+					//explosion->render_rect.x = bubble->render_rect.x;
+					//explosion->render_rect.y = bubble->render_rect.y;
+					//explosion->getComponent<MovementHandler>()->position.x = (float)explosion->render_rect.x;
+					//explosion->getComponent<MovementHandler>()->position.y = (float)explosion->render_rect.y;
+
+					//add power ups here
+
+
+
 					spike->destroy();
 					bubble->destroy();
+					
+
 					std::cout << "Bubble popped\n";
 					if (bubble->pops > 0) {
 						int cindex = randInt(0, (int)bubbleTextures.size() - 1);
@@ -139,6 +169,7 @@ public:
 					}
 					break; //Break so that we pop only one bubble.
 				}
+				
 			}
 
 			// add the bubbles in later so that they're not iterated over in the previous loop.
@@ -160,6 +191,7 @@ public:
 		SDL_RenderClear(renderer);
 		spike->draw();
 		player->draw();
+		//explosion->draw();
 
 		for (auto bubble : bubbles) {
 			bubble->draw();
@@ -202,26 +234,22 @@ public:
 
 	/// Generate a random bubble
 	void inline generateRandomBubble() {
-		bubbles.push_back(addBubble(randInt(20, 32), 
-			randInt(0, playZone.w), 
-			randInt((int)(playZone.h/3.0f), 
-			(int)(playZone.h/2.0f)),
-			randFloatPosNeg(1.3f, 1.75f),
-			0.0f, 
-			randFloat(0.04f, 0.06f), 
-			randInt(1, 3), 
-			bubbleTextures[randInt(0, (int)bubbleTextures.size()-1)]));
+		bubbles.push_back(addBubble(randInt(20, 32), randInt(0, playZone.w),
+			randInt((int)(playZone.h / 3.0f), (int)(playZone.h / 2.0f)),
+			randFloatPosNeg(1.3f, 1.75f), 0.0f,
+			randFloat(0.04f, 0.06f), randInt(1, 3),
+			bubbleTextures[randInt(0, (int)bubbleTextures.size() - 1)]));
 	}
 
 	/// Add a bubble to the bubble vector and initialize.
 	GameObject * addBubble(int radius, int posX, int posY, float velocityX, float velocityY, float acceleration, int pops, TextureLoader * texture) {
 		GameObject *bubble = new GameObject();
-		bubble->addComponent<MovementHandler>((float) posX, (float) posY, velocityX, velocityY, 0.0f, acceleration);
-		bubble->addComponent<TileHandler>(renderer, texture, (float) radius * 2 / texture->getRect().h);
+		bubble->addComponent<MovementHandler>((float)posX, (float)posY, velocityX, velocityY, 0.0f, acceleration);
+		bubble->addComponent<TileHandler>(renderer, texture, (float)radius * 2 / texture->getRect().h);
 		bubble->addComponent<CollisionHandler>(&playZone, true);
+		bubble->addComponent<SoundHandler>("assets/explosion.wav");
 		bubble->init();
 		bubble->pops = pops;
-		
 		return bubble;
 	}
 };
