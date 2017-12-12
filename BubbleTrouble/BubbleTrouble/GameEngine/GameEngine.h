@@ -3,6 +3,7 @@
 #include "headers/Components.h"
 #include "headers/CollisionChecks.h"
 #include "headers/RandomInterface.h"
+#include "headers/SoundHandler.h"
 #include <vector>
 #include <random>
 #include <ctime>
@@ -16,6 +17,7 @@
 
 #include "SDL.h"
 #include "SDL_image.h"
+#include "SDL_mixer.h"
 
 #endif
 
@@ -97,6 +99,7 @@ public:
 		spike->addComponent<MovementHandler>(0.0f, 0.0f, 0.0f, -4.8f, 0.0f, 0.0f);
 		spike->addComponent<TileHandler>(renderer, "assets/spike4.png", 1.0f);
 		spike->addComponent<CollisionHandler>(&playZone);
+		spike->addComponent<SoundHandler>("assets/spikecollision.wav");
 		spike->destroy();
 		player->init();
 		spike->init();
@@ -136,6 +139,10 @@ public:
 			for (auto bubble : bubbles) {
 				if (collidesWithCircle((spike->render_rect), (bubble->render_rect))) {
 
+					Mix_HaltMusic();
+					if (Mix_PlayMusic(bubble->getComponent<SoundHandler>()->test,1) == -1) {
+						std::cout << "Sound error";
+					}
 					spike->destroy();
 					bubble->destroy();
 					std::cout << "Bubble popped\n";
@@ -232,6 +239,7 @@ public:
 		bubble->addComponent<MovementHandler>((float) posX, (float) posY, velocityX, velocityY, 0.0f, acceleration);
 		bubble->addComponent<TileHandler>(renderer, texture, (float) radius * 2 / texture->getRect().h);
 		bubble->addComponent<CollisionHandler>(&playZone);
+		bubble->addComponent<SoundHandler>("assets/explosion.wav");
 		bubble->init();
 		bubble->pops = pops;
 		

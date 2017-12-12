@@ -3,3 +3,4 @@
 #include "TileHandler.h"
 #include "MovementHandler.h"
 #include "CollisionHandler.h"
+#include "SoundHandler.h"
