@@ -164,6 +164,7 @@
     <ClInclude Include="PowerUpsHandler.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="GameEngine\GameEngine.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
