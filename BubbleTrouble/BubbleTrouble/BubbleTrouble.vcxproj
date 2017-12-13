@@ -161,8 +161,10 @@
     <ClInclude Include="GameEngine\headers\TextureLoader.h" />
     <ClInclude Include="GameEngine\headers\TileHandler.h" />
     <ClInclude Include="GameEngine\headers\Vector2D.h" />
+    <ClInclude Include="PowerUpsHandler.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="GameEngine\GameEngine.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>

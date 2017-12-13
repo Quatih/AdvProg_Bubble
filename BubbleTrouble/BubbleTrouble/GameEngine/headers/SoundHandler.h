@@ -1,9 +1,7 @@
 #pragma once
 #include "GameObject.h"
 #include "MovementHandler.h"
-#include "SDL_mixer.h"
 #include <cmath>
-
 
 /// Handles all keyboard input for the player
 class SoundHandler : public GameComponent {
