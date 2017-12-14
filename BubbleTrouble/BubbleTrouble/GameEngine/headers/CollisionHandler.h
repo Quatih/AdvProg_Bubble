@@ -1,7 +1,6 @@
 #pragma once
 #include "GameObject.h"
 #include "MovementHandler.h"
-#include "CollisionChecks.h"
 
 
 /// Handles collision of the object to a specific zone rectangle, playZone.
@@ -76,7 +75,7 @@ public:
 	}
 
 	/// Returns true if the object collides with the playerZone.
-	bool collidesWithZone() {
-		return collidesWithRect(*playZone, *objectRect);
-	}
+	//bool collidesWithZone() {
+	//	return collidesWithRect(*playZone, *objectRect);
+	//}
 };

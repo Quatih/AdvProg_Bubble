@@ -1,10 +1,12 @@
 #include "GameEngine.h"
-#include "headers/CollisionChecks.h"
+#include "headers/GameObject.h"
+#include "headers/Components.h"
 #include "headers/RandomInterface.h"
 #include "headers/SoundHandler.h"
-/// Constructor creates the window and renderer
+#include "headers/CollisionChecks.h"
 
-inline GameEngine::GameEngine(std::string title, int winposx, int winposy, int winwidth, int winheight, SDL_WindowFlags flag) {
+/// Constructor creates the window and renderer
+GameEngine::GameEngine(std::string title, int winposx, int winposy, int winwidth, int winheight, SDL_WindowFlags flag) {
 	SDL_Init(SDL_INIT_EVERYTHING);
 	window = SDL_CreateWindow(title.c_str(), winposx, winposy, winwidth, winheight, flag);
 	renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
@@ -20,8 +22,7 @@ inline GameEngine::GameEngine(std::string title, int winposx, int winposy, int w
 }
 
 /// Free all allocated memory, hopefully.
-
-inline GameEngine::~GameEngine() {
+GameEngine::~GameEngine() {
 	delete player;
 	delete spike;
 	bubbles.clear();
@@ -35,7 +36,7 @@ inline GameEngine::~GameEngine() {
 
 /// Initialize player, spike and bubbles.
 
-inline void GameEngine::init() {
+void GameEngine::init() {
 	currentState = G_Init;
 	SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
 	SDL_ShowWindow(window);
@@ -68,7 +69,7 @@ inline void GameEngine::init() {
 
 /// Updates the game state, all objects.
 
-inline void GameEngine::update() {
+void GameEngine::update() {
 
 	player->update();
 	for (auto bubble : bubbles) {
@@ -141,7 +142,7 @@ inline void GameEngine::update() {
 
 /// Render each object on the screen.
 
-inline void GameEngine::render() {
+void GameEngine::render() {
 	SDL_RenderClear(renderer);
 	spike->draw();
 	player->draw();
@@ -154,7 +155,7 @@ inline void GameEngine::render() {
 
 /// Polls and handles all SDL events
 
-inline void GameEngine::handleEvents() {
+void GameEngine::handleEvents() {
 	SDL_PollEvent(&events);
 	// User requests quit
 	if (events.type == SDL_QUIT) {
@@ -164,7 +165,7 @@ inline void GameEngine::handleEvents() {
 
 /// Deletes invalidated game objects
 
-inline void GameEngine::cleanObjects() {
+void GameEngine::cleanObjects() {
 	for (std::vector<GameObject*>::iterator bubble = bubbles.begin(); bubble != bubbles.end();) {
 		if (!(*bubble)->isValid()) {
 			bubble = bubbles.erase(bubble);
@@ -177,7 +178,7 @@ inline void GameEngine::cleanObjects() {
 
 /// Generate a random bubble
 
-inline void GameEngine::generateRandomBubble() {
+void GameEngine::generateRandomBubble() {
 	bubbles.push_back(addBubble(randInt(20, 32),
 		randInt(0, playZone.w),
 		randInt((int)(playZone.h / 3.0f),
@@ -190,13 +191,13 @@ inline void GameEngine::generateRandomBubble() {
 	);
 }
 
-inline void GameEngine::start() {
+void GameEngine::start() {
 	currentState = G_Menu;
 }
 
 /// Add a bubble to the bubble vector and initialize.
 
-inline GameObject * GameEngine::addBubble(int radius, int posX, int posY, float velocityX, float velocityY, float acceleration, int pops, TextureLoader * texture) {
+GameObject * GameEngine::addBubble(int radius, int posX, int posY, float velocityX, float velocityY, float acceleration, int pops, TextureLoader * texture) {
 	GameObject *bubble = new GameObject(Object_Bubble);
 	bubble->addComponent<MovementHandler>((float)posX, (float)posY, velocityX, velocityY, 0.0f, acceleration);
 	bubble->addComponent<TileHandler>(renderer, texture, (float)radius * 2 / texture->getRect().h);
