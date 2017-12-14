@@ -40,15 +40,14 @@ void GameEngine::init() {
 	currentState = G_Init;
 	SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
 	SDL_ShowWindow(window);
-
-	player = std::make_unique<GameObject>(Object_Player); 
-	spike = std::make_unique<GameObject>(Object_Spike);
+	
+	player = std::make_unique<PlayerObject>(); 
+	spike = std::make_unique<SpikeObject>();
 
 	player->addComponent<KeyboardHandler>(3.5f, false, spike.get());
 	player->addComponent<MovementHandler>((float)playZone.w / 2, (float)playZone.h);
 	player->addComponent<TileHandler>(renderer, "assets/duder3.png", 1.0f);
 	player->addComponent<CollisionHandler>(&playZone);
-
 
 	spike->addComponent<MovementHandler>(0.0f, 0.0f, 0.0f, -4.8f, 0.0f, 0.0f);
 	spike->addComponent<TileHandler>(renderer, "assets/spike4.png", 1.0f);
@@ -76,21 +75,18 @@ void GameEngine::update() {
 		bubble->update();
 	}
 
-
 	for (auto& bubble : bubbles) {
 		if (collidesWithCircle((player->render_rect), (bubble->render_rect))) {
 			//std::cout << "Collides with bubble\n";
 		}
 	}
+
 	if (spike->isValid()) {
 		spike->update();
 
 		//If the spike has reached the top, destroy it.
-		if (spike->render_rect.y < playZone.y) {
-			spike->destroy();
-		}
 
-		std::vector<GameObject*> tempbubbles;
+		std::vector<BubbleObject*> tempbubbles;
 		for (auto& bubble : bubbles) {
 			if (collidesWithCircle((spike->render_rect), (bubble->render_rect))) {
 
@@ -128,7 +124,7 @@ void GameEngine::update() {
 
 		// add the bubbles in later so that they're not iterated over in the previous loop.
 		for (auto& bubble : tempbubbles) {
-			std::unique_ptr<GameObject> unique { bubble };
+			std::unique_ptr<BubbleObject> unique { bubble };
 			bubbles.emplace_back(std::move(unique));
 		}
 	}
@@ -184,7 +180,7 @@ void GameEngine::start() {
 
 /// Generate a random bubble
 void inline GameEngine::generateRandomBubble() {
-	std::unique_ptr<GameObject> unique{ addBubble(
+	std::unique_ptr<BubbleObject> unique{ addBubble(
 		randInt(20, 32),
 		randInt(0, playZone.w),
 		randInt((int)(playZone.h / 3.0f),
@@ -199,8 +195,8 @@ void inline GameEngine::generateRandomBubble() {
 
 
 /// Add a bubble to the bubble vector and initialize.
-GameObject * GameEngine::addBubble(int radius, int posX, int posY, float velocityX, float velocityY, float acceleration, int pops, TextureLoader * texture) {
-	GameObject *bubble = new GameObject(Object_Bubble);
+BubbleObject * GameEngine::addBubble(int radius, int posX, int posY, float velocityX, float velocityY, float acceleration, int pops, TextureLoader * texture) {
+	BubbleObject * bubble = new BubbleObject();
 	bubble->addComponent<MovementHandler>((float)posX, (float)posY, velocityX, velocityY, 0.0f, acceleration);
 	bubble->addComponent<TileHandler>(renderer, texture, (float)radius * 2 / texture->getRect().h);
 	bubble->addComponent<CollisionHandler>(&playZone);

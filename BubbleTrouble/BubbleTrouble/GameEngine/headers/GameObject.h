@@ -55,7 +55,6 @@ private:
 	}
 
 public:
-	int pops = 0;
 	SDL_Rect img_rect, render_rect;
 	ObjectType type;
 
@@ -63,11 +62,11 @@ public:
 		this->type = type;
 	}
 
-	~GameObject() {
+	virtual ~GameObject() {
 		components.clear();
 	}
 
-	void update() {
+	virtual void update() {
 		if (isValid()) {
 			for (auto& comps : components) {
 				comps->update();
@@ -75,13 +74,13 @@ public:
 		}
 	}
 
-	void init() {
+	virtual void init() {
 		for (auto& comps : components) {
 			comps->init();
 		}
 	}
 
-	void draw() {
+	virtual void draw() {
 		if (isValid()) {
 			for (auto& comps : components) {
 				comps->draw();

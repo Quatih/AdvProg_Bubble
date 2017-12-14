@@ -1,5 +1,8 @@
 #pragma once
 #include "headers/GameObject.h"
+#include "headers/BubbleObject.h"
+#include "headers/PlayerObject.h"
+#include "headers/SpikeObject.h"
 #include "headers/Components.h"
 #include <vector>
 #include <random>
@@ -13,9 +16,9 @@ enum GameState {G_Init, G_Menu, G_MenuOptions, G_LevelSelect,  G_Infinite, G_Lev
 class GameEngine {
 private:
 	GameState currentState;
-	std::unique_ptr<GameObject> player;
-	std::vector<std::unique_ptr<GameObject>> bubbles;
-	std::unique_ptr<GameObject> spike;
+	std::unique_ptr<PlayerObject> player;
+	std::vector<std::unique_ptr<BubbleObject>> bubbles;
+	std::unique_ptr<SpikeObject> spike;
 
 	SDL_Window * window;
 	SDL_Event events;
@@ -45,7 +48,6 @@ public:
 		return running;
 	} 
 
-
 	/// Initialize player, spike and bubbles.
 	void init();
 
@@ -64,9 +66,22 @@ public:
 
 	void start();
 
+
+	void setState(GameState state) {
+		currentState = state;
+		switch (currentState) {
+		case G_Menu:
+			break;
+		case G_Init:
+			break;
+		default:
+			break;
+		}
+	}
 	/// Generate a random bubble
 	void inline generateRandomBubble();
 
 	/// Add a bubble to the bubble vector and initialize.
-	GameObject * addBubble(int radius, int posX, int posY, float velocityX, float velocityY, float acceleration, int pops, TextureLoader * texture);
-};
+	void addBubble(BubbleType type, int posX, int posY, TextureLoader * texture)
+	//BubbleObject * addBubble(int radius, int posX, int posY, float velocityX, float velocityY, float acceleration, int pops, TextureLoader * texture);
+};	

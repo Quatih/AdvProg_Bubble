@@ -41,7 +41,7 @@ public:
 			if (objectRect->y + objectRect->h > playZone->y + playZone->h) {
 				mover->velocity.y *= -1;
 			}
-			//[[fallthrough]]; // Indicates that the next case statement will also be executed, and that it is intentional.
+			[[fallthrough]]; // Indicates that the next case statement will also be executed, and that it is intentional.
 		case Object_Player:
 			if (objectRect->x < playZone->x) {
 				mover->position.x = (float)playZone->x;
@@ -61,7 +61,6 @@ public:
 			objectRect->y = (int)mover->position.y;
 			break;
 		case Object_Spike:
-
 			if (objectRect->y < playZone->y) {
 				owner->destroy();
 			}

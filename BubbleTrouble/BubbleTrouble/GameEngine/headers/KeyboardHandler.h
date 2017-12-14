@@ -1,5 +1,5 @@
 #pragma once
-#include "GameObject.h"
+#include "SpikeObject.h"
 #include "MovementHandler.h"
 #include "SoundHandler.h"
 #include "SDL_mixer.h"
@@ -9,12 +9,12 @@
 /// Handles all keyboard input for the player
 class KeyboardHandler : public GameComponent {
 public:
-	GameObject * spike;
+	SpikeObject * spike;
 	MovementHandler *movement;
 	float velocity;
 	bool freedom;
 
-	KeyboardHandler(float velocity, bool freedom, GameObject * spike) {
+	KeyboardHandler(float velocity, bool freedom, SpikeObject * spike) {
 		this->velocity = velocity;
 		this->freedom = freedom;
 		this->spike = spike;
