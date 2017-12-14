@@ -13,9 +13,9 @@ enum GameState {G_Init, G_Menu, G_MenuOptions, G_LevelSelect,  G_Infinite, G_Lev
 class GameEngine {
 private:
 	GameState currentState;
-	GameObject * player;
-	std::vector<GameObject*> bubbles;
-	GameObject * spike;
+	std::unique_ptr<GameObject> player;
+	std::vector<std::unique_ptr<GameObject>> bubbles;
+	std::unique_ptr<GameObject> spike;
 
 	SDL_Window * window;
 	SDL_Event events;
@@ -30,7 +30,7 @@ private:
 	const Color colorarray[4] = { RED, GREEN, BLUE, BLACK };
 
 	/// Use this to re-use the bubble textures and minimize memory allocation.
-	std::vector<TextureLoader*> bubbleTextures;
+	std::vector<std::unique_ptr<TextureLoader>> bubbleTextures;
 
 public:
 	SDL_Renderer * renderer;
