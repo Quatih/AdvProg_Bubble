@@ -61,10 +61,7 @@ void GameEngine::init() {
 		bubbleTextures.emplace_back(std::make_unique<TextureLoader>(renderer, "assets/WhiteBall_128x128.png"));
 		bubbleTextures[i]->applyColor(colorarray[i]);
 	}
-	setState(G_Infinite);
-	//for (int i = 0; i < 4; i++) {
-	//	generateRandomBubble();
-	//}
+
 }
 
 /// Updates the game state, all objects.
@@ -85,8 +82,6 @@ void GameEngine::update() {
 	if (spike->isValid()) {
 		spike->update();
 
-		//If the spike has reached the top, destroy it.
-
 		std::vector<BubbleObject*> tempbubbles;
 		for (auto& bubble : bubbles) {
 			if (collidesWithCircle((spike->render_rect), (bubble->render_rect))) {
@@ -100,7 +95,7 @@ void GameEngine::update() {
 				std::cout << "Bubble popped\n";
 				if (bubble->pops > 0) {
 					std::size_t cindex = randInt<std::size_t>(0, bubbleTextures.size() - 1);
-					tempbubbles.emplace_back(addBubble(bubble->getNextBubble(), bubble->render_rect.x, bubble->render_rect.y, 1, bubbleTextures[cindex].get()));
+					tempbubbles.emplace_back(addBubble(bubble->getNextBubble(), bubble->render_rect.x, bubble->render_rect.y,  1, bubbleTextures[cindex].get()));
 					tempbubbles[0]->getComponent<MovementHandler>()->velocity.y = -abs(bubble->getComponent<MovementHandler>()->baseVelocity.y)*0.6;
 
 					tempbubbles.emplace_back(addBubble(bubble->getNextBubble(), bubble->render_rect.x, bubble->render_rect.y, -1, bubbleTextures[cindex].get()));
@@ -113,13 +108,13 @@ void GameEngine::update() {
 		// add the bubbles in later so that they're not iterated over in the previous loop.
 		for (auto& bubble : tempbubbles) {
 			std::unique_ptr<BubbleObject> unique { bubble };
-			bubbles.emplace_back(std::move(unique));
+			bubbles.emplace_back(std::move(unique)); 
 		}
 	}
 
 	// Re-populate the board if all the bubbles are popped.
 	if (bubbles.empty()) {
-		for (int i = 0; i < 4; i++) {
+		for (int i = 0; i < 3; i++) {
 			generateRandomBubble();
 		}
 	}
@@ -161,7 +156,6 @@ void GameEngine::cleanObjects() {
 	}
 }
 
-
 void GameEngine::start() {
 	currentState = G_Menu;
 }
@@ -169,9 +163,37 @@ void GameEngine::start() {
 void GameEngine::setState(GameState state) {
 	currentState = state;
 	switch (currentState) {
-	case G_Menu:
-		break;
 	case G_Init:
+		init();
+		break;
+	case G_Menu:
+
+		break;
+	case G_MenuOptions:
+		break;
+	case G_LevelSelect:
+		break;
+	case G_Infinite:
+		break;
+	case G_Level1:
+		break;
+	case G_Level2:
+		break;
+	case G_Level3:
+		break;
+	case G_Level4:
+		break;
+	case G_Level5:
+		break;
+	case G_Level6:
+		break;
+	case G_Level7:
+		break;
+	case G_Level8:
+		break;
+	case G_Level9:
+		break;
+	case G_Level10:
 		break;
 	default:
 		break;

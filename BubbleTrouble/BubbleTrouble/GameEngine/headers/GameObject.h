@@ -114,6 +114,7 @@ public:
 	/// Return pointer to the stored component of type T.
 	/// Returns nullptr if the Object does not contain a component of type T.
 	template <typename T> T* getComponent() {
-		return static_cast<T*>(componentsArray[getComponentID<T>()]);
+		if(hasComponent<T>()) return static_cast<T*>(componentsArray[getComponentID<T>()]);
+		else throw std::exception("Requested Component is non-existent");
 	}
 };

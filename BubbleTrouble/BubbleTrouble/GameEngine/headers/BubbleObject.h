@@ -16,14 +16,14 @@ struct BubbleProperties {
 	double accelerationY = 0;
 };
 
-const double Base_BubbleX_velocity = 2.2;
+const double Base_BubbleX_velocity = 2.1;
 const double Base_BubbleY_velocity = 9;
 const std::vector<BubbleProperties> Properties = {
 { 8,	0, Base_BubbleX_velocity, Base_BubbleY_velocity,		0, 0.2 },
-{ 16,	1, Base_BubbleX_velocity, Base_BubbleY_velocity + 0.5,	0, 0.2 },
-{ 24,	2, Base_BubbleX_velocity, Base_BubbleY_velocity + 1,	0, 0.2 },
-{ 32,	3, Base_BubbleX_velocity, Base_BubbleY_velocity + 1.5,	0, 0.2 },
-{ 38,	3, Base_BubbleX_velocity, Base_BubbleY_velocity + 2,	0, 0.2 }
+{ 14,	1, Base_BubbleX_velocity, Base_BubbleY_velocity + 0.5,	0, 0.2 },
+{ 20,	2, Base_BubbleX_velocity, Base_BubbleY_velocity + 1,	0, 0.2 },
+{ 28,	3, Base_BubbleX_velocity, Base_BubbleY_velocity + 1.5,	0, 0.2 },
+{ 36,	4, Base_BubbleX_velocity, Base_BubbleY_velocity + 2,	0, 0.2 }
 };
 
 class BubbleObject : public GameObject {

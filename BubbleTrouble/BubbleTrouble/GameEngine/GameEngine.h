@@ -10,7 +10,9 @@
 
 
 
-enum GameState {G_Init, G_Menu, G_MenuOptions, G_LevelSelect,  G_Infinite, G_Level1, G_Level2};
+enum GameState {G_Init, G_Menu, G_MenuOptions, G_LevelSelect, G_Infinite, 
+	G_Level1, G_Level2, G_Level3, G_Level4, G_Level5, G_Level6, G_Level7, G_Level8, G_Level9, G_Level10
+};
 
 /// Handles all the game logic
 class GameEngine {
@@ -65,7 +67,6 @@ public:
 
 	
 	void start();
-
 
 	void setState(GameState state);
 	/// Generate a random bubble
