@@ -4,7 +4,6 @@
 #include <array>
 #include <memory>
 #include <iostream>
-
 #ifdef __linux__ 
 
 #include <SDL2/SDL.h>
@@ -39,7 +38,7 @@ const std::size_t maxComponents = 10;
 /// Class used for each individual Game Object which has modularity with components.
 
 class GameObject {
-private:
+protected:
 	std::vector<std::unique_ptr<GameComponent>> components;
 
 	/// ComponentsArray used in order to be able to return a pointer to the components.

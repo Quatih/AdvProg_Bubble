@@ -63,25 +63,15 @@ public:
 	/// Deletes invalidated game objects
 	void cleanObjects();
 
-
+	
 	void start();
 
 
-	void setState(GameState state) {
-		currentState = state;
-		switch (currentState) {
-		case G_Menu:
-			break;
-		case G_Init:
-			break;
-		default:
-			break;
-		}
-	}
+	void setState(GameState state);
 	/// Generate a random bubble
 	void inline generateRandomBubble();
 
 	/// Add a bubble to the bubble vector and initialize.
-	void addBubble(BubbleType type, int posX, int posY, TextureLoader * texture)
-	//BubbleObject * addBubble(int radius, int posX, int posY, float velocityX, float velocityY, float acceleration, int pops, TextureLoader * texture);
+	BubbleObject * addBubble(BubbleType type, int posX, int posY, int direction, TextureLoader * texture);
+	//BubbleObject * addBubble(int radius, int posX, int posY, double velocityX, double velocityY, double acceleration, int pops, TextureLoader * texture);
 };	

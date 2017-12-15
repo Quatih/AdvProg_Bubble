@@ -15,18 +15,18 @@ private:
 		loadedTexture = true;
 	}
 
-	float scale = 1.0f;
+	double scale = 1;
 	TextureLoader * texture;
 	SDL_Renderer * renderer;
 public:
 
-	TileHandler(SDL_Renderer * renderer, TextureLoader* texture, float scale) {
+	TileHandler(SDL_Renderer * renderer, TextureLoader* texture, double scale) {
 		this->renderer = renderer;
 		this->texture = texture;
 		this->scale = scale;
 	}
 
-	TileHandler(SDL_Renderer * renderer, std::string path, float scale) {
+	TileHandler(SDL_Renderer * renderer, std::string path, double scale) {
 		this->renderer = renderer;
 		loadTexture(path);
 		this->scale = scale;

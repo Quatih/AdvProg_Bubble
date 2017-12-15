@@ -2,15 +2,12 @@
 #include "GameObject.h"
 #include "MovementHandler.h"
 
-
 /// Handles collision of the object to a specific zone rectangle, playZone.
 class CollisionHandler : public GameComponent {
 public:
 	MovementHandler * mover;
 	SDL_Rect * playZone;
 	SDL_Rect * objectRect;
-
-	/// Used to determine if the velocity should be adjusted upon collision, in the case of bubbles but not the player.
 
 
 	CollisionHandler(SDL_Rect * playZone) {
@@ -36,25 +33,26 @@ public:
 			}
 
 			if (objectRect->y < playZone->y) {
-				mover->velocity.y *= -1;
+				mover->velocity.y = mover->baseVelocity.y;
 			}
 			if (objectRect->y + objectRect->h > playZone->y + playZone->h) {
-				mover->velocity.y *= -1;
+				mover->velocity.y = mover->baseVelocity.y*-1;
 			}
 			[[fallthrough]]; // Indicates that the next case statement will also be executed, and that it is intentional.
+
 		case Object_Player:
 			if (objectRect->x < playZone->x) {
-				mover->position.x = (float)playZone->x;
+				mover->position.x = (double)playZone->x;
 			}
 			if (objectRect->x + objectRect->w > playZone->x + playZone->w) {
-				mover->position.x = (float)(playZone->x + playZone->w - objectRect->w);
+				mover->position.x = (double)(playZone->x + playZone->w - objectRect->w);
 			}
 
 			if (objectRect->y < playZone->y) {
-				mover->position.y = (float)playZone->y;
+				mover->position.y = (double)playZone->y;
 			}
 			if (objectRect->y + objectRect->h > playZone->y + playZone->h) {
-				mover->position.y = (float)(playZone->y + playZone->h - objectRect->h);
+				mover->position.y = (double)(playZone->y + playZone->h - objectRect->h);
 			}
 
 			objectRect->x = (int)mover->position.x;

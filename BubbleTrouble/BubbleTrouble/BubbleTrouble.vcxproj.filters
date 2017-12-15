@@ -51,9 +51,6 @@
     <ClInclude Include="GameEngine\headers\SoundHandler.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="PowerUpsHandler.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="GameEngine\headers\SpikeObject.h">
       <Filter>Header Files</Filter>
     </ClInclude>

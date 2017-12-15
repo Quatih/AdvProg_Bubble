@@ -1,93 +1,76 @@
 #pragma once
 #include "GameObject.h"
 #include "TextureLoader.h"
+#include "Components.h"
 
-enum BubbleType : std::size_t { Bubble0, Bubble1, Bubble2, Bubble3, Bubble4, MaxBubble} ;
+
+
+enum BubbleType : std::size_t { Bubble0, Bubble1, Bubble2, Bubble3, Bubble4 };
+
 struct BubbleProperties {
-	int posX = 0;
-	int PosY = 0;
-	float velocityX = 0;
-	float velocityY = 0;
-	float accelerationX = 0;
-	float accelerationY = 0;
+	double radius = 0;
 	int pops = 0;
+	double velocityX = 0;
+	double velocityY = 0;
+	double accelerationX = 0;
+	double accelerationY = 0;
 };
 
-std::vector<BubbleProperties> Properties = { {0,0,0.0f,0.0f,0.0f,0.0f,0} };
+const double Base_BubbleX_velocity = 2.2;
+const double Base_BubbleY_velocity = 9;
+const std::vector<BubbleProperties> Properties = {
+{ 8,	0, Base_BubbleX_velocity, Base_BubbleY_velocity,		0, 0.2 },
+{ 16,	1, Base_BubbleX_velocity, Base_BubbleY_velocity + 0.5,	0, 0.2 },
+{ 24,	2, Base_BubbleX_velocity, Base_BubbleY_velocity + 1,	0, 0.2 },
+{ 32,	3, Base_BubbleX_velocity, Base_BubbleY_velocity + 1.5,	0, 0.2 },
+{ 38,	3, Base_BubbleX_velocity, Base_BubbleY_velocity + 2,	0, 0.2 }
+};
 
 class BubbleObject : public GameObject {
 private:
-	
-	BubbleProperties properties;
+
 public:
 
 	int pops = 0;
 	BubbleType bubbleType;
-	BubbleObject(BubbleType type, int posX, int posY, TextureLoader * texture, SDL_Renderer* renderer, SDL_Rect *playzone) : GameObject(Object_Bubble) {
+	BubbleObject(BubbleType type, int posX, int posY, int direction, TextureLoader * texture, SDL_Renderer* renderer, SDL_Rect *playZone) : GameObject(Object_Bubble) {
 		bubbleType = type;
-		addComponent<MovementHandler>((float)posX, (float)posY);
-		addComponent<TileHandler>(renderer, texture, texture->getRect().h);
+		addComponent<MovementHandler>((double)posX, (double)posY, Properties[type].velocityX*direction, 0, Properties[type].accelerationX, Properties[type].accelerationY);
+		addComponent<TileHandler>(renderer, texture, Properties[type].radius * 2 / texture->getRect().h);
 		addComponent<CollisionHandler>(playZone);
 		addComponent<SoundHandler>("assets/explosion.wav");
+		pops = Properties[type].pops;
+		getComponent<MovementHandler>()->baseVelocity.y = Properties[type].velocityY;
 	}
 
-	void init() override {
-		switch (bubbleType) {
-		case Bubble0:
-			break;
-		case Bubble1:
-			break;
-		case Bubble2:
-			break;
-		case Bubble3:
-			break;
-		case Bubble4:
-			break;
-		default:
-			break;
-		}
-
-		for (auto& comps : components) {
-			comps->init();
-		}
-	}
-
-	setBubble(int radius, int posX, int posY, float velocityX, float velocityY, float acceleration, int pops, TextureLoader * texture) {
-		
-	}
+	//setBubble(int radius, int posX, int posY, double velocityX, double velocityY, double acceleration, int pops, TextureLoader * texture) {
+	//	
+	//}
 	//void update() override {
 	//	if (isValid()) {
 
 	//	}
 	//}
-
+	BubbleType getNextBubble() {
+		switch (bubbleType)	{
+		case Bubble0:
+			return Bubble0;
+			break;
+		case Bubble1:
+			return Bubble0;
+			break;
+		case Bubble2:
+			return Bubble1;
+			break;
+		case Bubble3:
+			return Bubble2;
+			break;
+		case Bubble4:
+			return Bubble3;
+			break;
+		default:
+			return Bubble0;
+			break;
+		}
+	}
 };
-
-/// Generate a random bubble
-void inline GameEngine::generateRandomBubble() {
-	std::unique_ptr<BubbleObject> unique{ addBubble(
-		randInt(20, 32),
-		randInt(0, playZone.w),
-		randInt((int)(playZone.h / 3.0f),
-		(int)(playZone.h / 2.0f)),
-		randFloatPosNeg(1.3f, 1.75f),
-		0.0f,
-		randFloat(0.04f, 0.06f),
-		randInt(1, 3),
-		bubbleTextures[randInt<std::size_t>(0, bubbleTextures.size() - 1)].get()) };
-	bubbles.emplace_back(std::move(unique));
-}
-
-
-/// Add a bubble to the bubble vector and initialize.
-BubbleObject * GameEngine::addBubble(int radius, int posX, int posY, float velocityX, float velocityY, float acceleration, int pops, TextureLoader * texture) {
-	BubbleObject * bubble = new BubbleObject();
-	bubble->addComponent<MovementHandler>((float)posX, (float)posY, velocityX, velocityY, 0.0f, acceleration);
-	bubble->addComponent<TileHandler>(renderer, texture, (float)radius * 2 / texture->getRect().h);
-	bubble->addComponent<CollisionHandler>(&playZone);
-	bubble->addComponent<SoundHandler>("assets/explosion.wav");
-	bubble->init();
-	bubble->pops = pops;
-
-	return bubble;
-}
