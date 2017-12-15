@@ -28,7 +28,9 @@ public:
 
 	}
 
-	void update() override {  }
+	void update() override {
+			
+	}
 
 	~SoundHandler() {
 		Mix_FreeMusic(test);

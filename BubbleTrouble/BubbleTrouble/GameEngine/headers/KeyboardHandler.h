@@ -1,5 +1,5 @@
 #pragma once
-#include "GameObject.h"
+#include "SpikeObject.h"
 #include "MovementHandler.h"
 #include "SoundHandler.h"
 #include "SDL_mixer.h"
@@ -9,12 +9,12 @@
 /// Handles all keyboard input for the player
 class KeyboardHandler : public GameComponent {
 public:
-	GameObject * spike;
+	SpikeObject * spike;
 	MovementHandler *movement;
-	float velocity;
+	double velocity;
 	bool freedom;
 
-	KeyboardHandler(float velocity, bool freedom, GameObject * spike) {
+	KeyboardHandler(double velocity, bool freedom, SpikeObject * spike) {
 		this->velocity = velocity;
 		this->freedom = freedom;
 		this->spike = spike;
@@ -54,10 +54,10 @@ public:
 
 			spike->setValid();
 			spike->render_rect.x = owner->render_rect.x + owner->render_rect.w / 2 - spike->render_rect.w/2;
-			spike->render_rect.y = owner->render_rect.y + owner->render_rect.h / 2;
+			spike->render_rect.y = owner->render_rect.y + owner->render_rect.h / 4;
 
-			spike->getComponent<MovementHandler>()->position.x = (float)spike->render_rect.x;
-			spike->getComponent<MovementHandler>()->position.y = (float)spike->render_rect.y;
+			spike->getComponent<MovementHandler>()->position.x = (double)spike->render_rect.x;
+			spike->getComponent<MovementHandler>()->position.y = (double)spike->render_rect.y;
 		}
 
 		// For testing purposes, allows up and down movement

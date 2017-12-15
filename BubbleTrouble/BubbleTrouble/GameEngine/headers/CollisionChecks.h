@@ -2,13 +2,9 @@
 #include <cmath>
 
 #ifdef __linux__ 
-
 #include <SDL2/SDL.h>
-
 #else
-
 #include "SDL.h"
-
 #endif
 
 /// Checks the collision bounds of two SDL_Rects and returns true if the rectangles collide.
@@ -17,7 +13,6 @@ bool collidesWithRect(const SDL_Rect check, const SDL_Rect other) {
 		check.y + check.h >= other.y && other.y + other.h >= check.y) {
 		return true;
 	}
-	else{ }
 	return false;
 }
 

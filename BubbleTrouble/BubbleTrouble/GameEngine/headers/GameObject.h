@@ -4,7 +4,6 @@
 #include <array>
 #include <memory>
 #include <iostream>
-
 #ifdef __linux__ 
 
 #include <SDL2/SDL.h>
@@ -39,7 +38,7 @@ const std::size_t maxComponents = 10;
 /// Class used for each individual Game Object which has modularity with components.
 
 class GameObject {
-private:
+protected:
 	std::vector<std::unique_ptr<GameComponent>> components;
 
 	/// ComponentsArray used in order to be able to return a pointer to the components.
@@ -55,7 +54,6 @@ private:
 	}
 
 public:
-	int pops = 0;
 	SDL_Rect img_rect, render_rect;
 	ObjectType type;
 
@@ -63,11 +61,11 @@ public:
 		this->type = type;
 	}
 
-	~GameObject() {
+	virtual ~GameObject() {
 		components.clear();
 	}
 
-	void update() {
+	virtual void update() {
 		if (isValid()) {
 			for (auto& comps : components) {
 				comps->update();
@@ -75,13 +73,13 @@ public:
 		}
 	}
 
-	void init() {
+	virtual void init() {
 		for (auto& comps : components) {
 			comps->init();
 		}
 	}
 
-	void draw() {
+	virtual void draw() {
 		if (isValid()) {
 			for (auto& comps : components) {
 				comps->draw();
@@ -116,6 +114,7 @@ public:
 	/// Return pointer to the stored component of type T.
 	/// Returns nullptr if the Object does not contain a component of type T.
 	template <typename T> T* getComponent() {
-		return static_cast<T*>(componentsArray[getComponentID<T>()]);
+		if(hasComponent<T>()) return static_cast<T*>(componentsArray[getComponentID<T>()]);
+		else throw std::exception("Requested Component is non-existent");
 	}
 };
