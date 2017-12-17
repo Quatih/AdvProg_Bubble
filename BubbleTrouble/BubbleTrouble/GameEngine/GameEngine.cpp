@@ -29,6 +29,7 @@ GameEngine::~GameEngine() {
 	running = false;
 
 	bubbleTextures.clear();
+	Mix_CloseAudio();
 	SDL_DestroyWindow(window);
 	SDL_DestroyRenderer(renderer);
 	SDL_Quit();
@@ -40,8 +41,8 @@ void GameEngine::init() {
 	currentState = G_Init;
 	SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
 	SDL_ShowWindow(window);
-	
-	player = std::make_unique<PlayerObject>(); 
+
+	player = std::make_unique<PlayerObject>();
 	spike = std::make_unique<SpikeObject>();
 
 	player->addComponent<KeyboardHandler>(3.8, false, spike.get());
@@ -52,7 +53,7 @@ void GameEngine::init() {
 	spike->addComponent<MovementHandler>(0.0, 0.0, 0.0, -4.8, 0.0, 0.0);
 	spike->addComponent<TileHandler>(renderer, "assets/spike4.png", 1.0);
 	spike->addComponent<CollisionHandler>(&playZone);
-	spike->addComponent<SoundHandler>("assets/spikecollision.wav");
+	spike->addComponent<SoundHandler>("assets/spikesound2.wav");
 	spike->destroy();
 	player->init();
 	spike->init();
@@ -87,15 +88,19 @@ void GameEngine::update() {
 			if (collidesWithCircle((spike->render_rect), (bubble->render_rect))) {
 
 				Mix_HaltMusic();
-				if (Mix_PlayMusic(bubble->getComponent<SoundHandler>()->test, 1) == -1) {
-					std::cout << "Sound error";
+				if (Mix_PlayMusic(bubble->getComponent<SoundHandler>()->test, 1) != -1) {
+					std::cout << "Sound playing for explosion";
 				}
+				else
+					std::cout << "sound playing inside the collision loop failing\n";
+
+				
 				spike->destroy();
 				bubble->destroy();
 				std::cout << "Bubble popped\n";
 				if (bubble->pops > 0) {
 					std::size_t cindex = randInt<std::size_t>(0, bubbleTextures.size() - 1);
-					tempbubbles.emplace_back(addBubble(bubble->getNextBubble(), bubble->render_rect.x, bubble->render_rect.y,  1, bubbleTextures[cindex].get()));
+					tempbubbles.emplace_back(addBubble(bubble->getNextBubble(), bubble->render_rect.x, bubble->render_rect.y, 1, bubbleTextures[cindex].get()));
 					tempbubbles[0]->getComponent<MovementHandler>()->velocity.y = -abs(bubble->getComponent<MovementHandler>()->baseVelocity.y)*0.6;
 
 					tempbubbles.emplace_back(addBubble(bubble->getNextBubble(), bubble->render_rect.x, bubble->render_rect.y, -1, bubbleTextures[cindex].get()));
@@ -107,8 +112,8 @@ void GameEngine::update() {
 
 		// add the bubbles in later so that they're not iterated over in the previous loop.
 		for (auto& bubble : tempbubbles) {
-			std::unique_ptr<BubbleObject> unique { bubble };
-			bubbles.emplace_back(std::move(unique)); 
+			std::unique_ptr<BubbleObject> unique{ bubble };
+			bubbles.emplace_back(std::move(unique));
 		}
 	}
 
@@ -217,7 +222,7 @@ void inline GameEngine::generateRandomBubble() {
 
 /// Add a bubble to the bubble vector and initialize.
 //BubbleObject * GameEngine::addBubble(int radius, int posX, int posY, double velocityX, double velocityY, double acceleration, int pops, TextureLoader * texture) {
-BubbleObject * GameEngine::addBubble(BubbleType type, int posX, int posY, int direction, TextureLoader * texture){
+BubbleObject * GameEngine::addBubble(BubbleType type, int posX, int posY, int direction, TextureLoader * texture) {
 	BubbleObject * bubble = new BubbleObject(type, posX, posY, direction, texture, renderer, &playZone);
 	bubble->init();
 	return bubble;

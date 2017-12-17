@@ -7,6 +7,7 @@
 class SoundHandler : public GameComponent {
 public:
 	Mix_Music* test = NULL;
+	
 	std::string paths;
 
 	SoundHandler(std::string path) {
@@ -14,13 +15,13 @@ public:
 	}
 
 	void init() override {
-
-		if (Mix_OpenAudio(22050, MIX_DEFAULT_FORMAT, 2, 4096) == -1) {
+		
+		if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 4096) == -1) {
 			std::cout << Mix_GetError();
 		}
 
 		test = Mix_LoadMUS(paths.c_str());
-
+		
 		if (test == NULL)
 			std::cout << "sound init failed";
 		else
@@ -29,11 +30,10 @@ public:
 	}
 
 	void update() override {
-			
 	}
 
-	~SoundHandler() {
+	/*~SoundHandler() {
 		Mix_FreeMusic(test);
 		SDL_CloseAudio();
-	}
+	}*/
 };
