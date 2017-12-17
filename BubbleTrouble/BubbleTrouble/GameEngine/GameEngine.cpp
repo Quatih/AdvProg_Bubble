@@ -45,11 +45,16 @@ void GameEngine::init() {
 	SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
 	SDL_ShowWindow(window);
 
+	manager = std::make_unique<ObjectManager>(renderer);
+
 	player = std::make_unique<PlayerObject>();
-	spike = std::make_unique<SpikeObject>();
+
+	spike = manager->addObject<GameObject>(Object_Spike);
+
+	//spike = std::make_unique<SpikeObject>();
 	explosionImage = std::make_unique<ExplosionImageObject>();
 
-	player->addComponent<KeyboardHandler>(3.8, false, spike.get());
+	player->addComponent<KeyboardHandler>(3.8, false, spike);
 	player->addComponent<MovementHandler>((double)playZone.w / 2, (double)playZone.h);
 	player->addComponent<TileHandler>(renderer, "assets/duder4.png", 0.9);
 	player->addComponent<CollisionHandler>(&playZone);
@@ -68,7 +73,9 @@ void GameEngine::init() {
 	player->init();
 	spike->init();
 	explosionImage->init();
+
 	
+
 	for (int i = 0; i < 4; i++) {
 		bubbleTextures.emplace_back(std::make_unique<TextureLoader>(renderer, "assets/WhiteBall_128x128.png"));
 		bubbleTextures[i]->applyColor(colorarray[i]);
@@ -109,9 +116,6 @@ void GameEngine::update() {
 				explosionImage->setValid();
 
 				explosionImage->render_rect = bubble->render_rect;
-				//explosionImage->render_rect.y = bubble->render_rect.y;
-				//explosionImage->render_rect.w = bubble->render_rect.w;
-				//explosionImage->render_rect.h = bubble->render_rect.h;
 				explosionImage->getComponent<MovementHandler>()->setPosition(explosionImage->render_rect.x, explosionImage->render_rect.y);
 
 				spike->destroy();
@@ -190,11 +194,12 @@ void GameEngine::render() {
 	SDL_RenderClear(renderer);
 	spike->draw();
 	player->draw();
-	explosionImage->draw();
+
 
 	for (auto& bubble : bubbles) {
 		bubble->draw();
 	}
+	explosionImage->draw();
 	SDL_RenderPresent(renderer);
 }
 
