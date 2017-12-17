@@ -100,8 +100,7 @@ void GameEngine::update() {
 		for (auto& bubble : bubbles) {
 			if (collidesWithCircle((spike->render_rect), (bubble->render_rect))) {
 
-				Mix_HaltMusic();
-				if (Mix_PlayMusic(bubble->getComponent<SoundHandler>()->test, 1) != -1) {
+				if (Mix_PlayChannel(2,bubble->getComponent<SoundHandler>()->test, 0) != -1) {
 					std::cout << "Sound playing for explosion\n";
 				}
 				else

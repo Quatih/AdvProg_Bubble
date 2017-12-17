@@ -46,7 +46,7 @@ public:
 		// Turn spike on and change its position to the player's position.
 		if (currentKeyStates[SDL_SCANCODE_SPACE] && !spike->isValid()) {
 			
-			if (Mix_PlayMusic(spike->getComponent<SoundHandler>()->test, 1) != -1)
+			if (Mix_PlayChannel(1,spike->getComponent<SoundHandler>()->test, 0) != -1)
 			{
 				std::cout << "sound in keyboardhandler played\n";
 
