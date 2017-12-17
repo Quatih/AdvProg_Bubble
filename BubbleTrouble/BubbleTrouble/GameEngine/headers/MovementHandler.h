@@ -7,23 +7,24 @@ class MovementHandler : public GameComponent {
 public:
 
 
-	Vector2D<float> position;
-	Vector2D<float> velocity;
-	Vector2D<float> acceleration;
+	Vector2D<double> position;
+	Vector2D<double> velocity;
+	Vector2D<double> acceleration;
+	Vector2D<double> baseVelocity;
 
-	MovementHandler(float posX, float posY) {
+	MovementHandler(double posX, double posY) {
 		position.x = posX;
 		position.y = posY;
 	};
 
-	MovementHandler(float posX, float posY, float velocityX, float velocityY) {
+	MovementHandler(double posX, double posY, double velocityX, double velocityY) {
 		position.x = posX;
 		position.y = posY;
 		velocity.x = velocityX;
 		velocity.y = velocityY;
 	};
 
-	MovementHandler(float posX, float posY, float velocityX, float velocityY, float accelX, float accelY) {
+	MovementHandler(double posX, double posY, double velocityX, double velocityY, double accelX, double accelY) {
 		position.x = posX;
 		position.y = posY;
 		velocity.x = velocityX;
@@ -48,17 +49,17 @@ public:
 		//std::cout << "pos(" << position.x << ", " << position.y << ")\n";
 	}
 
-	void setPosition(float x, float y) {
+	void setPosition(double x, double y) {
+		position.x = x;
+		position.y = y;
+	}
+
+	void setVelocity(double x, double y) {
 		velocity.x = x;
 		velocity.y = y;
 	}
 
-	void setVelocity(float x, float y) {
-		velocity.x = x;
-		velocity.y = y;
-	}
-
-	void setAcceleration(float x, float y) {
+	void setAcceleration(double x, double y) {
 		acceleration.x = x;
 		acceleration.y = y;
 	}

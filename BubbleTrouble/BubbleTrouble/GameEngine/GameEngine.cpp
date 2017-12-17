@@ -17,18 +17,22 @@ GameEngine::GameEngine(std::string title, int winposx, int winposy, int winwidth
 	playZone.h = winheight;
 	playZone.w = winwidth;
 
+	if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 4096) == -1) {
+		std::cout << Mix_GetError();
+	}
+
+	setState(G_Init);
 	// Set render quality to 1, so that scaled objects are dithered a little
 	//SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "1");
 }
 
 /// Free all allocated memory, hopefully.
 GameEngine::~GameEngine() {
-	//delete player;
-	//delete spike;
 	bubbles.clear();
 	running = false;
 
 	bubbleTextures.clear();
+	Mix_CloseAudio();
 	SDL_DestroyWindow(window);
 	SDL_DestroyRenderer(renderer);
 	SDL_Quit();
@@ -37,90 +41,95 @@ GameEngine::~GameEngine() {
 /// Initialize player, spike and bubbles.
 
 void GameEngine::init() {
-	currentState = G_Init;
+
 	SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
 	SDL_ShowWindow(window);
 
-	player = std::make_unique<GameObject>(Object_Player); 
-	spike = std::make_unique<GameObject>(Object_Spike);
+	manager = std::make_unique<ObjectManager>(renderer);
 
-	player->addComponent<KeyboardHandler>(3.5f, false, spike.get());
-	player->addComponent<MovementHandler>((float)playZone.w / 2, (float)playZone.h);
-	player->addComponent<TileHandler>(renderer, "assets/duder3.png", 1.0f);
+	player = std::make_unique<PlayerObject>();
+
+	spike = manager->addObject<GameObject>(Object_Spike);
+
+	//spike = std::make_unique<SpikeObject>();
+	explosionImage = std::make_unique<ExplosionImageObject>();
+
+	player->addComponent<KeyboardHandler>(3.8, false, spike);
+	player->addComponent<MovementHandler>((double)playZone.w / 2, (double)playZone.h);
+	player->addComponent<TileHandler>(renderer, "assets/duder4.png", 0.9);
 	player->addComponent<CollisionHandler>(&playZone);
 
-
-	spike->addComponent<MovementHandler>(0.0f, 0.0f, 0.0f, -4.8f, 0.0f, 0.0f);
-	spike->addComponent<TileHandler>(renderer, "assets/spike4.png", 1.0f);
+	spike->addComponent<MovementHandler>(0.0, 0.0, 0.0, -4.8, 0.0, 0.0);
+	spike->addComponent<TileHandler>(renderer, "assets/spike4.png", 1.0);
 	spike->addComponent<CollisionHandler>(&playZone);
-	spike->addComponent<SoundHandler>("assets/spikecollision.wav");
+	spike->addComponent<SoundHandler>("assets/spikesound2.wav");
+
+	explosionImage->addComponent <TileHandler>(renderer, "assets/collision.png", 0.5);
+	explosionImage->addComponent<MovementHandler>(0.0, 0.0);
+
+	explosionImage->destroy();
 	spike->destroy();
+
 	player->init();
 	spike->init();
+	explosionImage->init();
+
+	
 
 	for (int i = 0; i < 4; i++) {
 		bubbleTextures.emplace_back(std::make_unique<TextureLoader>(renderer, "assets/WhiteBall_128x128.png"));
 		bubbleTextures[i]->applyColor(colorarray[i]);
 	}
-	for (int i = 0; i < 4; i++) {
-		generateRandomBubble();
-	}
+	setState(G_Infinite);
 }
 
 /// Updates the game state, all objects.
 
 void GameEngine::update() {
-
+	
 	player->update();
+
+
 	for (auto& bubble : bubbles) {
 		bubble->update();
 	}
-
-
+	
 	for (auto& bubble : bubbles) {
 		if (collidesWithCircle((player->render_rect), (bubble->render_rect))) {
 			//std::cout << "Collides with bubble\n";
 		}
 	}
+	
 	if (spike->isValid()) {
 		spike->update();
 
-		//If the spike has reached the top, destroy it.
-		if (spike->render_rect.y < playZone.y) {
-			spike->destroy();
-		}
-
-		std::vector<GameObject*> tempbubbles;
+		std::vector<BubbleObject*> tempbubbles;
 		for (auto& bubble : bubbles) {
 			if (collidesWithCircle((spike->render_rect), (bubble->render_rect))) {
 
 				Mix_HaltMusic();
-				if (Mix_PlayMusic(bubble->getComponent<SoundHandler>()->test, 1) == -1) {
-					std::cout << "Sound error";
+				if (Mix_PlayMusic(bubble->getComponent<SoundHandler>()->test, 1) != -1) {
+					std::cout << "Sound playing for explosion\n";
 				}
+				else
+					std::cout << "sound playing inside the collision loop failing\n";
+
+				explosionImage->setValid();
+
+				explosionImage->render_rect = bubble->render_rect;
+				explosionImage->getComponent<MovementHandler>()->setPosition(explosionImage->render_rect.x, explosionImage->render_rect.y);
+
 				spike->destroy();
 				bubble->destroy();
+				
 				std::cout << "Bubble popped\n";
 				if (bubble->pops > 0) {
 					std::size_t cindex = randInt<std::size_t>(0, bubbleTextures.size() - 1);
-					tempbubbles.push_back(
-						addBubble(bubble->render_rect.h / 3,
-							bubble->render_rect.x, bubble->render_rect.y,
-							bubble->getComponent<MovementHandler>()->velocity.x,
-							-abs(bubble->getComponent<MovementHandler>()->velocity.y*0.65f),
-							bubble->getComponent<MovementHandler>()->acceleration.y,
-							bubble->pops - 1,
-							bubbleTextures[cindex].get())
-					);
-					tempbubbles.push_back(
-						addBubble(bubble->render_rect.h / 3,
-							bubble->render_rect.x, bubble->render_rect.y,
-							-bubble->getComponent<MovementHandler>()->velocity.x,
-							-abs(bubble->getComponent<MovementHandler>()->velocity.y*0.65f),
-							bubble->getComponent<MovementHandler>()->acceleration.y,
-							bubble->pops - 1,
-							bubbleTextures[cindex].get())
-					);
+					tempbubbles.emplace_back(addBubble(bubble->getNextBubble(), bubble->render_rect.x, bubble->render_rect.y, 1, bubbleTextures[cindex].get()));
+					tempbubbles[0]->getComponent<MovementHandler>()->velocity.y = -abs(bubble->getComponent<MovementHandler>()->baseVelocity.y)*0.6;
+
+					tempbubbles.emplace_back(addBubble(bubble->getNextBubble(), bubble->render_rect.x, bubble->render_rect.y, -1, bubbleTextures[cindex].get()));
+					tempbubbles[1]->getComponent<MovementHandler>()->velocity.y = -abs(bubble->getComponent<MovementHandler>()->baseVelocity.y)*0.6;
 				}
 				break; //Break so that we pop only one bubble.
 			}
@@ -128,34 +137,74 @@ void GameEngine::update() {
 
 		// add the bubbles in later so that they're not iterated over in the previous loop.
 		for (auto& bubble : tempbubbles) {
-			std::unique_ptr<GameObject> unique { bubble };
+			std::unique_ptr<BubbleObject> unique { bubble };
 			bubbles.emplace_back(std::move(unique));
 		}
 	}
 
+	explosionImage->update();
+
 	// Re-populate the board if all the bubbles are popped.
-	if (bubbles.empty()) {
-		for (int i = 0; i < 4; i++) {
-			generateRandomBubble();
+	switch (currentState) {
+	case G_Init:
+		init();
+		break;
+	case G_Menu:
+		break;
+	case G_MenuOptions:
+		break;
+	case G_LevelSelect:
+		break;
+	case G_Infinite:
+
+		if (bubbles.empty()) {
+			for (int i = 0; i < 3; i++) {
+				generateRandomBubble();
+			}
 		}
+
+		break;
+	case G_Level1:
+		break;
+	case G_Level2:
+		break;
+	case G_Level3:
+		break;
+	case G_Level4:
+		break;
+	case G_Level5:
+		break;
+	case G_Level6:
+		break;
+	case G_Level7:
+		break;
+	case G_Level8:
+		break;
+	case G_Level9:
+		break;
+	case G_Level10:
+		break;
+	default:
+		break;
 	}
+
 }
 
 /// Render each object on the screen.
-
 void GameEngine::render() {
 	SDL_RenderClear(renderer);
 	spike->draw();
 	player->draw();
 
+
 	for (auto& bubble : bubbles) {
 		bubble->draw();
 	}
+	explosionImage->draw();
 	SDL_RenderPresent(renderer);
 }
 
 /// Polls and handles all SDL events
-
 void GameEngine::handleEvents() {
 	SDL_PollEvent(&events);
 	// User requests quit
@@ -165,7 +214,6 @@ void GameEngine::handleEvents() {
 }
 
 /// Deletes invalidated game objects
-
 void GameEngine::cleanObjects() {
 	for (auto bubble = bubbles.begin(); bubble != bubbles.end();) {
 		if (!(*bubble)->isValid()) {
@@ -177,36 +225,65 @@ void GameEngine::cleanObjects() {
 	}
 }
 
-
-void GameEngine::start() {
-	currentState = G_Menu;
+/// Set the game state
+void GameEngine::setState(GameState state) {
+	currentState = state;
+	switch (currentState) {
+	case G_Init:
+		init();
+		break;
+	case G_Menu:
+		break;
+	case G_MenuOptions:
+		break;
+	case G_LevelSelect:
+		break;
+	case G_Infinite:
+		break;
+	case G_Level1:
+		break;
+	case G_Level2:
+		break;
+	case G_Level3:
+		break;
+	case G_Level4:
+		break;
+	case G_Level5:
+		break;
+	case G_Level6:
+		break;
+	case G_Level7:
+		break;
+	case G_Level8:
+		break;
+	case G_Level9:
+		break;
+	case G_Level10:
+		break;
+	default:
+		break;
+	}
 }
 
 /// Generate a random bubble
 void inline GameEngine::generateRandomBubble() {
-	std::unique_ptr<GameObject> unique{ addBubble(
-		randInt(20, 32),
+
+	std::unique_ptr<BubbleObject> unique{
+		addBubble(
+		static_cast<BubbleType>(randInt(1, 4)),
 		randInt(0, playZone.w),
-		randInt((int)(playZone.h / 3.0f),
-		(int)(playZone.h / 2.0f)),
-		randFloatPosNeg(1.3f, 1.75f),
-		0.0f,
-		randFloat(0.04f, 0.06f),
-		randInt(1, 3),
+		randInt((int)(playZone.h / 3.0),
+		(int)(playZone.h / 2.0)),
+		randMinusPlus(),
 		bubbleTextures[randInt<std::size_t>(0, bubbleTextures.size() - 1)].get()) };
 	bubbles.emplace_back(std::move(unique));
 }
 
 
 /// Add a bubble to the bubble vector and initialize.
-GameObject * GameEngine::addBubble(int radius, int posX, int posY, float velocityX, float velocityY, float acceleration, int pops, TextureLoader * texture) {
-	GameObject *bubble = new GameObject(Object_Bubble);
-	bubble->addComponent<MovementHandler>((float)posX, (float)posY, velocityX, velocityY, 0.0f, acceleration);
-	bubble->addComponent<TileHandler>(renderer, texture, (float)radius * 2 / texture->getRect().h);
-	bubble->addComponent<CollisionHandler>(&playZone);
-	bubble->addComponent<SoundHandler>("assets/explosion.wav");
+//BubbleObject * GameEngine::addBubble(int radius, int posX, int posY, double velocityX, double velocityY, double acceleration, int pops, TextureLoader * texture) {
+BubbleObject * GameEngine::addBubble(BubbleType type, int posX, int posY, int direction, TextureLoader * texture) {
+	BubbleObject * bubble = new BubbleObject(type, posX, posY, direction, texture, renderer, &playZone);
 	bubble->init();
-	bubble->pops = pops;
-
 	return bubble;
 }

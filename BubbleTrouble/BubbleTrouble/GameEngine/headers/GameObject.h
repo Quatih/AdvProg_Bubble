@@ -32,30 +32,29 @@ public:
 	virtual void draw() {};
 };
 
-enum ObjectType { Object_Player, Object_Spike, Object_Bubble, Object_Explosive };
+enum ObjectType : std::size_t { Object_Player, Object_Spike, Object_Bubble, Object_ExplosiveImage, MAX_OBJECTS};
 
 const std::size_t maxComponents = 10;
 
 /// Class used for each individual Game Object which has modularity with components.
 
 class GameObject {
-private:
+protected:
 	std::vector<std::unique_ptr<GameComponent>> components;
 
 	/// ComponentsArray used in order to be able to return a pointer to the components.
 	std::array<GameComponent*, maxComponents> componentsArray;
 	bool valid = true;
-	std::size_t numComponents = 0;
+	std::size_t componentIDs = 0;
 
 	/// Purpose is to keep a unique ID to the template component of type T
 	template <typename T> std::size_t getComponentID() {
 		// Since ID is static, it is stored at run-time, so each different typename T has a different ID
-		static std::size_t ID = numComponents++;
+		static std::size_t ID = componentIDs++;
 		return ID;
 	}
 
 public:
-	int pops = 0;
 	SDL_Rect img_rect, render_rect;
 	ObjectType type;
 
@@ -63,11 +62,11 @@ public:
 		this->type = type;
 	}
 
-	~GameObject() {
+	virtual ~GameObject() {
 		components.clear();
 	}
 
-	void update() {
+	virtual void update() {
 		if (isValid()) {
 			for (auto& comps : components) {
 				comps->update();
@@ -75,13 +74,13 @@ public:
 		}
 	}
 
-	void init() {
+	virtual void init() {
 		for (auto& comps : components) {
 			comps->init();
 		}
 	}
 
-	void draw() {
+	virtual void draw() {
 		if (isValid()) {
 			for (auto& comps : components) {
 				comps->draw();
@@ -98,14 +97,11 @@ public:
 	template <typename T, typename... Ts>
 	void addComponent(Ts&&... args) {
 		/// Forward arguments made to addcomponent to the newly created component
-		T* comp = new T(std::forward<Ts>(args)...);
-
-		std::unique_ptr<GameComponent> unique{ comp };
-		components.emplace_back(std::move(unique));
+		auto& comp = components.emplace_back(std::make_unique<T>(std::forward<Ts>(args)...));
 		comp->owner = this;
 
 		/// Add the component to the array at the unique location of this template type
-		componentsArray[getComponentID<T>()] = comp;
+		componentsArray[getComponentID<T>()] = comp.get();
 	}
 
 	/// Returns true if the Object has a component of type T.
@@ -116,6 +112,7 @@ public:
 	/// Return pointer to the stored component of type T.
 	/// Returns nullptr if the Object does not contain a component of type T.
 	template <typename T> T* getComponent() {
-		return static_cast<T*>(componentsArray[getComponentID<T>()]);
+		if(hasComponent<T>()) return static_cast<T*>(componentsArray[getComponentID<T>()]);
+		else throw std::exception("Requested Component is non-existent");
 	}
 };

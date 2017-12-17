@@ -107,7 +107,7 @@
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
-      <AdditionalLibraryDirectories>C:\Dev\SDL2_image\lib\x64;C:\Dev\SDL2_mixer\lib\x64;C:\Dev\SDL2\lib\x64;c:\Dev\SDL2_mixer\lib\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>C:\Dev\SDL2_image\lib\x64;C:\Dev\SDL2\lib\x64;C:\Dev\SDL2_mixer\lib\x64</AdditionalLibraryDirectories>
       <AdditionalDependencies>SDL2.lib;SDL2Main.lib;SDL2_image.lib;SDL2_mixer.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SubSystem>Console</SubSystem>
     </Link>
@@ -145,32 +145,33 @@
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalLibraryDirectories>C:\Dev\SDL2_image\lib\x64;C:\Dev\SDL2\lib\x64;c:\Dev\SDL2_mixer\lib\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>C:\Dev\SDL2_image\lib\x64;C:\Dev\SDL2\lib\x64;C:\Dev\SDL2_mixer\lib\x64</AdditionalLibraryDirectories>
       <AdditionalDependencies>SDL2.lib;SDL2Main.lib;SDL2_image.lib;SDL2_mixer.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SubSystem>Console</SubSystem>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="GameEngine\GameEngine.h" />
+    <ClInclude Include="GameEngine\headers\BubbleObject.h" />
     <ClInclude Include="GameEngine\headers\CollisionChecks.h" />
     <ClInclude Include="GameEngine\headers\CollisionHandler.h" />
     <ClInclude Include="GameEngine\headers\Components.h" />
+    <ClInclude Include="GameEngine\headers\ExplosionImageObject.h" />
     <ClInclude Include="GameEngine\headers\GameObject.h" />
     <ClInclude Include="GameEngine\headers\KeyboardHandler.h" />
     <ClInclude Include="GameEngine\headers\MovementHandler.h" />
+    <ClInclude Include="GameEngine\headers\ObjectManager.h" />
+    <ClInclude Include="GameEngine\headers\PlayerObject.h" />
     <ClInclude Include="GameEngine\headers\RandomInterface.h" />
     <ClInclude Include="GameEngine\headers\SoundHandler.h" />
+    <ClInclude Include="GameEngine\headers\SpikeObject.h" />
     <ClInclude Include="GameEngine\headers\TextureLoader.h" />
     <ClInclude Include="GameEngine\headers\TileHandler.h" />
     <ClInclude Include="GameEngine\headers\Vector2D.h" />
-    <ClInclude Include="PowerUpsHandler.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GameEngine\GameEngine.cpp" />
     <ClCompile Include="main.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="ClassDiagram.cd" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
