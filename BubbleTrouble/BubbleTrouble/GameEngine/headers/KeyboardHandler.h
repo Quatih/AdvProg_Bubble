@@ -9,12 +9,12 @@
 /// Handles all keyboard input for the player
 class KeyboardHandler : public GameComponent {
 public:
-	SpikeObject * spike;
+	GameObject * spike;
 	MovementHandler *movement;
 	double velocity;
 	bool freedom;
 
-	KeyboardHandler(double velocity, bool freedom, SpikeObject * spike) {
+	KeyboardHandler(double velocity, bool freedom, GameObject * spike) {
 		this->velocity = velocity;
 		this->freedom = freedom;
 		this->spike = spike;

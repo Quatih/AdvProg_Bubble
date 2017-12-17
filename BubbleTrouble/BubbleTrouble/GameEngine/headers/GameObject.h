@@ -4,6 +4,7 @@
 #include <array>
 #include <memory>
 #include <iostream>
+
 #ifdef __linux__ 
 
 #include <SDL2/SDL.h>
@@ -31,7 +32,7 @@ public:
 	virtual void draw() {};
 };
 
-enum ObjectType { Object_Player, Object_Spike, Object_Bubble, Object_ExplosiveImage };
+enum ObjectType : std::size_t { Object_Player, Object_Spike, Object_Bubble, Object_ExplosiveImage, MAX_OBJECTS};
 
 const std::size_t maxComponents = 10;
 
@@ -44,12 +45,12 @@ protected:
 	/// ComponentsArray used in order to be able to return a pointer to the components.
 	std::array<GameComponent*, maxComponents> componentsArray;
 	bool valid = true;
-	std::size_t numComponents = 0;
+	std::size_t componentIDs = 0;
 
 	/// Purpose is to keep a unique ID to the template component of type T
 	template <typename T> std::size_t getComponentID() {
 		// Since ID is static, it is stored at run-time, so each different typename T has a different ID
-		static std::size_t ID = numComponents++;
+		static std::size_t ID = componentIDs++;
 		return ID;
 	}
 
@@ -96,14 +97,11 @@ public:
 	template <typename T, typename... Ts>
 	void addComponent(Ts&&... args) {
 		/// Forward arguments made to addcomponent to the newly created component
-		T* comp = new T(std::forward<Ts>(args)...);
-
-		std::unique_ptr<GameComponent> unique{ comp };
-		components.emplace_back(std::move(unique));
+		auto& comp = components.emplace_back(std::make_unique<T>(std::forward<Ts>(args)...));
 		comp->owner = this;
 
 		/// Add the component to the array at the unique location of this template type
-		componentsArray[getComponentID<T>()] = comp;
+		componentsArray[getComponentID<T>()] = comp.get();
 	}
 
 	/// Returns true if the Object has a component of type T.

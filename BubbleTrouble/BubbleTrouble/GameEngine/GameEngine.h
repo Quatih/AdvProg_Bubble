@@ -1,5 +1,5 @@
 #pragma once
-#include "headers/GameObject.h"
+#include "headers/ObjectManager.h"
 #include "headers/BubbleObject.h"
 #include "headers/PlayerObject.h"
 #include "headers/SpikeObject.h"
@@ -19,9 +19,10 @@ enum GameState {G_Init, G_Menu, G_MenuOptions, G_LevelSelect, G_Infinite,
 class GameEngine {
 private:
 	GameState currentState;
+	std::unique_ptr<ObjectManager> manager;
 	std::unique_ptr<PlayerObject> player;
 	std::vector<std::unique_ptr<BubbleObject>> bubbles;
-	std::unique_ptr<SpikeObject> spike;
+	GameObject* spike;
 	std::unique_ptr<ExplosionImageObject> explosionImage;
 	SDL_Window * window;
 	SDL_Event events;
