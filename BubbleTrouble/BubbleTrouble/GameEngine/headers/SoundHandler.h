@@ -29,7 +29,7 @@ public:
 	}
 
 	void update() override {
-			
+		
 	}
 
 	~SoundHandler() {

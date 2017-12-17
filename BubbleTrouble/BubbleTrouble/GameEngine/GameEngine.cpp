@@ -46,13 +46,15 @@ void GameEngine::init() {
 
 	player->addComponent<KeyboardHandler>(3.8, false, spike.get());
 	player->addComponent<MovementHandler>((double)playZone.w / 2, (double)playZone.h);
-	player->addComponent<TileHandler>(renderer, "assets/duder3.png", 0.9);
+	player->addComponent<TileHandler>(renderer, "assets/duder4.png", 0.9);
 	player->addComponent<CollisionHandler>(&playZone);
 
 	spike->addComponent<MovementHandler>(0.0, 0.0, 0.0, -4.8, 0.0, 0.0);
 	spike->addComponent<TileHandler>(renderer, "assets/spike4.png", 1.0);
 	spike->addComponent<CollisionHandler>(&playZone);
 	spike->addComponent<SoundHandler>("assets/spikecollision.wav");
+
+
 	spike->destroy();
 	player->init();
 	spike->init();

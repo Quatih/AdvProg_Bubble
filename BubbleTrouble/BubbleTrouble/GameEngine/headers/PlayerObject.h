@@ -4,12 +4,23 @@
 class PlayerObject : public GameObject {
 public:
 
-	PlayerObject() : GameObject(Object_Player) {	}
+	///Specific collider for the player in order to compensate for whitespace in the image
+	PlayerObject() : GameObject(Object_Player) {
 
-	//void update() override {
-	//	if (isValid()) {
+	}
 
-	//	}
-	//}
+	void init() override {
+		
+		for (auto& comps : components) {
+			comps->init();
+		}
+	}
 
+	void update() override {
+		if (isValid()) {
+			for (auto& comps : components) {
+				comps->update();
+			}
+		}
+	}
 };
