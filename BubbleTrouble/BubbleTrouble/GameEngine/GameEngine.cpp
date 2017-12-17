@@ -17,6 +17,11 @@ GameEngine::GameEngine(std::string title, int winposx, int winposy, int winwidth
 	playZone.h = winheight;
 	playZone.w = winwidth;
 
+	if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 4096) == -1) {
+		std::cout << Mix_GetError();
+	}
+
+	setState(G_Init);
 	// Set render quality to 1, so that scaled objects are dithered a little
 	//SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "1");
 }
@@ -36,7 +41,7 @@ GameEngine::~GameEngine() {
 /// Initialize player, spike and bubbles.
 
 void GameEngine::init() {
-	currentState = G_Init;
+
 	SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
 	SDL_ShowWindow(window);
 
@@ -63,12 +68,12 @@ void GameEngine::init() {
 	player->init();
 	spike->init();
 	explosionImage->init();
-
+	
 	for (int i = 0; i < 4; i++) {
 		bubbleTextures.emplace_back(std::make_unique<TextureLoader>(renderer, "assets/WhiteBall_128x128.png"));
 		bubbleTextures[i]->applyColor(colorarray[i]);
 	}
-
+	setState(G_Infinite);
 }
 
 /// Updates the game state, all objects.
@@ -128,7 +133,7 @@ void GameEngine::update() {
 
 		// add the bubbles in later so that they're not iterated over in the previous loop.
 		for (auto& bubble : tempbubbles) {
-			std::unique_ptr<BubbleObject> unique{ bubble };
+			std::unique_ptr<BubbleObject> unique { bubble };
 			bubbles.emplace_back(std::move(unique));
 		}
 	}
@@ -136,15 +141,52 @@ void GameEngine::update() {
 	explosionImage->update();
 
 	// Re-populate the board if all the bubbles are popped.
-	if (bubbles.empty()) {
-		for (int i = 0; i < 3; i++) {
-			generateRandomBubble();
+	switch (currentState) {
+	case G_Init:
+		init();
+		break;
+	case G_Menu:
+		break;
+	case G_MenuOptions:
+		break;
+	case G_LevelSelect:
+		break;
+	case G_Infinite:
+
+		if (bubbles.empty()) {
+			for (int i = 0; i < 3; i++) {
+				generateRandomBubble();
+			}
 		}
+
+		break;
+	case G_Level1:
+		break;
+	case G_Level2:
+		break;
+	case G_Level3:
+		break;
+	case G_Level4:
+		break;
+	case G_Level5:
+		break;
+	case G_Level6:
+		break;
+	case G_Level7:
+		break;
+	case G_Level8:
+		break;
+	case G_Level9:
+		break;
+	case G_Level10:
+		break;
+	default:
+		break;
 	}
+
 }
 
 /// Render each object on the screen.
-
 void GameEngine::render() {
 	SDL_RenderClear(renderer);
 	spike->draw();
@@ -158,7 +200,6 @@ void GameEngine::render() {
 }
 
 /// Polls and handles all SDL events
-
 void GameEngine::handleEvents() {
 	SDL_PollEvent(&events);
 	// User requests quit
@@ -168,7 +209,6 @@ void GameEngine::handleEvents() {
 }
 
 /// Deletes invalidated game objects
-
 void GameEngine::cleanObjects() {
 	for (auto bubble = bubbles.begin(); bubble != bubbles.end();) {
 		if (!(*bubble)->isValid()) {
@@ -180,10 +220,7 @@ void GameEngine::cleanObjects() {
 	}
 }
 
-void GameEngine::start() {
-	currentState = G_Menu;
-}
-
+/// Set the game state
 void GameEngine::setState(GameState state) {
 	currentState = state;
 	switch (currentState) {
@@ -191,7 +228,6 @@ void GameEngine::setState(GameState state) {
 		init();
 		break;
 	case G_Menu:
-
 		break;
 	case G_MenuOptions:
 		break;

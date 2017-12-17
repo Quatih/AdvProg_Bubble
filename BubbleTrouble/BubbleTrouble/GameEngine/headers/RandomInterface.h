@@ -5,16 +5,16 @@ std::random_device random_dev;
 std::mt19937 rng(random_dev());
 
 /// Returns a pseudorandom double in the given range.
-const double randdouble(const double min, const double max) {
-	std::uniform_real_distribution<double> uni(min, max);
+const float randFloat(const float min, const float max) {
+	std::uniform_real_distribution<float> uni(min, max);
 	//double r = min + (double)rand() *(max - min) / ((double)RAND_MAX + 1.0f);
 	return uni(rng);
 }
 	
 /// Returns a pseudorandom negative or positive double in the range provided
-const double randdoublePosNeg(const double min, const double max) {
-	std::uniform_real_distribution<double> uni(-(max - min), max - min);
-	double r = uni(rng);
+const float randFloatePosNeg(const float min, const float max) {
+	std::uniform_real_distribution<float> uni(-(max - min), max - min);
+	float r = uni(rng);
 	if (r >= 0.0f) r += min;
 	else r -= min;
 	
@@ -32,7 +32,7 @@ const double randDouble(const double min, const double max) {
 const double randDoublePosNeg(const double min, const double max) {
 	std::uniform_real_distribution<double> uni(-(max - min), max - min);
 	double r = uni(rng);
-	if (r >= 0.0f) r += min;
+	if (r >= 0.0) r += min;
 	else r -= min;
 
 	return r;

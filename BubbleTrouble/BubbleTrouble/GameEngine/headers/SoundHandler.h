@@ -16,9 +16,6 @@ public:
 
 	void init() override {
 		
-		if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 4096) == -1) {
-			std::cout << Mix_GetError();
-		}
 
 		test = Mix_LoadMUS(paths.c_str());
 		
