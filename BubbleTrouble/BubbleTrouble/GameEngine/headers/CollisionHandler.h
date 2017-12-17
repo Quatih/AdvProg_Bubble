@@ -60,7 +60,7 @@ public:
 			break;
 		case Object_Spike:
 			if (objectRect->y < playZone->y) {
-				owner->destroy();
+				owner->hide();
 			}
 			break;
 		case Object_ExplosiveImage:

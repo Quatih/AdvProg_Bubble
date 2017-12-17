@@ -20,14 +20,15 @@ class GameEngine {
 private:
 	GameState currentState;
 	std::unique_ptr<ObjectManager> manager;
-	std::unique_ptr<PlayerObject> player;
-	std::vector<std::unique_ptr<BubbleObject>> bubbles;
-	GameObject* spike;
-	std::unique_ptr<ExplosionImageObject> explosionImage;
+	PlayerObject* player;
+	SpikeObject* spike;
+
+	ExplosionImageObject* explosionImage;
 	SDL_Window * window;
 	SDL_Event events;
-	bool running;
+	bool running, paused;
 
+	Mix_Chunk * bubbleExplosion;
 	/// Rectangle for the playingZone objects can be within
 	SDL_Rect playZone;
 	/// The zone the Spike can be within
@@ -46,7 +47,7 @@ public:
 	GameEngine(std::string title, int winposx, int winposy, int winwidth, int winheight, SDL_WindowFlags flag);;
 
 	/// Free all allocated memory, hopefully.
-	~GameEngine();;
+	~GameEngine();
 
 	bool inline isRunning() const {
 		return running;
@@ -67,9 +68,9 @@ public:
 	/// Deletes invalidated game objects
 	void cleanObjects();
 
+	/// Main gameplay update function
+	void allUpdate();
 	
-	void start();
-
 	void setState(GameState state);
 	/// Generate a random bubble
 	void inline generateRandomBubble();
