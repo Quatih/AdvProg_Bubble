@@ -50,10 +50,10 @@ void GameEngine::init() {
 
 	manager = std::make_unique<ObjectManager>();
 
-	player = manager->addObject<PlayerObject>();
-
 	spike = manager->addObject<SpikeObject>();
-	//spike = std::make_unique<SpikeObject>();
+
+	player = manager->addObject<PlayerObject>();
+	
 	explosionImage = manager->addObject<ExplosionImageObject>();
 
 	player->addComponent<KeyboardHandler>(3.8, false, spike);
@@ -76,6 +76,10 @@ void GameEngine::init() {
 	spike->init();
 	explosionImage->init();
 
+	for (int i = 0; i < 3; i++) {
+		addLife();
+	}
+
 	bubbleExplosion = Mix_LoadWAV("assets/explosionsound.wav");
 
 	for (int i = 0; i < 4; i++) {
@@ -91,8 +95,18 @@ void GameEngine::allUpdate() {
 	manager->update();
 	auto bubbles = manager->getObjectType<BubbleObject>();
 	for (auto& bubble : bubbles) {
+		
 		if (collidesWithCircle((player->render_rect), (bubble->render_rect))) {
-			//std::cout << "Collides with bubble\n";
+			auto life = manager->getObjectType<LifeObject>();
+			if (life.size() > 1){
+				std::cout << "WE COLLIDIN\n";
+				life[life.size()-1]->destroy();
+				SDL_Delay(1000);
+			}
+			if (life.size() == 1) {
+				std::cout << "WE DEAD\n";
+			}
+			setState(G_Infinite);
 		}
 	}
 
@@ -181,12 +195,8 @@ void GameEngine::update() {
 void GameEngine::render() {
 	SDL_RenderClear(renderer);
 
-	if (!paused) {
-		manager->draw();
-	}
-	else {
+	manager->draw();
 
-	}
 
 	SDL_RenderPresent(renderer);
 }
@@ -197,6 +207,13 @@ void GameEngine::handleEvents() {
 	// User requests quit
 	if (events.type == SDL_QUIT) {
 		running = false;
+	}
+	if (events.key.keysym.scancode == SDL_SCANCODE_ESCAPE && paused) {
+		while (manager->getObjectType<LifeObject>().size() < 3) {
+			addLife();
+		}
+		setState(G_Infinite);
+		paused = false;
 	}
 }
 
@@ -219,12 +236,22 @@ void GameEngine::setState(GameState state) {
 		break;
 	case G_Infinite:
 		/*manager->getObjectType<BubbleObject>().clear();*/
-		spike->hide();
-		for (int i = 0; i < 3; i++) {
-			generateRandomBubble();
+		if (manager->getObjectType<LifeObject>().size() > 1) {
+			for (auto a : manager->getObjectType<BubbleObject>()) {
+				a->destroy();
+			}
+			cleanObjects();
+			spike->hide();
+			for (int i = 0; i < 3; i++) {
+				generateRandomBubble();
+			}
+			player->render_rect.x = playZone.x + playZone.w / 2 - player->render_rect.w / 2;
+			player->render_rect.y = playZone.y + playZone.h - player->render_rect.h;
+			player->getComponent<MovementHandler>()->setPosition(player->render_rect.x, player->render_rect.y);
 		}
-		player->render_rect.x = playZone.x + playZone.w / 2 - player->render_rect.w / 2;
-		player->render_rect.y = playZone.y + playZone.h - player->render_rect.h;
+		else {
+			paused = true;
+		}
 		break;
 	case G_Level1:
 		break;
@@ -261,6 +288,14 @@ void inline GameEngine::generateRandomBubble() {
 		randMinusPlus(),
 		bubbleTextures[randInt<std::size_t>(0, bubbleTextures.size() - 1)].get()
 		);
+}
+
+void inline GameEngine::addLife() {
+	auto lives = manager->addObject<LifeObject>();
+	lives->addComponent<MovementHandler>((manager->getObjectType<LifeObject>().size()-1)*50, 0);
+	lives->addComponent<TileHandler>(renderer, "assets/square.png", 1.0);
+	lives->getComponent<TileHandler>()->applyColor(RED);
+	lives->init();
 }
 
 BubbleObject * GameEngine::addBubble(BubbleType type, int posX, int posY, int direction, TextureLoader * texture) {

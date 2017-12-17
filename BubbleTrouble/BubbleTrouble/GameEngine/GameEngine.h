@@ -4,6 +4,7 @@
 #include "headers/PlayerObject.h"
 #include "headers/SpikeObject.h"
 #include "headers/ExplosionImageObject.h"
+#include "headers/LifeObject.h"
 #include "headers/Components.h"
 #include <vector>
 #include <random>
@@ -70,7 +71,7 @@ public:
 
 	/// Main gameplay update function
 	void allUpdate();
-	
+	void addLife();
 	void setState(GameState state);
 	/// Generate a random bubble
 	void inline generateRandomBubble();
