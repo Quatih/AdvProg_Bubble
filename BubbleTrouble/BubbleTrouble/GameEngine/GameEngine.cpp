@@ -44,6 +44,7 @@ void GameEngine::init() {
 
 	player = std::make_unique<PlayerObject>();
 	spike = std::make_unique<SpikeObject>();
+	explosionimage = std::make_unique<ExplosionImageObject>();
 
 	player->addComponent<KeyboardHandler>(3.8, false, spike.get());
 	player->addComponent<MovementHandler>((double)playZone.w / 2, (double)playZone.h);
@@ -54,9 +55,17 @@ void GameEngine::init() {
 	spike->addComponent<TileHandler>(renderer, "assets/spike4.png", 1.0);
 	spike->addComponent<CollisionHandler>(&playZone);
 	spike->addComponent<SoundHandler>("assets/spikesound2.wav");
+
+	explosionimage->addComponent <TileHandler>(renderer, "assets/collision.png", 0.5f);
+	explosionimage->addComponent<MovementHandler>(0.0, 0.0);
+	explosionimage->addComponent<CollisionHandler>(&playZone);
+
+	explosionimage->destroy();
 	spike->destroy();
+
 	player->init();
 	spike->init();
+	explosionimage->init();
 
 	for (int i = 0; i < 4; i++) {
 		bubbleTextures.emplace_back(std::make_unique<TextureLoader>(renderer, "assets/WhiteBall_128x128.png"));
@@ -68,18 +77,20 @@ void GameEngine::init() {
 /// Updates the game state, all objects.
 
 void GameEngine::update() {
-
+	
 	player->update();
+	explosionimage->update();
+
 	for (auto& bubble : bubbles) {
 		bubble->update();
 	}
-
+	
 	for (auto& bubble : bubbles) {
 		if (collidesWithCircle((player->render_rect), (bubble->render_rect))) {
 			//std::cout << "Collides with bubble\n";
 		}
 	}
-
+	
 	if (spike->isValid()) {
 		spike->update();
 
@@ -94,9 +105,13 @@ void GameEngine::update() {
 				else
 					std::cout << "sound playing inside the collision loop failing\n";
 
-				
+				explosionimage->setValid();
+				explosionimage->render_rect.x = bubble->render_rect.x;
+				explosionimage->render_rect.y = bubble->render_rect.y - 35;
+
 				spike->destroy();
 				bubble->destroy();
+				
 				std::cout << "Bubble popped\n";
 				if (bubble->pops > 0) {
 					std::size_t cindex = randInt<std::size_t>(0, bubbleTextures.size() - 1);
@@ -131,6 +146,7 @@ void GameEngine::render() {
 	SDL_RenderClear(renderer);
 	spike->draw();
 	player->draw();
+	explosionimage->draw();
 
 	for (auto& bubble : bubbles) {
 		bubble->draw();
