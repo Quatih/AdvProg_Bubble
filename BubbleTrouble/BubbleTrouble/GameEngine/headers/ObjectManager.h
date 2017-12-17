@@ -61,10 +61,10 @@ public:
 	}
 
 	void clean() {
-		for (auto vec = objectGroups.begin(); vec != objectGroups.end(); ++vec) {
-			for (auto object = (*vec).begin(); object != (*vec).end();) {
+		for (auto& group : objectGroups) {
+			for (auto object = group.begin(); object != group.end();) {
 				if (!(*object)->isValid()) {
-					object = objectGroups[getObjectID<BubbleObject>()].erase(object);
+					object = group.erase(object);
 				}
 				else {
 					++object;
