@@ -44,10 +44,14 @@ public:
 		}
 
 		// Turn spike on and change its position to the player's position.
-		if (currentKeyStates[SDL_SCANCODE_SPACE] && !spike->isVisible()) {			
-			spike->getComponent<SoundHandler>()->play();
+		if (currentKeyStates[SDL_SCANCODE_SPACE] && !spike->isValid()) {
+			
+			if (Mix_PlayChannel(1,spike->getComponent<SoundHandler>()->test, 0) != -1)
+			{
+				std::cout << "sound in keyboardhandler played\n";
 
-			spike->show();
+			}
+			spike->setValid();
 			spike->render_rect.x = owner->render_rect.x + owner->render_rect.w / 2 - spike->render_rect.w / 2 + 5;
 			spike->render_rect.y = owner->render_rect.y + owner->render_rect.h / 4;
 

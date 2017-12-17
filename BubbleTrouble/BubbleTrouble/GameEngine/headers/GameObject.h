@@ -45,7 +45,6 @@ protected:
 	/// ComponentsArray used in order to be able to return a pointer to the components.
 	std::array<GameComponent*, maxComponents> componentsArray;
 	bool valid = true;
-	bool visible = true;
 	std::size_t componentIDs = 0;
 
 	/// Purpose is to keep a unique ID to the template component of type T
@@ -89,12 +88,9 @@ public:
 		}
 	}
 
-
-	void hide() { visible = false; }
-	void show() { visible = true;  }
-	bool isVisible() { return visible; }
 	void setValid() { valid = true; }
 	void destroy() { valid = false; }
+
 	bool isValid() const { return valid; }
 
 	/// Add component of type T with arguments Ts to this GameObject
