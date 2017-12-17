@@ -5,7 +5,7 @@
 const std::size_t maxObjectTypes = MAX_OBJECTS;
 
 class ObjectManager {
-	SDL_Renderer* renderer;
+
 	std::array<std::vector<std::unique_ptr<GameObject>>, maxObjectTypes> objectGroups;
 
 	std::size_t ObjectIDs = 0;
@@ -19,13 +19,31 @@ class ObjectManager {
 
 public:
 
-	ObjectManager(SDL_Renderer* renderer) {
-		this->renderer = renderer;
-	}
+	ObjectManager() {}
 	
 	template <typename T, typename... Ts> T* addObject(Ts&&... args) {
 		auto& object = objectGroups[getObjectID<T>()].emplace_back(std::make_unique<T>(std::forward<Ts>(args)...));
 		return object.get();
+	}
+
+	template <typename T> std::vector<std::unique_ptr<GameObject>* getObjectType() {
+		return objectGroups[getObjectID<T>()];
+	}
+
+	void update() {
+		for (auto& group : objectGroups) {
+			for (auto& object : group) {
+				if(object->isValid()) object->update();
+			}
+		}
+	}
+
+	void draw() {
+		for (auto& group : objectGroups) {
+			for (auto& object : group) {
+				if (object->isValid()) object->draw();
+			}
+		}
 	}
 
 };

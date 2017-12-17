@@ -45,7 +45,7 @@ void GameEngine::init() {
 	SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
 	SDL_ShowWindow(window);
 
-	manager = std::make_unique<ObjectManager>(renderer);
+	manager = std::make_unique<ObjectManager>();
 
 	player = std::make_unique<PlayerObject>();
 
