@@ -3,6 +3,7 @@
 #include "headers/BubbleObject.h"
 #include "headers/PlayerObject.h"
 #include "headers/SpikeObject.h"
+#include "headers/ExplosionImageObject.h"
 #include "headers/Components.h"
 #include <vector>
 #include <random>
@@ -21,7 +22,7 @@ private:
 	std::unique_ptr<PlayerObject> player;
 	std::vector<std::unique_ptr<BubbleObject>> bubbles;
 	std::unique_ptr<SpikeObject> spike;
-
+	std::unique_ptr<ExplosionImageObject> explosionimage;
 	SDL_Window * window;
 	SDL_Event events;
 	bool running;

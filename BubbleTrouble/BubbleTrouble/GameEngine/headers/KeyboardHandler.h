@@ -45,15 +45,14 @@ public:
 
 		// Turn spike on and change its position to the player's position.
 		if (currentKeyStates[SDL_SCANCODE_SPACE] && !spike->isValid()) {
-
-			if (Mix_PlayMusic(spike->getComponent<SoundHandler>()->test, 1) == -1)
+			
+			if (Mix_PlayMusic(spike->getComponent<SoundHandler>()->test, 1) != -1)
 			{
-				std::cout << "failed music";
+				std::cout << "sound in keyboardhandler played";
 
 			}
-
 			spike->setValid();
-			spike->render_rect.x = owner->render_rect.x + owner->render_rect.w / 2 + 5 - spike->render_rect.w/2;
+			spike->render_rect.x = owner->render_rect.x + owner->render_rect.w / 2 - spike->render_rect.w / 2;
 			spike->render_rect.y = owner->render_rect.y + owner->render_rect.h / 4;
 
 			spike->getComponent<MovementHandler>()->position.x = (double)spike->render_rect.x;
@@ -66,7 +65,7 @@ public:
 				movement->velocity.y = 0;
 			}
 			else if (currentKeyStates[SDL_SCANCODE_W] || currentKeyStates[SDL_SCANCODE_UP]) {
-				movement->velocity.y = -1*velocity;
+				movement->velocity.y = -1 * velocity;
 			}
 			else if (currentKeyStates[SDL_SCANCODE_S] || currentKeyStates[SDL_SCANCODE_DOWN]) {
 				movement->velocity.y = velocity;
@@ -74,7 +73,7 @@ public:
 			else {
 				movement->velocity.y = 0;
 			}
-			
+
 			// Normalize the speed to the velocity
 			if (movement->velocity.y != 0 && movement->velocity.x != 0) {
 				movement->velocity.x = sqrt(velocity*velocity / 2) * movement->velocity.x / velocity;

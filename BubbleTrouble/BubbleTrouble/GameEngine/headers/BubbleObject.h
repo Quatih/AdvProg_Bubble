@@ -40,7 +40,7 @@ public:
 		addComponent<MovementHandler>((double)posX, (double)posY, Properties[type].velocityX*direction, 0, Properties[type].accelerationX, Properties[type].accelerationY);
 		addComponent<TileHandler>(renderer, texture, Properties[type].radius * 2 / texture->getRect().h);
 		addComponent<CollisionHandler>(playZone);
-		addComponent<SoundHandler>("assets/explosion.wav");
+ 		addComponent<SoundHandler>("assets/explosionsound.wav");
 		pops = Properties[type].pops;
 		getComponent<MovementHandler>()->baseVelocity.y = Properties[type].velocityY;
 	}

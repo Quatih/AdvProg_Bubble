@@ -63,7 +63,7 @@ public:
 				owner->destroy();
 			}
 			break;
-		case Object_Explosive:
+		case Object_ExplosiveImage:
 				owner->destroy();
 			break;
 		default:
