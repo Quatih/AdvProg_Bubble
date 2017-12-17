@@ -11,6 +11,7 @@ public:
 	Vector2D<double> velocity;
 	Vector2D<double> acceleration;
 	Vector2D<double> baseVelocity;
+
 	MovementHandler(double posX, double posY) {
 		position.x = posX;
 		position.y = posY;
@@ -49,8 +50,8 @@ public:
 	}
 
 	void setPosition(double x, double y) {
-		velocity.x = x;
-		velocity.y = y;
+		position.x = x;
+		position.y = y;
 	}
 
 	void setVelocity(double x, double y) {

@@ -23,8 +23,6 @@ GameEngine::GameEngine(std::string title, int winposx, int winposy, int winwidth
 
 /// Free all allocated memory, hopefully.
 GameEngine::~GameEngine() {
-	//delete player;
-	//delete spike;
 	bubbles.clear();
 	running = false;
 
@@ -44,7 +42,7 @@ void GameEngine::init() {
 
 	player = std::make_unique<PlayerObject>();
 	spike = std::make_unique<SpikeObject>();
-	explosionimage = std::make_unique<ExplosionImageObject>();
+	explosionImage = std::make_unique<ExplosionImageObject>();
 
 	player->addComponent<KeyboardHandler>(3.8, false, spike.get());
 	player->addComponent<MovementHandler>((double)playZone.w / 2, (double)playZone.h);
@@ -56,16 +54,15 @@ void GameEngine::init() {
 	spike->addComponent<CollisionHandler>(&playZone);
 	spike->addComponent<SoundHandler>("assets/spikesound2.wav");
 
-	explosionimage->addComponent <TileHandler>(renderer, "assets/collision.png", 0.5f);
-	explosionimage->addComponent<MovementHandler>(0.0, 0.0);
-	explosionimage->addComponent<CollisionHandler>(&playZone);
+	explosionImage->addComponent <TileHandler>(renderer, "assets/collision.png", 0.5);
+	explosionImage->addComponent<MovementHandler>(0.0, 0.0);
 
-	explosionimage->destroy();
+	explosionImage->destroy();
 	spike->destroy();
 
 	player->init();
 	spike->init();
-	explosionimage->init();
+	explosionImage->init();
 
 	for (int i = 0; i < 4; i++) {
 		bubbleTextures.emplace_back(std::make_unique<TextureLoader>(renderer, "assets/WhiteBall_128x128.png"));
@@ -79,7 +76,7 @@ void GameEngine::init() {
 void GameEngine::update() {
 	
 	player->update();
-	explosionimage->update();
+
 
 	for (auto& bubble : bubbles) {
 		bubble->update();
@@ -100,14 +97,18 @@ void GameEngine::update() {
 
 				Mix_HaltMusic();
 				if (Mix_PlayMusic(bubble->getComponent<SoundHandler>()->test, 1) != -1) {
-					std::cout << "Sound playing for explosion";
+					std::cout << "Sound playing for explosion\n";
 				}
 				else
 					std::cout << "sound playing inside the collision loop failing\n";
 
-				explosionimage->setValid();
-				explosionimage->render_rect.x = bubble->render_rect.x;
-				explosionimage->render_rect.y = bubble->render_rect.y - 35;
+				explosionImage->setValid();
+
+				explosionImage->render_rect = bubble->render_rect;
+				//explosionImage->render_rect.y = bubble->render_rect.y;
+				//explosionImage->render_rect.w = bubble->render_rect.w;
+				//explosionImage->render_rect.h = bubble->render_rect.h;
+				explosionImage->getComponent<MovementHandler>()->setPosition(explosionImage->render_rect.x, explosionImage->render_rect.y);
 
 				spike->destroy();
 				bubble->destroy();
@@ -132,6 +133,8 @@ void GameEngine::update() {
 		}
 	}
 
+	explosionImage->update();
+
 	// Re-populate the board if all the bubbles are popped.
 	if (bubbles.empty()) {
 		for (int i = 0; i < 3; i++) {
@@ -146,7 +149,7 @@ void GameEngine::render() {
 	SDL_RenderClear(renderer);
 	spike->draw();
 	player->draw();
-	explosionimage->draw();
+	explosionImage->draw();
 
 	for (auto& bubble : bubbles) {
 		bubble->draw();

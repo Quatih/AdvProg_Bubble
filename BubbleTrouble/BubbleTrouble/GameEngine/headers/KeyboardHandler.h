@@ -48,7 +48,7 @@ public:
 			
 			if (Mix_PlayMusic(spike->getComponent<SoundHandler>()->test, 1) != -1)
 			{
-				std::cout << "sound in keyboardhandler played";
+				std::cout << "sound in keyboardhandler played\n";
 
 			}
 			spike->setValid();
