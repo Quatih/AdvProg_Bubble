@@ -35,6 +35,7 @@ public:
 		}
 		else if (currentKeyStates[SDL_SCANCODE_A] || currentKeyStates[SDL_SCANCODE_LEFT]) {
 			movement->velocity.x = -1 * velocity;
+
 		}
 		else if (currentKeyStates[SDL_SCANCODE_D] || currentKeyStates[SDL_SCANCODE_RIGHT]) {
 			movement->velocity.x = velocity;
@@ -45,12 +46,13 @@ public:
 
 		// Turn spike on and change its position to the player's position.
 		if (currentKeyStates[SDL_SCANCODE_SPACE] && !spike->isValid()) {
-			
-			if (Mix_PlayMusic(spike->getComponent<SoundHandler>()->test, 1) != -1)
+
+			if (Mix_PlayChannel(1, spike->getComponent<SoundHandler>()->test, 0) == -1)
 			{
-				std::cout << "sound in keyboardhandler played";
+				std::cout << "error in keyboardhandler sound";
 
 			}
+			
 			spike->setValid();
 			spike->render_rect.x = owner->render_rect.x + owner->render_rect.w / 2 - spike->render_rect.w / 2;
 			spike->render_rect.y = owner->render_rect.y + owner->render_rect.h / 4;
