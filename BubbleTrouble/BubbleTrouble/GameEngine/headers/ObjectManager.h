@@ -61,11 +61,13 @@ public:
 	}
 
 	void clean() {
-		for (auto object = objectGroups[getObjectID<BubbleObject>()].begin(); object != objectGroups[getObjectID<BubbleObject>()].end(); object++) {
-			if ((*object) == nullptr) std::cout << "WTF" << objectGroups[getObjectID<BubbleObject>()].size() << std::endl;
-			else {
+		for (auto vec = objectGroups.begin(); vec != objectGroups.end(); ++vec) {
+			for (auto object = (*vec).begin(); object != (*vec).end();) {
 				if (!(*object)->isValid()) {
 					object = objectGroups[getObjectID<BubbleObject>()].erase(object);
+				}
+				else {
+					++object;
 				}
 			}
 		}

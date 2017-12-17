@@ -254,7 +254,7 @@ void GameEngine::setState(GameState state) {
 /// Generate a random bubble
 void inline GameEngine::generateRandomBubble() {
 	addBubble(
-		static_cast<BubbleType>(randInt(0, 0)),
+		static_cast<BubbleType>(randInt(1, 4)),
 		randInt(0, playZone.w),
 		randInt((int)(playZone.h / 3.0),
 		(int)(playZone.h / 2.0)),
