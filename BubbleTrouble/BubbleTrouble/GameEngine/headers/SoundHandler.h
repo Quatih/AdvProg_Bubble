@@ -17,15 +17,12 @@ public:
 
 	void init() override {
 		
-		if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 4096) == -1) {
-			std::cout << Mix_GetError();
-		}
 
 		/*test = Mix_LoadMUS(paths.c_str());*/
 		test = Mix_LoadWAV(paths.c_str());
 		
 		if (test == NULL)
-			std::cout << "sound init failed";
+			std::cout << "sound init failed\n";
 		else
 			std::cout << "Sound init\n";
 

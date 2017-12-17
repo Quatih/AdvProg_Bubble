@@ -22,7 +22,7 @@ private:
 	std::unique_ptr<PlayerObject> player;
 	std::vector<std::unique_ptr<BubbleObject>> bubbles;
 	std::unique_ptr<SpikeObject> spike;
-	std::unique_ptr<ExplosionImageObject> explosionimage;
+	std::unique_ptr<ExplosionImageObject> explosionImage;
 	SDL_Window * window;
 	SDL_Event events;
 	bool running;

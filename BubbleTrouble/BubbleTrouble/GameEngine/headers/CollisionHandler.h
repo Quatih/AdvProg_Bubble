@@ -9,7 +9,6 @@ public:
 	SDL_Rect * playZone;
 	SDL_Rect * objectRect;
 
-
 	CollisionHandler(SDL_Rect * playZone) {
 		this->playZone = playZone;
 	}
@@ -24,6 +23,7 @@ public:
 	void update() {
 
 		switch (owner->type) {
+
 		case Object_Bubble:
 			if (objectRect->x < playZone->x) {
 				mover->velocity.x *= -1;
@@ -64,12 +64,13 @@ public:
 			}
 			break;
 		case Object_ExplosiveImage:
-				owner->destroy();
 			break;
 		default:
 			break;
 		}
 	}
+
+
 
 	/// Returns true if the object collides with the playerZone.
 	//bool collidesWithZone() {
