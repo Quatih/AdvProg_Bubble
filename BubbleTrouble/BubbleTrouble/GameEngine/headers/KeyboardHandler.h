@@ -52,7 +52,7 @@ public:
 
 			}
 			spike->setValid();
-			spike->render_rect.x = owner->render_rect.x + owner->render_rect.w / 2 - spike->render_rect.w / 2;
+			spike->render_rect.x = owner->render_rect.x + owner->render_rect.w / 2 - spike->render_rect.w / 2 + 5;
 			spike->render_rect.y = owner->render_rect.y + owner->render_rect.h / 4;
 
 			spike->getComponent<MovementHandler>()->position.x = (double)spike->render_rect.x;
