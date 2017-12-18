@@ -26,9 +26,7 @@ public:
 	ObjectManager() {}
 
 	~ObjectManager() {
-		for (auto& group : objectGroups) {
-			group.clear();
-		}
+		freeAll();
 	}
 
 	/// Add an object to the appropriate position, then return a pointer to it.
@@ -71,6 +69,7 @@ public:
 
 	/// Removes all invalidated objects in the array.
 	void clean() {
+
 		for (auto& group : objectGroups) {
 			for (auto object = group.begin(); object != group.end();) {
 				if (!(*object)->isValid()) {
@@ -79,7 +78,16 @@ public:
 				else {
 					++object;
 				}
+
 			}
 		}
+
 	}
+
+	void freeAll() {
+		for (auto& group : objectGroups) {
+			group.clear();
+		}
+	}
+
 };

@@ -1,4 +1,5 @@
 #pragma once
+#include "GameObject.h"
 #ifdef __linux__ 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
@@ -14,7 +15,7 @@
 
 enum FontJustified{LEFT, CENTER, RIGHT};
 
-class FontLoader {
+class FontObject : public GameObject {
 private:
 
 public:
@@ -30,7 +31,7 @@ public:
 	FontJustified justification;
 	bool visible = true;
 
-	FontLoader(SDL_Renderer* renderer, std::string fontpath, int size, SDL_Rect dimensions, Color bgcolor, FontJustified justified) {
+	FontObject(SDL_Renderer* renderer, std::string fontpath, int size, SDL_Rect dimensions, Color bgcolor, FontJustified justified) : GameObject(Object_Font) {
 
 		this->renderer = renderer;
 		this->dimensions = dimensions;
@@ -46,7 +47,7 @@ public:
 		}
 	}
 
-	~FontLoader() {
+	~FontObject() {
 		if (message != nullptr) SDL_DestroyTexture(message);
 		//if(font != nullptr) TTF_CloseFont(font);
 	}
@@ -108,20 +109,12 @@ public:
 		setText(path, color);
 	}
 
-
-	void hide() {
-		visible = false;
-	}
-
-	void show() {
-		visible = true;
-	}
 	void setFontStyle(int style) {
 		TTF_SetFontStyle(font, style);
 		setText(path, color);
 	};
 
-	void draw() {
+	void draw() override {
 		if(visible) SDL_RenderCopyEx(renderer, message, NULL, &imgrect, 0, 0, SDL_FLIP_NONE);
 	}
 };

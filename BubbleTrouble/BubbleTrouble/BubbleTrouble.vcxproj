@@ -157,7 +157,7 @@
     <ClInclude Include="GameEngine\headers\CollisionHandler.h" />
     <ClInclude Include="GameEngine\headers\Components.h" />
     <ClInclude Include="GameEngine\headers\ExplosionImageObject.h" />
-    <ClInclude Include="GameEngine\headers\FontLoader.h" />
+    <ClInclude Include="GameEngine\headers\FontObject.h" />
     <ClInclude Include="GameEngine\headers\GameObject.h" />
     <ClInclude Include="GameEngine\headers\KeyboardHandler.h" />
     <ClInclude Include="GameEngine\headers\LifeObject.h" />

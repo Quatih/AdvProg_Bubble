@@ -11,7 +11,7 @@ public:
 	}
 
 	void init() override {
-		
+		score = 0;
 		for (auto& comps : components) {
 			comps->init();
 		}

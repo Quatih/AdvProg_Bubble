@@ -6,7 +6,7 @@
 #include "headers/ExplosionImageObject.h"
 #include "headers/LifeObject.h"
 #include "headers/Components.h"
-#include "headers/FontLoader.h"
+#include "headers/FontObject.h"
 #include "headers/MillisTimer.h"
 #include <vector>
 #include <random>
@@ -25,7 +25,8 @@ private:
 	std::unique_ptr<ObjectManager> manager;
 	PlayerObject* player;
 	SpikeObject* spike;
-
+	FontObject* scoreText;
+	FontObject* timerText;
 	ExplosionImageObject* explosionImage;
 	SDL_Window * window;
 	SDL_Event events;
@@ -44,8 +45,7 @@ private:
 	std::vector<std::unique_ptr<TextureLoader>> bubbleTextures;
 	MillisTimer stageTimer;
 public:
-	std::unique_ptr<FontLoader> scoreText;
-	std::unique_ptr<FontLoader> timerText;
+
 	SDL_Renderer * renderer;
 	Uint32 stageTimeSeconds;
 	/// Constructor creates the window and renderer
@@ -60,6 +60,10 @@ public:
 
 	/// Initialize player, spike and bubbles.
 	void init();
+
+	/// Initialize player, spike and bubbles.
+	void initPlayingObjects();
+
 
 	/// Updates the game state, all objects.
 	void update();

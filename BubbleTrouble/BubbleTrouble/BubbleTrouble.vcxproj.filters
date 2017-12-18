@@ -69,10 +69,10 @@
     <ClInclude Include="GameEngine\headers\LifeObject.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="GameEngine\headers\FontLoader.h">
+    <ClInclude Include="GameEngine\headers\MillisTimer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="GameEngine\headers\MillisTimer.h">
+    <ClInclude Include="GameEngine\headers\FontObject.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
