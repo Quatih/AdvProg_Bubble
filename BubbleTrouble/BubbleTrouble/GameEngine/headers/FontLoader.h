@@ -12,6 +12,8 @@
 #include <iostream>
 #include <string>
 
+enum FontJustified{LEFT, CENTER, RIGHT};
+
 class FontLoader {
 private:
 
@@ -20,19 +22,23 @@ public:
 	SDL_Renderer * renderer;
 	SDL_Texture * message;
 	SDL_Rect dimensions;
-
+	SDL_Rect imgrect;
 	TTF_Font * font;
 	std::string path;
 	SDL_Color color;
 	SDL_Color bgcolor;
+	FontJustified justification;
 
-	FontLoader(SDL_Renderer* renderer, std::string fontpath, int size, SDL_Rect dimensions, Color bgcolor) {
-
+	FontLoader(SDL_Renderer* renderer, std::string fontpath, int size, SDL_Rect dimensions, Color bgcolor, FontJustified justified) {
+	
 		this->renderer = renderer;
 		this->dimensions = dimensions;
+		imgrect.x = dimensions.x;
+		imgrect.y = dimensions.y;
 		this->bgcolor.r = bgcolor.red;
 		this->bgcolor.b = bgcolor.blue;
 		this->bgcolor.g = bgcolor.green;
+		justification = justified;
 		font = TTF_OpenFont(fontpath.c_str(), size);
 		if (font == NULL) {
 			std::cout << "Error loading font " << fontpath << std::endl;
@@ -52,8 +58,25 @@ public:
 		if (surface == NULL) {
 			std::cout << "Error loading text surface\n";
 		}
-		dimensions.w = surface->clip_rect.w;
-		dimensions.h = surface->clip_rect.h;
+		imgrect.w = surface->clip_rect.w;
+		imgrect.h = surface->clip_rect.h;
+		switch (justification) {
+		case LEFT:
+			break;
+		case CENTER:
+
+			//imgrect.x += (dimensions.w - surface->clip_rect.w);
+			//imgrect.y += (dimensions.h - surface->clip_rect.h);
+
+			break;
+		case RIGHT:
+			imgrect.x = dimensions.x + (dimensions.w - surface->clip_rect.w);
+			//imgrect.y = dimensions.y + (dimensions.h - surface->clip_rect.h);
+			break;
+		default:
+			break;
+		}
+
 		message = SDL_CreateTextureFromSurface(renderer, surface);
 		if (message == NULL) {
 			std::cout << "Error loading text\n";
@@ -88,6 +111,6 @@ public:
 	};
 
 	void draw() {
-		SDL_RenderCopyEx(renderer, message, NULL, &dimensions, 0, 0, SDL_FLIP_NONE);
+		SDL_RenderCopyEx(renderer, message, NULL, &imgrect, 0, 0, SDL_FLIP_NONE);
 	}
 };

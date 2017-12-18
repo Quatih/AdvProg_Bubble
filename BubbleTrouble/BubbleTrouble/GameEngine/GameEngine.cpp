@@ -86,11 +86,11 @@ void GameEngine::init() {
 
 
 	SDL_Rect scorepos;
-	scorepos.h = 24;
+	scorepos.h = 48;
 	scorepos.w = 100;
-	scorepos.x = playZone.w/2;
-	scorepos.y = playZone.h/2;
-	scoreText = std::make_unique<FontLoader>(renderer, "assets/FreeSans.ttf", 24, scorepos, WHITE);
+	scorepos.x = playZone.w - scorepos.w;
+	scorepos.y = 10;
+	scoreText = std::make_unique<FontLoader>(renderer, "assets/FreeSans.ttf", 24, scorepos, WHITE, RIGHT);
 	scoreText->setText("Whaddafa", BLACK);
 
 
