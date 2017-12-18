@@ -116,12 +116,13 @@ void GameEngine::allUpdate() {
 			if (life.size() > 1){
 				std::cout << "WE COLLIDIN'\n";
 				SDL_Delay(1000);
-
+				life[life.size() - 1]->destroy();
 			}
 			if (life.size() == 1) {
 				std::cout << "WE DEAD!\n";
+				life[life.size() - 1]->destroy();
 			}
-			life[life.size() - 1]->destroy();
+			
 			setState(G_Infinite);
 		}
 	}
@@ -176,8 +177,8 @@ void GameEngine::update() {
 		case G_Infinite:
 			
 			allUpdate();
-			stageTimer = (SDL_GetTicks() - stageStartTime) / 1000;
-			timerText->setText(std::to_string(stageTimer));
+			stageTimeSeconds = stageTimer.getMillis() / 1000;
+			timerText->setText(std::to_string(stageTimeSeconds));
 			scoreText->setText(std::to_string(player->score));
 			timerText->show();
 			if (manager->getObjectTypeVector<BubbleObject>().empty()) {
@@ -185,6 +186,7 @@ void GameEngine::update() {
 					generateRandomBubble();
 				}
 			}
+
 			break;
 		case G_Level1:
 			break;
@@ -235,10 +237,10 @@ void GameEngine::handleEvents() {
 
 	if (events.type == SDL_KEYDOWN) {
 		if (currentKeyStates[SDL_SCANCODE_P] && paused) {
-			paused = false;
+			unpause();
 		}
 		else if(currentKeyStates[SDL_SCANCODE_P]){
-			paused = true;
+			pause();
 		}
 
 		if (currentKeyStates[SDL_SCANCODE_RETURN] && paused) {
@@ -246,7 +248,7 @@ void GameEngine::handleEvents() {
 				addLife();
 			}
 			setState(G_Infinite);
-			paused = false;
+			unpause();
 		}
 		if (currentKeyStates[SDL_SCANCODE_ESCAPE]) {
 			running = false;
@@ -254,10 +256,17 @@ void GameEngine::handleEvents() {
 	}
 }
 
-void inline GameEngine::refresh() {
-	
-
+void GameEngine::pause() {
+	paused = true;
+	stageTimer.pause();
+	Mix_HaltChannel(1);
 }
+
+void GameEngine::unpause() {
+	paused = false;
+	stageTimer.unpause();
+}
+
 
 /// Deletes invalidated game objects
 void inline GameEngine::cleanObjects() {	
@@ -278,7 +287,7 @@ void GameEngine::setState(GameState state) {
 		break;
 	case G_Infinite:
 		/*manager->getObjectType<BubbleObject>().clear();*/
-		stageStartTime = SDL_GetTicks();
+		stageTimer.start();
 		player->score = 0;
 		if (manager->getObjectTypeVector<LifeObject>().size() > 1) {
 			for (auto a : manager->getObjectTypeVector<BubbleObject>()) {
@@ -294,7 +303,8 @@ void GameEngine::setState(GameState state) {
 			player->getComponent<MovementHandler>()->setPosition(player->render_rect.x, player->render_rect.y);
 		}
 		else {
-			paused = true;
+			pause();
+			
 		}
 		break;
 	case G_Level1:
@@ -336,10 +346,10 @@ void inline GameEngine::generateRandomBubble() {
 
 void inline GameEngine::addLife() {
 	auto lives = manager->addObject<LifeObject>();
-	lives->addComponent<MovementHandler>((double)(manager->getObjectTypeVector<LifeObject>().size()-1)*50+10, 10);
-	lives->addComponent<TileHandler>(renderer, "assets/square.png", 1.0);
-	lives->getComponent<TileHandler>()->applyColor(RED);
+	lives->addComponent<MovementHandler>(0, 0);
+	lives->addComponent<TileHandler>(renderer, "assets/heart.png", 1);
 	lives->init();
+	lives->getComponent<MovementHandler>()->setPosition((double)(manager->getObjectTypeVector<LifeObject>().size() - 1) * lives->render_rect.w + 10, 10);
 }
 
 BubbleObject * GameEngine::addBubble(BubbleType type, int posX, int posY, int direction, TextureLoader * texture) {

@@ -7,6 +7,7 @@
 #include "headers/LifeObject.h"
 #include "headers/Components.h"
 #include "headers/FontLoader.h"
+#include "headers/MillisTimer.h"
 #include <vector>
 #include <random>
 #include <ctime>
@@ -41,13 +42,12 @@ private:
 
 	/// Use this to re-use the bubble textures and minimize memory allocation.
 	std::vector<std::unique_ptr<TextureLoader>> bubbleTextures;
-
+	MillisTimer stageTimer;
 public:
 	std::unique_ptr<FontLoader> scoreText;
 	std::unique_ptr<FontLoader> timerText;
 	SDL_Renderer * renderer;
-	Uint32 stageTimer;
-	Uint32 stageStartTime;
+	Uint32 stageTimeSeconds;
 	/// Constructor creates the window and renderer
 	GameEngine(std::string title, int winposx, int winposy, int winwidth, int winheight, SDL_WindowFlags flag);;
 
@@ -77,6 +77,10 @@ public:
 
 	/// Main gameplay update function
 	void allUpdate();
+
+	void pause();
+
+	void unpause();
 
 	/// Add a life to the board
 	void addLife();

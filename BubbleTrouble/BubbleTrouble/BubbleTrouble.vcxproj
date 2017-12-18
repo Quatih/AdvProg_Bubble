@@ -169,6 +169,7 @@
     <ClInclude Include="GameEngine\headers\SpikeObject.h" />
     <ClInclude Include="GameEngine\headers\TextureLoader.h" />
     <ClInclude Include="GameEngine\headers\TileHandler.h" />
+    <ClInclude Include="GameEngine\headers\MillisTimer.h" />
     <ClInclude Include="GameEngine\headers\Vector2D.h" />
   </ItemGroup>
   <ItemGroup>
