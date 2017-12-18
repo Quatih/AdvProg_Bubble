@@ -2,19 +2,18 @@
 #include "SpikeObject.h"
 #include "MovementHandler.h"
 #include "SoundHandler.h"
-#include "SDL_mixer.h"
 #include <cmath>
 
 
 /// Handles all keyboard input for the player
 class KeyboardHandler : public GameComponent {
 public:
-	GameObject * spike;
+	SpikeObject * spike;
 	MovementHandler *movement;
 	double velocity;
 	bool freedom;
 
-	KeyboardHandler(double velocity, bool freedom, GameObject * spike) {
+	KeyboardHandler(double velocity, bool freedom, SpikeObject * spike) {
 		this->velocity = velocity;
 		this->freedom = freedom;
 		this->spike = spike;

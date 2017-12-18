@@ -75,7 +75,7 @@ void GameEngine::initPlayingObjects() {
 	spike->addComponent<CollisionHandler>(&playZone);
 	spike->addComponent<SoundHandler>("assets/shoot.wav");
 
-	explosionImage->addComponent <TileHandler>(renderer, "assets/collision.png", 0.5);
+	explosionImage->addComponent<TileHandler>(renderer, "assets/collision.png", 0.5);
 	explosionImage->addComponent<MovementHandler>(0.0, 0.0);
 
 	explosionImage->hide();

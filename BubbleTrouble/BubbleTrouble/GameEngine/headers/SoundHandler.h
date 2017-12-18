@@ -1,6 +1,5 @@
 #pragma once
 #include "GameObject.h"
-#include "MovementHandler.h"
 #include <cmath>
 
 /// Handles sound for the object
