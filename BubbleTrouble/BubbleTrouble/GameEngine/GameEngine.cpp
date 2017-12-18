@@ -48,17 +48,18 @@ void GameEngine::init() {
 		std::cout << Mix_GetError();
 	}
 	TTF_Init();
-	std::unique_ptr<ObjectManager> uptr(new ObjectManager);
-	manager = std::move(uptr);
+	//std::unique_ptr<ObjectManager> uptr(new ObjectManager);
+	//manager = std::move(uptr);
 
+	manager = std::make_unique<ObjectManager>();
 	for (int i = 0; i < 4; i++) {
 		TextureLoader * bubb = new TextureLoader(renderer, "assets/WhiteBall_128x128.png");
 		auto &a = bubbleTextures.emplace_back(std::move(bubb));
 		a->applyColor(colorarray[i]);
 	}
 
-	std::unique_ptr<TextureLoader> Textl (new TextureLoader(renderer, "assets/heart.png"));
-	heartTexture = std::move(Textl);
+	//std::unique_ptr<TextureLoader> Textl (new TextureLoader();
+	heartTexture = std::make_unique<TextureLoader>(renderer, "assets/heart.png");
 }
 
 /// Initialise objects for playing the game
