@@ -324,7 +324,7 @@ void GameEngine::setState(GameState state) {
 	switch (currentState) {
 	case G_Init:
 		init();
-
+		initPlayingObjects();
 		setState(G_Infinite);
 		break;
 	case G_Menu:
@@ -336,8 +336,8 @@ void GameEngine::setState(GameState state) {
 		break;
 	case G_Infinite:
 		/*manager->getObjectType<BubbleObject>().clear();*/
-		refresh();
-		initPlayingObjects();
+		//refresh();
+		//initPlayingObjects();
 		stageTimer.start();
 		player->score = 0;
 		unpause();
