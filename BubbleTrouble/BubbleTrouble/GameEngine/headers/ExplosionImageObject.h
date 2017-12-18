@@ -19,7 +19,7 @@ public:
 			}
 			else {
 				renderedFrames = 0;
-				destroy();
+				hide();
 			}
 		}
 	}
