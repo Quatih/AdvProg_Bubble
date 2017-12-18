@@ -54,6 +54,7 @@ void GameEngine::init() {
 		bubbleTextures.emplace_back(std::make_unique<TextureLoader>(renderer, "assets/WhiteBall_128x128.png"));
 		bubbleTextures[i]->applyColor(colorarray[i]);
 	}
+	heartTexture = std::make_unique<TextureLoader>(renderer, "assets/heart.png");
 }
 
 void GameEngine::initPlayingObjects() {
@@ -68,7 +69,7 @@ void GameEngine::initPlayingObjects() {
 	player->addComponent<CollisionHandler>(&playZone);
 	player->addComponent<SoundHandler>("assets/hit.wav");
 
-	spike->addComponent<MovementHandler>(0.0, 0.0, 0.0, -5.1, 0.0, 0.0);
+	spike->addComponent<MovementHandler>(0.0, 0.0, 0.0, -6, 0.0, 0.0);
 	spike->addComponent<TileHandler>(renderer, "assets/spike4.png", 1.0);
 	spike->addComponent<CollisionHandler>(&playZone);
 	spike->addComponent<SoundHandler>("assets/shoot.wav");
@@ -89,18 +90,18 @@ void GameEngine::initPlayingObjects() {
 
 	bubbleExplosion = Mix_LoadWAV("assets/pop.wav");
 
-	SDL_Rect scorepos;
-	scorepos.h = 48;
-	scorepos.w = 100;
-	scorepos.x = playZone.w - scorepos.w - 10;
-	scorepos.y = 10;
-	scoreText = manager->addObject<FontObject>(renderer, "assets/FreeSans.ttf", 24, scorepos, WHITE, RIGHT);
-	scoreText->setText("Whaddafa", BLACK);
-	scoreText->hide();
-	scorepos.y = 44;
-	timerText = manager->addObject<FontObject>(renderer, "assets/FreeSans.ttf", 24, scorepos, WHITE, RIGHT);
-	timerText->setText("Whaddafa", BLACK);
-	timerText->hide();
+	//SDL_Rect scorepos;
+	//scorepos.h = 48;
+	//scorepos.w = 100;
+	//scorepos.x = playZone.w - scorepos.w - 10;
+	//scorepos.y = 10;
+	//scoreText = manager->addObject<FontObject>(renderer, "assets/FreeSans.ttf", 24, scorepos, WHITE, RIGHT);
+	//scoreText->setText("Whaddafa", BLACK);
+	//scoreText->hide();
+	//scorepos.y = 44;
+	//timerText = manager->addObject<FontObject>(renderer, "assets/FreeSans.ttf", 24, scorepos, WHITE, RIGHT);
+	//timerText->setText("Whaddafa", BLACK);
+	//timerText->hide();
 
 
 }
@@ -111,6 +112,12 @@ void GameEngine::allUpdate() {
 
 
 	manager->update();
+
+	stageTimeSeconds = stageTimer.getMillis() / 1000;
+	//timerText->setText(std::to_string(stageTimeSeconds));
+	//scoreText->setText(std::to_string(player->score));
+	//scoreText->show();
+	//timerText->show();
 
 	auto bubbles = manager->getObjectTypeVector<BubbleObject>();
 
@@ -130,7 +137,26 @@ void GameEngine::allUpdate() {
 				life[life.size() - 1]->destroy();
 			}
 
-			setState(G_Infinite);
+			if (manager->getObjectTypeVector<LifeObject>().size() > 1) {
+				for (auto a : manager->getObjectTypeVector<BubbleObject>()) {
+					a->destroy();
+				}
+				cleanObjects();
+				spike->hide();
+				for (int i = 0; i < 3; i++) {
+					generateRandomBubble();
+				}
+				player->render_rect.x = playZone.x + playZone.w / 2 - player->render_rect.w / 2;
+				player->render_rect.y = playZone.y + playZone.h - player->render_rect.h;
+				player->getComponent<MovementHandler>()->setPosition(player->render_rect.x, player->render_rect.y);
+				player->score = 0;
+				stageTimer.start();
+				unpause();
+			}
+			else {
+				pause();
+			}
+
 		}
 	}
 
@@ -164,12 +190,6 @@ void GameEngine::allUpdate() {
 		}
 	}
 
-
-	stageTimeSeconds = stageTimer.getMillis() / 1000;
-	timerText->setText(std::to_string(stageTimeSeconds));
-	scoreText->setText(std::to_string(player->score));
-	scoreText->show();
-	timerText->show();
 
 
 }
@@ -254,11 +274,7 @@ void GameEngine::handleEvents() {
 		}
 
 		if (currentKeyStates[SDL_SCANCODE_RETURN] && paused) {
-			while (manager->getObjectTypeVector<LifeObject>().size() < 3) {
-				addLife();
-			}
 			setState(G_Infinite);
-			unpause();
 		}
 		if (currentKeyStates[SDL_SCANCODE_ESCAPE]) {
 			running = false;
@@ -298,8 +314,6 @@ void GameEngine::setState(GameState state) {
 	case G_Init:
 		init();
 
-		initPlayingObjects();
-
 		setState(G_Infinite);
 		break;
 	case G_Menu:
@@ -311,26 +325,11 @@ void GameEngine::setState(GameState state) {
 		break;
 	case G_Infinite:
 		/*manager->getObjectType<BubbleObject>().clear();*/
-
+		refresh();
+		initPlayingObjects();
 		stageTimer.start();
 		player->score = 0;
-		if (manager->getObjectTypeVector<LifeObject>().size() > 1) {
-			for (auto a : manager->getObjectTypeVector<BubbleObject>()) {
-				a->destroy();
-			}
-			cleanObjects();
-			spike->hide();
-			for (int i = 0; i < 3; i++) {
-				generateRandomBubble();
-			}
-			player->render_rect.x = playZone.x + playZone.w / 2 - player->render_rect.w / 2;
-			player->render_rect.y = playZone.y + playZone.h - player->render_rect.h;
-			player->getComponent<MovementHandler>()->setPosition(player->render_rect.x, player->render_rect.y);
-			unpause();
-		}
-		else {
-			pause();
-		}
+		unpause();
 		break;
 	case G_Level1:
 		break;
@@ -372,7 +371,7 @@ void inline GameEngine::generateRandomBubble() {
 void inline GameEngine::addLife() {
 	auto lives = manager->addObject<LifeObject>();
 	lives->addComponent<MovementHandler>(0, 0);
-	lives->addComponent<TileHandler>(renderer, "assets/heart.png", 1);
+	lives->addComponent<TileHandler>(renderer, heartTexture.get(), 1);
 	lives->init();
 	lives->getComponent<MovementHandler>()->setPosition((double)(manager->getObjectTypeVector<LifeObject>().size() - 1) * lives->render_rect.w + 10, 10);
 }

@@ -43,6 +43,7 @@ private:
 
 	/// Use this to re-use the bubble textures and minimize memory allocation.
 	std::vector<std::unique_ptr<TextureLoader>> bubbleTextures;
+	std::unique_ptr<TextureLoader> heartTexture;
 	MillisTimer stageTimer;
 public:
 
