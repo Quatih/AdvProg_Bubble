@@ -54,8 +54,8 @@ void GameEngine::init() {
 	manager = std::make_unique<ObjectManager>();
 	for (int i = 0; i < 4; i++) {
 		TextureLoader * bubb = new TextureLoader(renderer, "assets/WhiteBall_128x128.png");
-		auto &a = bubbleTextures.emplace_back(std::move(bubb));
-		a->applyColor(colorarray[i]);
+		bubbleTextures.emplace_back(std::move(bubb));
+		bubb->applyColor(colorarray[i]);
 	}
 
 	//std::unique_ptr<TextureLoader> Textl (new TextureLoader();
