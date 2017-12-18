@@ -62,7 +62,7 @@ void GameEngine::initPlayingObjects() {
 	spike = manager->addObject<SpikeObject>();
 	player = manager->addObject<PlayerObject>();
 
-	explosionImage = manager->addObject<ExplosionImageObject>();
+	explosionImage = manager->addObject<ExplosionObject>();
 	player->addComponent<KeyboardHandler>(3.8, false, spike);
 	player->addComponent<MovementHandler>((double)playZone.w / 2, (double)playZone.h);
 	player->addComponent<TileHandler>(renderer, "assets/duder4.png", 0.9);
@@ -103,7 +103,14 @@ void GameEngine::initPlayingObjects() {
 	timerText->setText("Whaddafa", BLACK);
 	timerText->hide();
 
-
+	scorepos.x -= 50;
+	scorepos.y = 10;
+	auto temptext = manager->addObject<FontObject>(renderer, "assets/FreeSans.ttf", 24, scorepos, WHITE, LEFT);
+	temptext->setText("Score: ",BLACK);
+	scorepos.y += 34;
+	temptext = manager->addObject<FontObject>(renderer, "assets/FreeSans.ttf", 24, scorepos, WHITE, LEFT);
+	temptext->setText("Time: ", BLACK);
+	
 }
 
 
@@ -113,8 +120,7 @@ void GameEngine::allUpdate() {
 
 	manager->update();
 
-	stageTimeSeconds = stageTimer.getMillis() / 1000;
-	timerText->setText(std::to_string(stageTimeSeconds));
+	timerText->setText(std::to_string(stageTimer.getMillis() / 1000));
 	scoreText->setText(std::to_string(player->score));
 	scoreText->show();
 	timerText->show();

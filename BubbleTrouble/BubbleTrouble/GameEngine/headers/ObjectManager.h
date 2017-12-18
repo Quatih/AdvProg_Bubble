@@ -51,6 +51,7 @@ public:
 		return &objectGroups[getObjectID<T>()];
 	}
 		
+	/// update each object
 	void update() {
 		for (auto& group : objectGroups) {
 			for (auto& object : group) {
@@ -59,6 +60,7 @@ public:
 		}
 	}
 
+	/// draw each object, if they are visible in the game
 	void draw() {
 		for (auto& group : objectGroups) {
 			for (auto& object : group) {
@@ -69,7 +71,6 @@ public:
 
 	/// Removes all invalidated objects in the array.
 	void clean() {
-
 		for (auto& group : objectGroups) {
 			for (auto object = group.begin(); object != group.end();) {
 				if (!(*object)->isValid()) {
@@ -84,6 +85,8 @@ public:
 
 	}
 
+
+	/// Clear each object Vector
 	void freeAll() {
 		for (auto& group : objectGroups) {
 			group.clear();

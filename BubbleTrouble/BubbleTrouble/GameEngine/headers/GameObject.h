@@ -34,7 +34,7 @@ public:
 };
 
 /// Hold the different types of objects
-enum ObjectType : std::size_t { Object_Player, Object_Spike, Object_Bubble, Object_ExplosiveImage, Object_Lives, Object_Font, MAX_OBJECTS};
+enum ObjectType : std::size_t { Object_Player, Object_Spike, Object_Bubble, Object_Explosion, Object_Lives, Object_Font, MAX_OBJECTS};
 
 const std::size_t maxComponents = 10;
 

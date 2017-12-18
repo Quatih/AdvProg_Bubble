@@ -19,7 +19,6 @@ class FontObject : public GameObject {
 private:
 
 public:
-
 	SDL_Renderer * renderer;
 	SDL_Texture * message;
 	SDL_Rect dimensions;
@@ -29,7 +28,6 @@ public:
 	SDL_Color color;
 	SDL_Color bgcolor;
 	FontJustified justification;
-	bool visible = true;
 
 	FontObject(SDL_Renderer* renderer, std::string fontpath, int size, SDL_Rect dimensions, Color bgcolor, FontJustified justified) : GameObject(Object_Font) {
 

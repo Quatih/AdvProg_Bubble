@@ -49,7 +49,7 @@ public:
 
 			spike->show();
 			spike->render_rect.x = owner->render_rect.x + owner->render_rect.w / 2 - spike->render_rect.w / 2 + 5;
-			spike->render_rect.y = owner->render_rect.y + owner->render_rect.h / 4;
+			spike->render_rect.y = owner->render_rect.y;
 
 			spike->getComponent<MovementHandler>()->position.x = (double)spike->render_rect.x;
 			spike->getComponent<MovementHandler>()->position.y = (double)spike->render_rect.y;

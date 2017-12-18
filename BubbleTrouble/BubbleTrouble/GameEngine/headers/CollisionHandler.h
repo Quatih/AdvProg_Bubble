@@ -63,7 +63,7 @@ public:
 				owner->hide();
 			}
 			break;
-		case Object_ExplosiveImage:
+		case Object_Explosion:
 			break;
 		default:
 			break;

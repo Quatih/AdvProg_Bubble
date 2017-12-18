@@ -2,13 +2,13 @@
 #include "GameObject.h"
 
 /// Deals wth the Explosion object, only for showing the image for X frames
-class ExplosionImageObject : public GameObject {
+class ExplosionObject : public GameObject {
 private:
 	const int visibleFrames = 6;
 	int renderedFrames = 0;
 public:
 
-	ExplosionImageObject() : GameObject(Object_ExplosiveImage) {	}
+	ExplosionObject() : GameObject(Object_Explosion) {	}
 
 	void update() override {
 		if (isVisible()) {

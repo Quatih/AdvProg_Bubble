@@ -48,7 +48,6 @@ public:
 		SDL_DestroyTexture(texture);
 	}
 
-
 	/// Load the surface from an image at path, then create a texture from the surface.
 	void loadTexture() {
 
