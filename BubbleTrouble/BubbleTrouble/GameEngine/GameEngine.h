@@ -6,6 +6,7 @@
 #include "headers/ExplosionImageObject.h"
 #include "headers/LifeObject.h"
 #include "headers/Components.h"
+#include "headers/FontLoader.h"
 #include <vector>
 #include <random>
 #include <ctime>
@@ -42,6 +43,7 @@ private:
 	std::vector<std::unique_ptr<TextureLoader>> bubbleTextures;
 
 public:
+	std::unique_ptr<FontLoader> scoreText;
 	SDL_Renderer * renderer;
 
 	/// Constructor creates the window and renderer

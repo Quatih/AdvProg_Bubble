@@ -4,7 +4,7 @@
 /// Deals wth the Explosion object, only for showing the image for X frames
 class ExplosionImageObject : public GameObject {
 private:
-	const int visibleFrames = 5;
+	const int visibleFrames = 6;
 	int renderedFrames = 0;
 public:
 

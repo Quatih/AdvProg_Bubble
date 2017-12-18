@@ -3,6 +3,7 @@
 
 class PlayerObject : public GameObject {
 public:
+	int score = 0;
 
 	///Specific collider for the player in order to compensate for whitespace in the image
 	PlayerObject() : GameObject(Object_Player) {

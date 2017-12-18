@@ -10,17 +10,15 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_mixer.h>
+#include <SDL2/SDL_ttf.h>
 
 #else
 
 #include "SDL.h"
 #include "SDL_image.h"
 #include "SDL_mixer.h"
-
+#include "SDL_ttf.h"
 #endif
-
-class CollisionHandler;
-class MovementHandler;
 
 class GameObject;
 

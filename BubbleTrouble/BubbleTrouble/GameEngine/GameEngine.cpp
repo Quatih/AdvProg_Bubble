@@ -4,7 +4,7 @@
 #include "headers/RandomInterface.h"
 #include "headers/SoundHandler.h"
 #include "headers/CollisionChecks.h"
-
+#include <string>
 /// Constructor creates the window and renderer
 GameEngine::GameEngine(std::string title, int winposx, int winposy, int winwidth, int winheight, SDL_WindowFlags flag) {
 	SDL_Init(SDL_INIT_EVERYTHING);
@@ -22,6 +22,7 @@ GameEngine::GameEngine(std::string title, int winposx, int winposy, int winwidth
 	if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 4096) == -1) {
 		std::cout << Mix_GetError();
 	}
+	TTF_Init();
 
 	setState(G_Init);
 	// Set render quality to 1, so that scaled objects are dithered a little
@@ -30,7 +31,7 @@ GameEngine::GameEngine(std::string title, int winposx, int winposy, int winwidth
 
 /// Free all allocated memory, hopefully.
 GameEngine::~GameEngine() {
-
+	TTF_Quit();
 	running = false;
 	
 	bubbleTextures.clear();
@@ -83,6 +84,16 @@ void GameEngine::init() {
 
 	bubbleExplosion = Mix_LoadWAV("assets/pop.wav");
 
+
+	SDL_Rect scorepos;
+	scorepos.h = 24;
+	scorepos.w = 100;
+	scorepos.x = playZone.w/2;
+	scorepos.y = playZone.h/2;
+	scoreText = std::make_unique<FontLoader>(renderer, "assets/FreeSans.ttf", 24, scorepos, WHITE);
+	scoreText->setText("Whaddafa", BLACK);
+
+
 	for (int i = 0; i < 4; i++) {
 		bubbleTextures.emplace_back(std::make_unique<TextureLoader>(renderer, "assets/WhiteBall_128x128.png"));
 		bubbleTextures[i]->applyColor(colorarray[i]);
@@ -102,13 +113,13 @@ void GameEngine::allUpdate() {
 			Mix_HaltChannel(1);
 			player->getComponent<SoundHandler>()->play();
 			if (life.size() > 1){
-				std::cout << "WE COLLIDIN\n";
+				std::cout << "WE COLLIDIN'\n";
 				life[life.size()-1]->destroy();
 				SDL_Delay(1000);
 
 			}
 			if (life.size() == 1) {
-				std::cout << "WE DEAD\n";
+				std::cout << "WE DEAD!\n";
 			}
 
 			setState(G_Infinite);
@@ -130,6 +141,7 @@ void GameEngine::allUpdate() {
 				spike->hide();
 				bubble->destroy();
 				
+				player->score++;
 				std::cout << "Bubble popped\n";
 				if (bubble->pops > 0) {
 					std::size_t cindex = randInt<std::size_t>(0, bubbleTextures.size() - 1);
@@ -150,6 +162,7 @@ void GameEngine::allUpdate() {
 /// Updates the game state, all objects.
 void GameEngine::update() {
 
+	
 	if (!paused) {
 		// Re-populate the board if all the bubbles are popped.
 		switch (currentState) {
@@ -162,7 +175,7 @@ void GameEngine::update() {
 		case G_Infinite:
 
 			allUpdate();
-			
+			scoreText->setText(std::to_string(player->score));
 			if (manager->getObjectTypeVector<BubbleObject>().empty()) {
 				for (int i = 0; i < 3; i++) {
 					generateRandomBubble();
@@ -200,8 +213,9 @@ void GameEngine::update() {
 void GameEngine::render() {
 	SDL_RenderClear(renderer);
 
-	manager->draw();
+	scoreText->draw();
 
+	manager->draw();
 
 	SDL_RenderPresent(renderer);
 }
@@ -296,7 +310,7 @@ void GameEngine::setState(GameState state) {
 /// Generate a random bubble
 void inline GameEngine::generateRandomBubble() {
 	addBubble(
-		static_cast<BubbleType>(randInt(1, 4)),
+		static_cast<BubbleType>(randInt(1, 3)),
 		randInt(0, playZone.w),
 		randInt((int)(playZone.h / 3.0),
 		(int)(playZone.h / 2.0)),
