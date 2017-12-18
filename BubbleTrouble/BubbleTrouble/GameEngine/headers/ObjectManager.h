@@ -32,7 +32,8 @@ public:
 	/// Add an object to the appropriate position, then return a pointer to it.
 	template <typename T, typename... Ts> T* addObject(Ts&&... args) {
 		// Add the object to the correct vector and forward the arguments
-		auto& object = objectGroups[getObjectID<T>()].emplace_back(std::make_unique<T>(std::forward<Ts>(args)...));
+		auto ptr = std::unique_ptr<T>(new T(std::forward<Ts>(args)...));
+		auto& object = objectGroups[getObjectID<T>()].emplace_back(std::move(ptr));
 		return dynamic_cast<T*>(object.get());
 	}
 
