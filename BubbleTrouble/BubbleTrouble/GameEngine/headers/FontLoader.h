@@ -28,9 +28,10 @@ public:
 	SDL_Color color;
 	SDL_Color bgcolor;
 	FontJustified justification;
+	bool visible = true;
 
 	FontLoader(SDL_Renderer* renderer, std::string fontpath, int size, SDL_Rect dimensions, Color bgcolor, FontJustified justified) {
-	
+
 		this->renderer = renderer;
 		this->dimensions = dimensions;
 		imgrect.x = dimensions.x;
@@ -53,33 +54,38 @@ public:
 	void setText(std::string str, SDL_Color color) {
 		path = str;
 		this->color = color;
-		if(message != nullptr) SDL_DestroyTexture(message);
+		if (message != nullptr) SDL_DestroyTexture(message);
 		SDL_Surface * surface = TTF_RenderText_Shaded(font, path.c_str(), this->color, bgcolor);
 		if (surface == NULL) {
 			std::cout << "Error loading text surface\n";
 		}
-		imgrect.w = surface->clip_rect.w;
-		imgrect.h = surface->clip_rect.h;
-		switch (justification) {
-		case LEFT:
-			break;
-		case CENTER:
-			imgrect.x= dimensions.x + (dimensions.w/2 - surface->clip_rect.w/2);
-			//imgrect.y = dimensions.x + (dimensions.h/2 - surface->clip_rect.h/2);
-			break;
-		case RIGHT:
-			imgrect.x = dimensions.x + (dimensions.w - surface->clip_rect.w);
-			//imgrect.y = dimensions.y + (dimensions.h - surface->clip_rect.h);
-			break;
-		default:
-			break;
-		}
+		else {
+			imgrect.w = surface->clip_rect.w;
+			imgrect.h = surface->clip_rect.h;
 
-		message = SDL_CreateTextureFromSurface(renderer, surface);
-		if (message == NULL) {
-			std::cout << "Error loading text\n";
+			switch (justification) {
+			case LEFT:
+				break;
+			case CENTER:
+				imgrect.x = dimensions.x + (dimensions.w / 2 - surface->clip_rect.w / 2);
+				//imgrect.y = dimensions.x + (dimensions.h/2 - surface->clip_rect.h/2);
+				break;
+			case RIGHT:
+				imgrect.x = dimensions.x + (dimensions.w - surface->clip_rect.w);
+				//imgrect.y = dimensions.y + (dimensions.h - surface->clip_rect.h);
+				break;
+			default:
+				break;
+			}
+
+
+			message = SDL_CreateTextureFromSurface(renderer, surface);
+			if (message == NULL) {
+				std::cout << "Error loading text\n";
+			}
+
+			SDL_FreeSurface(surface);
 		}
-		SDL_FreeSurface(surface);
 	}
 
 	void setText(std::string str, Color color) {
@@ -103,12 +109,19 @@ public:
 	}
 
 
+	void hide() {
+		visible = false;
+	}
+
+	void show() {
+		visible = true;
+	}
 	void setFontStyle(int style) {
 		TTF_SetFontStyle(font, style);
 		setText(path, color);
 	};
 
 	void draw() {
-		SDL_RenderCopyEx(renderer, message, NULL, &imgrect, 0, 0, SDL_FLIP_NONE);
+		if(visible) SDL_RenderCopyEx(renderer, message, NULL, &imgrect, 0, 0, SDL_FLIP_NONE);
 	}
 };

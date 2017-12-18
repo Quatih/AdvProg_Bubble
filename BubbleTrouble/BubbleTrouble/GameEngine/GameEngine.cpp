@@ -56,7 +56,6 @@ void GameEngine::init() {
 	player = manager->addObject<PlayerObject>();
 	
 	explosionImage = manager->addObject<ExplosionImageObject>();
-
 	player->addComponent<KeyboardHandler>(3.8, false, spike);
 	player->addComponent<MovementHandler>((double)playZone.w / 2, (double)playZone.h);
 	player->addComponent<TileHandler>(renderer, "assets/duder4.png", 0.9);
@@ -88,12 +87,14 @@ void GameEngine::init() {
 	SDL_Rect scorepos;
 	scorepos.h = 48;
 	scorepos.w = 100;
-	scorepos.x = playZone.w - scorepos.w;
+	scorepos.x = playZone.w - scorepos.w-10;
 	scorepos.y = 10;
-	scoreText = std::make_unique<FontLoader>(renderer, "assets/FreeSans.ttf", 24, scorepos, WHITE, CENTER);
+	scoreText = std::make_unique<FontLoader>(renderer, "assets/FreeSans.ttf", 24, scorepos, WHITE, RIGHT);
 	scoreText->setText("Whaddafa", BLACK);
-
-
+	scorepos.y = 44;
+	timerText = std::make_unique<FontLoader>(renderer, "assets/FreeSans.ttf", 24, scorepos, WHITE, RIGHT);
+	timerText->setText("i", BLACK);
+	timerText->hide();
 	for (int i = 0; i < 4; i++) {
 		bubbleTextures.emplace_back(std::make_unique<TextureLoader>(renderer, "assets/WhiteBall_128x128.png"));
 		bubbleTextures[i]->applyColor(colorarray[i]);
@@ -173,9 +174,12 @@ void GameEngine::update() {
 		case G_LevelSelect:
 			break;
 		case G_Infinite:
-
+			
 			allUpdate();
+			stageTimer = (SDL_GetTicks() - stageStartTime) / 1000;
+			timerText->setText(std::to_string(stageTimer));
 			scoreText->setText(std::to_string(player->score));
+			timerText->show();
 			if (manager->getObjectTypeVector<BubbleObject>().empty()) {
 				for (int i = 0; i < 3; i++) {
 					generateRandomBubble();
@@ -213,7 +217,7 @@ void GameEngine::render() {
 	SDL_RenderClear(renderer);
 
 	scoreText->draw();
-
+	timerText->draw();
 	manager->draw();
 
 	SDL_RenderPresent(renderer);
@@ -274,6 +278,8 @@ void GameEngine::setState(GameState state) {
 		break;
 	case G_Infinite:
 		/*manager->getObjectType<BubbleObject>().clear();*/
+		stageStartTime = SDL_GetTicks();
+		player->score = 0;
 		if (manager->getObjectTypeVector<LifeObject>().size() > 1) {
 			for (auto a : manager->getObjectTypeVector<BubbleObject>()) {
 				a->destroy();

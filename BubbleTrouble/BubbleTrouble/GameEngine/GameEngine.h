@@ -44,8 +44,10 @@ private:
 
 public:
 	std::unique_ptr<FontLoader> scoreText;
+	std::unique_ptr<FontLoader> timerText;
 	SDL_Renderer * renderer;
-
+	Uint32 stageTimer;
+	Uint32 stageStartTime;
 	/// Constructor creates the window and renderer
 	GameEngine(std::string title, int winposx, int winposy, int winwidth, int winheight, SDL_WindowFlags flag);;
 
