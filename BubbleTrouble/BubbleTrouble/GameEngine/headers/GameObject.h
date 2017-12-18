@@ -102,7 +102,8 @@ public:
 	template <typename T, typename... Ts>
 	void addComponent(Ts&&... args) {
 		/// Forward arguments made to addcomponent to the newly created component
-		auto& comp = components.emplace_back(std::make_unique<T>(std::forward<Ts>(args)...));
+		auto ptr = std::unique_ptr<T>(new T(std::forward<Ts>(args)...));
+		auto& comp = components.emplace_back(std::move(ptr));
 		comp->owner = this;
 
 		/// Add the component to the array at the unique location of this template type
