@@ -35,8 +35,7 @@ public:
 
 			if (audio == NULL)
 				std::cout << "sound init failed\n";
-			else
-				std::cout << "Sound init\n";
+
 		}
 	}
 
