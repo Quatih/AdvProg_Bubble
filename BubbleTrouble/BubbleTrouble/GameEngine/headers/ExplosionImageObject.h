@@ -1,16 +1,17 @@
 #pragma once
 #include "GameObject.h"
 
+/// Deals wth the Explosion object, only for showing the image for X frames
 class ExplosionImageObject : public GameObject {
 private:
-	const int visibleFrames = 5;
+	const int visibleFrames = 6;
 	int renderedFrames = 0;
 public:
 
 	ExplosionImageObject() : GameObject(Object_ExplosiveImage) {	}
 
 	void update() override {
-		if (isValid()) {
+		if (isVisible()) {
 			if (renderedFrames < visibleFrames) {
 				for (auto& comps : components) {
 					comps->update();
@@ -23,13 +24,4 @@ public:
 			}
 		}
 	}
-
-	void draw() override {
-		if (isValid()) {
-			for (auto& comps : components) {
-				comps->draw();
-			}
-		}
-	}
-
 }; 

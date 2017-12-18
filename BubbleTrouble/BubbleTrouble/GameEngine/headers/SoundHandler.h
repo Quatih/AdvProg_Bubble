@@ -27,6 +27,7 @@ public:
 		if (loaded) Mix_FreeChunk(audio);
 	}
 
+	/// Load sound
 	void init() override {
 		
 		if (loaded) {	
@@ -40,12 +41,27 @@ public:
 		}
 	}
 
-	void update() override {
+	///Plays the loaded sound
+	void play() const {
 
-	}
-
-	void play() {
-		if (Mix_PlayChannel(2, audio, 0) == -1) {
+		//USe a different sound channel for each of our soudnds
+		int ch;
+		switch (owner->type) {
+		case Object_Bubble: 
+			ch = 0;
+			break;
+		case Object_Spike:
+			ch = 1;
+			break;
+		case Object_Player:
+			ch = 2;
+			break;
+		default:
+			ch = -1;
+			break;
+		}
+		
+		if (Mix_PlayChannel(ch, audio, 0) == -1) {
 			std::cout << "Error playing sound\n";
 		}
 	}

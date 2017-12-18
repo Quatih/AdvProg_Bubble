@@ -69,11 +69,4 @@ public:
 			break;
 		}
 	}
-
-
-
-	/// Returns true if the object collides with the playerZone.
-	//bool collidesWithZone() {
-	//	return collidesWithRect(*playZone, *objectRect);
-	//}
 };

@@ -10,13 +10,14 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_mixer.h>
+#include <SDL2/SDL_ttf.h>
 
 #else
 
 #include "SDL.h"
 #include "SDL_image.h"
 #include "SDL_mixer.h"
-
+#include "SDL_ttf.h"
 #endif
 
 class GameObject;
@@ -32,12 +33,12 @@ public:
 	virtual void draw() {};
 };
 
-enum ObjectType : std::size_t { Object_Player, Object_Spike, Object_Bubble, Object_ExplosiveImage, MAX_OBJECTS};
+/// Hold the different types of objects
+enum ObjectType : std::size_t { Object_Player, Object_Spike, Object_Bubble, Object_ExplosiveImage, Object_Lives, Object_Font, MAX_OBJECTS};
 
 const std::size_t maxComponents = 10;
 
 /// Class used for each individual Game Object which has modularity with components.
-
 class GameObject {
 protected:
 	std::vector<std::unique_ptr<GameComponent>> components;

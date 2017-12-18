@@ -4,10 +4,10 @@
 
 const std::size_t maxObjectTypes = MAX_OBJECTS;
 
+/// Maintains different object types
 class ObjectManager {
 
 	std::array<std::vector<std::unique_ptr<GameObject>>, maxObjectTypes> objectGroups;
-
 	
 	std::size_t uniqueID() {
 		static std::size_t ObjectIDs = 0;
@@ -26,22 +26,29 @@ public:
 	ObjectManager() {}
 
 	~ObjectManager() {
-		for (auto& group : objectGroups) {
-			group.clear();
-		}
+		freeAll();
 	}
 
+	/// Add an object to the appropriate position, then return a pointer to it.
 	template <typename T, typename... Ts> T* addObject(Ts&&... args) {
+		// Add the object to the correct vector and forward the arguments
 		auto& object = objectGroups[getObjectID<T>()].emplace_back(std::make_unique<T>(std::forward<Ts>(args)...));
 		return dynamic_cast<T*>(object.get());
 	}
 
-	template <typename T> std::vector<T*> getObjectType() {
+	/// Return a copy of a vector with the type T.
+	/// Necessary in order to use a vector for the subtypes
+	template <typename T> std::vector<T*> getObjectTypeVector() {
 		std::vector<T*> vec;
 		for (auto & object : objectGroups[getObjectID<T>()]){
 			vec.push_back(dynamic_cast<T*>(object.get()));
 		}
 		return vec;	
+	}
+
+	/// Return a pointer to the stored vector of type T
+	template <typename T> std::vector<std::unique_ptr<GameComponent>> * getObjectBaseVector() const {
+		return &objectGroups[getObjectID<T>()];
 	}
 		
 	void update() {
@@ -60,14 +67,27 @@ public:
 		}
 	}
 
+	/// Removes all invalidated objects in the array.
 	void clean() {
-		for (auto object = objectGroups[getObjectID<BubbleObject>()].begin(); object != objectGroups[getObjectID<BubbleObject>()].end(); object++) {
-			if ((*object) == nullptr) std::cout << "WTF" << objectGroups[getObjectID<BubbleObject>()].size() << std::endl;
-			else {
+
+		for (auto& group : objectGroups) {
+			for (auto object = group.begin(); object != group.end();) {
 				if (!(*object)->isValid()) {
-					object = objectGroups[getObjectID<BubbleObject>()].erase(object);
+					object = group.erase(object);
 				}
+				else {
+					++object;
+				}
+
 			}
 		}
+
 	}
+
+	void freeAll() {
+		for (auto& group : objectGroups) {
+			group.clear();
+		}
+	}
+
 };

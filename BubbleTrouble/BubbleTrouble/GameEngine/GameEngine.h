@@ -4,7 +4,10 @@
 #include "headers/PlayerObject.h"
 #include "headers/SpikeObject.h"
 #include "headers/ExplosionImageObject.h"
+#include "headers/LifeObject.h"
 #include "headers/Components.h"
+#include "headers/FontObject.h"
+#include "headers/MillisTimer.h"
 #include <vector>
 #include <random>
 #include <ctime>
@@ -22,7 +25,8 @@ private:
 	std::unique_ptr<ObjectManager> manager;
 	PlayerObject* player;
 	SpikeObject* spike;
-
+	FontObject* scoreText;
+	FontObject* timerText;
 	ExplosionImageObject* explosionImage;
 	SDL_Window * window;
 	SDL_Event events;
@@ -39,10 +43,12 @@ private:
 
 	/// Use this to re-use the bubble textures and minimize memory allocation.
 	std::vector<std::unique_ptr<TextureLoader>> bubbleTextures;
-
+	std::unique_ptr<TextureLoader> heartTexture;
+	MillisTimer stageTimer;
 public:
-	SDL_Renderer * renderer;
 
+	SDL_Renderer * renderer;
+	Uint32 stageTimeSeconds;
 	/// Constructor creates the window and renderer
 	GameEngine(std::string title, int winposx, int winposy, int winwidth, int winheight, SDL_WindowFlags flag);;
 
@@ -56,6 +62,10 @@ public:
 	/// Initialize player, spike and bubbles.
 	void init();
 
+	/// Initialize player, spike and bubbles.
+	void initPlayingObjects();
+
+
 	/// Updates the game state, all objects.
 	void update();
 
@@ -65,12 +75,22 @@ public:
 	/// Polls and handles all SDL events
 	void handleEvents();
 
+	void refresh();
+
 	/// Deletes invalidated game objects
 	void cleanObjects();
 
 	/// Main gameplay update function
 	void allUpdate();
-	
+
+	void pause();
+
+	void unpause();
+
+	/// Add a life to the board
+	void addLife();
+
+	/// Set the State of the game, takes appropriate action.
 	void setState(GameState state);
 	/// Generate a random bubble
 	void inline generateRandomBubble();

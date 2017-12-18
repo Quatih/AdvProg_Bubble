@@ -54,13 +54,12 @@ public:
 		}
 	}
 
-	void update() override { }
-	
 	/// Draw the texture at the position of the object
 	void draw() override {
 		SDL_RenderCopyEx(renderer, texture->getTexture(), &(owner->img_rect), &(owner->render_rect), 0, 0, SDL_FLIP_NONE);
 	}
 
+	/// return a pointer to the stored textureLoader
 	TextureLoader * getTextureLoader() const {
 		return texture;
 	}
