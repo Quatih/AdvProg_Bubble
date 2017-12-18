@@ -57,6 +57,7 @@ void GameEngine::init() {
 	heartTexture = std::make_unique<TextureLoader>(renderer, "assets/heart.png");
 }
 
+/// Initialise objects for playing the game
 void GameEngine::initPlayingObjects() {
 
 	spike = manager->addObject<SpikeObject>();

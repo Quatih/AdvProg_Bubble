@@ -88,5 +88,4 @@ public:
 	const SDL_Rect & getRect() const {
 		return img_rect;
 	}
-
 };

@@ -15,6 +15,7 @@
 
 enum FontJustified{LEFT, CENTER, RIGHT};
 
+/// Object that renders text
 class FontObject : public GameObject {
 private:
 
@@ -49,7 +50,7 @@ public:
 		if (message != nullptr) SDL_DestroyTexture(message);
 		//if(font != nullptr) TTF_CloseFont(font);
 	}
-
+	/// creates a new texture with the passed text
 	void setText(std::string str, SDL_Color color) {
 		path = str;
 		this->color = color;
@@ -64,19 +65,19 @@ public:
 
 			switch (justification) {
 			case LEFT:
+				//imgrect.y = dimensions.y + (dimensions.h - surface->clip_rect.h); // top justified
 				break;
 			case CENTER:
 				imgrect.x = dimensions.x + (dimensions.w / 2 - surface->clip_rect.w / 2);
-				//imgrect.y = dimensions.x + (dimensions.h/2 - surface->clip_rect.h/2);
+				//imgrect.y = dimensions.y + (dimensions.h/2 - surface->clip_rect.h/2); // center justified
 				break;
 			case RIGHT:
 				imgrect.x = dimensions.x + (dimensions.w - surface->clip_rect.w);
-				//imgrect.y = dimensions.y + (dimensions.h - surface->clip_rect.h);
+				//imgrect.y = dimensions.y + (dimensions.h - surface->clip_rect.h); // bottom justified
 				break;
 			default:
 				break;
 			}
-
 
 			message = SDL_CreateTextureFromSurface(renderer, surface);
 			if (message == NULL) {
@@ -86,7 +87,9 @@ public:
 			SDL_FreeSurface(surface);
 		}
 	}
+	
 
+	/// Set the text with a COlor struct
 	void setText(std::string str, Color color) {
 
 		this->color.r = color.red;
@@ -97,21 +100,24 @@ public:
 		setText(str, this->color);
 	}
 
+	/// Set the text with an already provided color
 	void setText(std::string str) {
 		path = str;
 		setText(str, color);
 	}
 
-
+	/// Set the color of the already provided text
 	void setColor(Color color) {
 		setText(path, color);
 	}
 
+	/// Set the font style and refresh texture
 	void setFontStyle(int style) {
 		TTF_SetFontStyle(font, style);
 		setText(path, color);
 	};
 
+	/// Draw
 	void draw() override {
 		if(visible) SDL_RenderCopyEx(renderer, message, NULL, &imgrect, 0, 0, SDL_FLIP_NONE);
 	}
