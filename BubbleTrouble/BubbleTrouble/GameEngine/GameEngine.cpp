@@ -90,7 +90,7 @@ void GameEngine::init() {
 	scorepos.w = 100;
 	scorepos.x = playZone.w - scorepos.w;
 	scorepos.y = 10;
-	scoreText = std::make_unique<FontLoader>(renderer, "assets/FreeSans.ttf", 24, scorepos, WHITE, RIGHT);
+	scoreText = std::make_unique<FontLoader>(renderer, "assets/FreeSans.ttf", 24, scorepos, WHITE, CENTER);
 	scoreText->setText("Whaddafa", BLACK);
 
 
@@ -114,14 +114,13 @@ void GameEngine::allUpdate() {
 			player->getComponent<SoundHandler>()->play();
 			if (life.size() > 1){
 				std::cout << "WE COLLIDIN'\n";
-				life[life.size()-1]->destroy();
 				SDL_Delay(1000);
 
 			}
 			if (life.size() == 1) {
 				std::cout << "WE DEAD!\n";
 			}
-
+			life[life.size() - 1]->destroy();
 			setState(G_Infinite);
 		}
 	}
@@ -167,6 +166,7 @@ void GameEngine::update() {
 		// Re-populate the board if all the bubbles are popped.
 		switch (currentState) {
 		case G_Menu:
+
 			break;
 		case G_MenuOptions:
 			break;
@@ -183,7 +183,6 @@ void GameEngine::update() {
 			}
 			break;
 		case G_Level1:
-
 			break;
 		case G_Level2:
 			break;
@@ -220,6 +219,7 @@ void GameEngine::render() {
 	SDL_RenderPresent(renderer);
 }
 
+
 /// Polls and handles all SDL events
 void GameEngine::handleEvents() {
 	SDL_PollEvent(&events);
@@ -229,13 +229,6 @@ void GameEngine::handleEvents() {
 	}
 	const Uint8* currentKeyStates = SDL_GetKeyboardState(NULL);
 
-	if (currentKeyStates[SDL_SCANCODE_RETURN] && paused) {
-		while (manager->getObjectTypeVector<LifeObject>().size() < 3) {
-			addLife();
-		}
-		setState(G_Infinite);
-		paused = false;
-	}
 	if (events.type == SDL_KEYDOWN) {
 		if (currentKeyStates[SDL_SCANCODE_P] && paused) {
 			paused = false;
@@ -243,11 +236,27 @@ void GameEngine::handleEvents() {
 		else if(currentKeyStates[SDL_SCANCODE_P]){
 			paused = true;
 		}
+
+		if (currentKeyStates[SDL_SCANCODE_RETURN] && paused) {
+			while (manager->getObjectTypeVector<LifeObject>().size() < 3) {
+				addLife();
+			}
+			setState(G_Infinite);
+			paused = false;
+		}
+		if (currentKeyStates[SDL_SCANCODE_ESCAPE]) {
+			running = false;
+		}
 	}
 }
 
+void inline GameEngine::refresh() {
+	
+
+}
+
 /// Deletes invalidated game objects
-void GameEngine::cleanObjects() {	
+void inline GameEngine::cleanObjects() {	
 	manager->clean();
 }
 

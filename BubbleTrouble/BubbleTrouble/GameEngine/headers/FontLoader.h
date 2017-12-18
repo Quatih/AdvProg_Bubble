@@ -47,7 +47,7 @@ public:
 
 	~FontLoader() {
 		if (message != nullptr) SDL_DestroyTexture(message);
-		TTF_CloseFont(font);
+		//if(font != nullptr) TTF_CloseFont(font);
 	}
 
 	void setText(std::string str, SDL_Color color) {
@@ -64,10 +64,8 @@ public:
 		case LEFT:
 			break;
 		case CENTER:
-
-			//imgrect.x += (dimensions.w - surface->clip_rect.w);
-			//imgrect.y += (dimensions.h - surface->clip_rect.h);
-
+			imgrect.x= dimensions.x + (dimensions.w/2 - surface->clip_rect.w/2);
+			//imgrect.y = dimensions.x + (dimensions.h/2 - surface->clip_rect.h/2);
 			break;
 		case RIGHT:
 			imgrect.x = dimensions.x + (dimensions.w - surface->clip_rect.w);

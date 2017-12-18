@@ -49,7 +49,7 @@ public:
 	}
 
 	/// Return a pointer to the stored vector of type T
-	template <typename T> std::vector<std::unique_ptr<GameComponent>> * getObjectVectorBase() const {
+	template <typename T> std::vector<std::unique_ptr<GameComponent>> * getObjectBaseVector() const {
 		return &objectGroups[getObjectID<T>()];
 	}
 		

@@ -68,6 +68,8 @@ public:
 	/// Polls and handles all SDL events
 	void handleEvents();
 
+	void refresh();
+
 	/// Deletes invalidated game objects
 	void cleanObjects();
 
