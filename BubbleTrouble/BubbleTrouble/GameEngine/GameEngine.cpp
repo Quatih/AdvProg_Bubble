@@ -90,18 +90,18 @@ void GameEngine::initPlayingObjects() {
 
 	bubbleExplosion = Mix_LoadWAV("assets/pop.wav");
 
-	//SDL_Rect scorepos;
-	//scorepos.h = 48;
-	//scorepos.w = 100;
-	//scorepos.x = playZone.w - scorepos.w - 10;
-	//scorepos.y = 10;
-	//scoreText = manager->addObject<FontObject>(renderer, "assets/FreeSans.ttf", 24, scorepos, WHITE, RIGHT);
-	//scoreText->setText("Whaddafa", BLACK);
-	//scoreText->hide();
-	//scorepos.y = 44;
-	//timerText = manager->addObject<FontObject>(renderer, "assets/FreeSans.ttf", 24, scorepos, WHITE, RIGHT);
-	//timerText->setText("Whaddafa", BLACK);
-	//timerText->hide();
+	SDL_Rect scorepos;
+	scorepos.h = 48;
+	scorepos.w = 100;
+	scorepos.x = playZone.w - scorepos.w - 10;
+	scorepos.y = 10;
+	scoreText = manager->addObject<FontObject>(renderer, "assets/FreeSans.ttf", 24, scorepos, WHITE, RIGHT);
+	scoreText->setText("Whaddafa", BLACK);
+	scoreText->hide();
+	scorepos.y = 44;
+	timerText = manager->addObject<FontObject>(renderer, "assets/FreeSans.ttf", 24, scorepos, WHITE, RIGHT);
+	timerText->setText("Whaddafa", BLACK);
+	timerText->hide();
 
 
 }
@@ -114,10 +114,10 @@ void GameEngine::allUpdate() {
 	manager->update();
 
 	stageTimeSeconds = stageTimer.getMillis() / 1000;
-	//timerText->setText(std::to_string(stageTimeSeconds));
-	//scoreText->setText(std::to_string(player->score));
-	//scoreText->show();
-	//timerText->show();
+	timerText->setText(std::to_string(stageTimeSeconds));
+	scoreText->setText(std::to_string(player->score));
+	scoreText->show();
+	timerText->show();
 
 	auto bubbles = manager->getObjectTypeVector<BubbleObject>();
 
