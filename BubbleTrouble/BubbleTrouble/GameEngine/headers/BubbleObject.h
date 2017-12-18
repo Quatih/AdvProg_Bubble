@@ -4,9 +4,10 @@
 #include "Components.h"
 
 
-
+/// Different bubble types
 enum BubbleType : std::size_t { Bubble0, Bubble1, Bubble2, Bubble3, Bubble4 };
 
+/// Struct to hold different properties of the bubble types
 struct BubbleProperties {
 	double radius = 0;
 	int pops = 0;
@@ -19,7 +20,7 @@ struct BubbleProperties {
 const double Base_BubbleX_velocity = 2.1;
 const double Base_BubbleY_velocity = 7.5;
 const double Base_BubbleY_acceleration = 0.15;
-
+///Vector with the bubble properties
 const std::vector<BubbleProperties> Properties = {
 { 8,	0, Base_BubbleX_velocity, Base_BubbleY_velocity,		0, Base_BubbleY_acceleration },
 { 14,	1, Base_BubbleX_velocity, Base_BubbleY_velocity + 0.5,	0, Base_BubbleY_acceleration },
@@ -28,6 +29,7 @@ const std::vector<BubbleProperties> Properties = {
 { 36,	4, Base_BubbleX_velocity, Base_BubbleY_velocity + 2,	0, Base_BubbleY_acceleration }
 };
 
+///Class for dealing with different bubbles
 class BubbleObject : public GameObject {
 private:
 
@@ -45,15 +47,8 @@ public:
 		getComponent<MovementHandler>()->baseVelocity.y = Properties[type].velocityY;
 	}
 
-	//setBubble(int radius, int posX, int posY, double velocityX, double velocityY, double acceleration, int pops, TextureLoader * texture) {
-	//	
-	//}
-	//void update() override {
-	//	if (isValid()) {
-
-	//	}
-	//}
-	BubbleType getNextBubble() {
+	/// Get the next bubble type in the line
+	BubbleType getNextBubble() const {
 		switch (bubbleType)	{
 		case Bubble0:
 			return Bubble0;

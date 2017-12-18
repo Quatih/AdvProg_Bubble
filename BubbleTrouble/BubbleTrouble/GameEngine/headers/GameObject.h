@@ -35,12 +35,12 @@ public:
 	virtual void draw() {};
 };
 
+/// Hold the different types of objects
 enum ObjectType : std::size_t { Object_Player, Object_Spike, Object_Bubble, Object_ExplosiveImage, Object_Lives, MAX_OBJECTS};
 
 const std::size_t maxComponents = 10;
 
 /// Class used for each individual Game Object which has modularity with components.
-
 class GameObject {
 protected:
 	std::vector<std::unique_ptr<GameComponent>> components;

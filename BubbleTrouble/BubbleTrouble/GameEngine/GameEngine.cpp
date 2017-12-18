@@ -94,11 +94,11 @@ void GameEngine::init() {
 void GameEngine::allUpdate() {
 
 	manager->update();
-	auto bubbles = manager->getObjectType<BubbleObject>();
+	auto bubbles = manager->getObjectTypeVector<BubbleObject>();
 	for (auto& bubble : bubbles) {
 		
 		if (collidesWithCircle((player->render_rect), (bubble->render_rect))) {
-			auto life = manager->getObjectType<LifeObject>();
+			auto life = manager->getObjectTypeVector<LifeObject>();
 			Mix_HaltChannel(1);
 			player->getComponent<SoundHandler>()->play();
 			if (life.size() > 1){
@@ -163,7 +163,7 @@ void GameEngine::update() {
 
 			allUpdate();
 			
-			if (manager->getObjectType<BubbleObject>().empty()) {
+			if (manager->getObjectTypeVector<BubbleObject>().empty()) {
 				for (int i = 0; i < 3; i++) {
 					generateRandomBubble();
 				}
@@ -216,7 +216,7 @@ void GameEngine::handleEvents() {
 	const Uint8* currentKeyStates = SDL_GetKeyboardState(NULL);
 
 	if (currentKeyStates[SDL_SCANCODE_RETURN] && paused) {
-		while (manager->getObjectType<LifeObject>().size() < 3) {
+		while (manager->getObjectTypeVector<LifeObject>().size() < 3) {
 			addLife();
 		}
 		setState(G_Infinite);
@@ -251,8 +251,8 @@ void GameEngine::setState(GameState state) {
 		break;
 	case G_Infinite:
 		/*manager->getObjectType<BubbleObject>().clear();*/
-		if (manager->getObjectType<LifeObject>().size() > 1) {
-			for (auto a : manager->getObjectType<BubbleObject>()) {
+		if (manager->getObjectTypeVector<LifeObject>().size() > 1) {
+			for (auto a : manager->getObjectTypeVector<BubbleObject>()) {
 				a->destroy();
 			}
 			cleanObjects();
@@ -307,7 +307,7 @@ void inline GameEngine::generateRandomBubble() {
 
 void inline GameEngine::addLife() {
 	auto lives = manager->addObject<LifeObject>();
-	lives->addComponent<MovementHandler>((double)(manager->getObjectType<LifeObject>().size()-1)*50+10, 10);
+	lives->addComponent<MovementHandler>((double)(manager->getObjectTypeVector<LifeObject>().size()-1)*50+10, 10);
 	lives->addComponent<TileHandler>(renderer, "assets/square.png", 1.0);
 	lives->getComponent<TileHandler>()->applyColor(RED);
 	lives->init();

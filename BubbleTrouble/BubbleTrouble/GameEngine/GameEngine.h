@@ -71,7 +71,11 @@ public:
 
 	/// Main gameplay update function
 	void allUpdate();
+
+	/// Add a life to the board
 	void addLife();
+
+	/// Set the State of the game, takes appropriate action.
 	void setState(GameState state);
 	/// Generate a random bubble
 	void inline generateRandomBubble();

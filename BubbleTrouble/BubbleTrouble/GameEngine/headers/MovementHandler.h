@@ -6,10 +6,10 @@
 class MovementHandler : public GameComponent {
 public:
 
-
 	Vector2D<double> position;
 	Vector2D<double> velocity;
 	Vector2D<double> acceleration;
+	/// Used for maintaining a fixed velocity for the bubbles
 	Vector2D<double> baseVelocity;
 
 	MovementHandler(double posX, double posY) {
@@ -32,11 +32,6 @@ public:
 		acceleration.x = accelX;
 		acceleration.y = accelY;
 	};
-
-	void init() override {
-		//std::cout << "MovementHandler init\n";
-	}
-
 
 	/// Update the velocity and position.
 	void update() override {
