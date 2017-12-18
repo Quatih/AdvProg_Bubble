@@ -60,11 +60,12 @@ void GameEngine::init() {
 	player->addComponent<MovementHandler>((double)playZone.w / 2, (double)playZone.h);
 	player->addComponent<TileHandler>(renderer, "assets/duder4.png", 0.9);
 	player->addComponent<CollisionHandler>(&playZone);
+	player->addComponent<SoundHandler>("assets/hit.wav");
 
-	spike->addComponent<MovementHandler>(0.0, 0.0, 0.0, -4.8, 0.0, 0.0);
+	spike->addComponent<MovementHandler>(0.0, 0.0, 0.0, -5.1, 0.0, 0.0);
 	spike->addComponent<TileHandler>(renderer, "assets/spike4.png", 1.0);
 	spike->addComponent<CollisionHandler>(&playZone);
-	spike->addComponent<SoundHandler>("assets/spikesound2.wav");
+	spike->addComponent<SoundHandler>("assets/shoot.wav");
 
 	explosionImage->addComponent <TileHandler>(renderer, "assets/collision.png", 0.5);
 	explosionImage->addComponent<MovementHandler>(0.0, 0.0);
@@ -80,7 +81,7 @@ void GameEngine::init() {
 		addLife();
 	}
 
-	bubbleExplosion = Mix_LoadWAV("assets/explosionsound.wav");
+	bubbleExplosion = Mix_LoadWAV("assets/pop.wav");
 
 	for (int i = 0; i < 4; i++) {
 		bubbleTextures.emplace_back(std::make_unique<TextureLoader>(renderer, "assets/WhiteBall_128x128.png"));
@@ -98,14 +99,18 @@ void GameEngine::allUpdate() {
 		
 		if (collidesWithCircle((player->render_rect), (bubble->render_rect))) {
 			auto life = manager->getObjectType<LifeObject>();
+			Mix_HaltChannel(1);
+			player->getComponent<SoundHandler>()->play();
 			if (life.size() > 1){
 				std::cout << "WE COLLIDIN\n";
 				life[life.size()-1]->destroy();
 				SDL_Delay(1000);
+
 			}
 			if (life.size() == 1) {
 				std::cout << "WE DEAD\n";
 			}
+
 			setState(G_Infinite);
 		}
 	}
@@ -114,7 +119,7 @@ void GameEngine::allUpdate() {
 
 		for (auto& bubble : bubbles) {
 			if (spike->isVisible() && collidesWithCircle((spike->render_rect), (bubble->render_rect))) {
-
+				Mix_HaltChannel(1);
 				bubble->getComponent<SoundHandler>()->play();
 
 				explosionImage->show();
@@ -208,12 +213,22 @@ void GameEngine::handleEvents() {
 	if (events.type == SDL_QUIT) {
 		running = false;
 	}
-	if (events.key.keysym.scancode == SDL_SCANCODE_ESCAPE && paused) {
+	const Uint8* currentKeyStates = SDL_GetKeyboardState(NULL);
+
+	if (currentKeyStates[SDL_SCANCODE_RETURN] && paused) {
 		while (manager->getObjectType<LifeObject>().size() < 3) {
 			addLife();
 		}
 		setState(G_Infinite);
 		paused = false;
+	}
+	if (events.type == SDL_KEYDOWN) {
+		if (currentKeyStates[SDL_SCANCODE_P] && paused) {
+			paused = false;
+		}
+		else if(currentKeyStates[SDL_SCANCODE_P]){
+			paused = true;
+		}
 	}
 }
 
@@ -292,7 +307,7 @@ void inline GameEngine::generateRandomBubble() {
 
 void inline GameEngine::addLife() {
 	auto lives = manager->addObject<LifeObject>();
-	lives->addComponent<MovementHandler>((manager->getObjectType<LifeObject>().size()-1)*50, 0);
+	lives->addComponent<MovementHandler>((double)(manager->getObjectType<LifeObject>().size()-1)*50+10, 10);
 	lives->addComponent<TileHandler>(renderer, "assets/square.png", 1.0);
 	lives->getComponent<TileHandler>()->applyColor(RED);
 	lives->init();

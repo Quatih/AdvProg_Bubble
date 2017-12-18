@@ -19,6 +19,9 @@
 
 #endif
 
+class CollisionHandler;
+class MovementHandler;
+
 class GameObject;
 
 /// Base component class for inheritance.
