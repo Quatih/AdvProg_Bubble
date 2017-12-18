@@ -52,7 +52,7 @@ void GameEngine::init() {
 	manager = std::move(uptr);
 
 	for (int i = 0; i < 4; i++) {
-		std::unique_ptr<TextureLoader> bubb (new TextureLoader(renderer, "assets/WhiteBall_128x128.png"));
+		TextureLoader * bubb = new TextureLoader(renderer, "assets/WhiteBall_128x128.png");
 		bubbleTextures.emplace_back(std::move(bubb));
 		bubbleTextures[i]->applyColor(colorarray[i]);
 	}

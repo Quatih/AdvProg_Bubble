@@ -102,12 +102,12 @@ public:
 	template <typename T, typename... Ts>
 	void addComponent(Ts&&... args) {
 		/// Forward arguments made to addcomponent to the newly created component
-		auto ptr = std::unique_ptr<T>(new T(std::forward<Ts>(args)...));
-		auto& comp = components.emplace_back(std::move(ptr));
+		T* comp = new T(std::forward<Ts>(args)...);
+		components.emplace_back(std::move(comp));
 		comp->owner = this;
 
 		/// Add the component to the array at the unique location of this template type
-		componentsArray[getComponentID<T>()] = comp.get();
+		componentsArray[getComponentID<T>()] = comp;
 	}
 
 	/// Returns true if the Object has a component of type T.
@@ -118,7 +118,7 @@ public:
 	/// Return pointer to the stored component of type T.
 	/// Returns nullptr if the Object does not contain a component of type T.
 	template <typename T> T* getComponent() {
-		if(hasComponent<T>()) return static_cast<T*>(componentsArray[getComponentID<T>()]);
-		else throw std::exception("Requested Component is non-existent");
+		return static_cast<T*>(componentsArray[getComponentID<T>()]);
+		//else throw std::exception("Requested Component is non-existent");
 	}
 };
