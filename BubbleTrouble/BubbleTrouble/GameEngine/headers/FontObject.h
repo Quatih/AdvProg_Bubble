@@ -21,7 +21,7 @@ private:
 
 public:
 	SDL_Renderer * renderer;
-	SDL_Texture * message;
+	SDL_Texture * message = NULL;
 	SDL_Rect dimensions;
 	SDL_Rect imgrect;
 	TTF_Font * font;
@@ -60,16 +60,15 @@ public:
 	}
 
 	~FontObject() {
-		if (message != nullptr) SDL_DestroyTexture(message);
+		if (message != NULL) SDL_DestroyTexture(message);
 		//if(font != nullptr) TTF_CloseFont(font);
 	}
 	/// creates a new texture with the passed text
 	void setText(std::string str, SDL_Color color) {
 		text = str;
 		this->color = color;
-		if (message != nullptr) SDL_DestroyTexture(message);
-		SDL_Surface * surface = TTF_RenderText_Solid(font, text.c_str(), this->color);
-
+		if (message != NULL) SDL_DestroyTexture(message);
+		SDL_Surface * surface = TTF_RenderText_Shaded(font, text.c_str(), this->color, bgcolor);
 		if (surface == NULL) {
 			std::cout << "Error loading text surface\n";
 		}
