@@ -71,15 +71,16 @@ void GameEngine::initPlayingObjects() {
 	player = manager->addObject<PlayerObject>();
 
 	explosionImage = manager->addObject<ExplosionObject>();
-
 	player->addComponent<KeyboardHandler>(3.8, false, spike);
 	player->addComponent<MovementHandler>(0, 0);
 	player->addComponent<TileHandler>(renderer, "assets/duder4.png", 0.9);
 	player->addComponent<CollisionHandler>(&playZone);
 	player->addComponent<SoundHandler>("assets/hit.wav");
+
 	player->render_rect.x = playZone.x + playZone.w / 2 - player->render_rect.w / 2 - 5;
-	player->render_rect.y = playZone.y + playZone.h - player->render_rect.h;
+	player->render_rect.y = playZone.y + playZone.h - player->render_rect.h-10;
 	player->getComponent<MovementHandler>()->setPosition(player->render_rect.x, player->render_rect.y);
+
 	player->getComponent<MovementHandler>()->setAcceleration(0, Base_BubbleY_acceleration);
 	spike->addComponent<MovementHandler>(0.0, 0.0, 0.0, -6, 0.0, 0.0);
 	spike->addComponent<TileHandler>(renderer, "assets/spike4.png", 1.0);
@@ -165,7 +166,7 @@ void GameEngine::allUpdate() {
 				for (int i = 0; i < 3; i++) {
 					generateRandomBubble();
 				}
-				player->render_rect.x = playZone.x + playZone.w / 2 - player->render_rect.w / 2 - 5;
+				player->render_rect.x = playZone.x + playZone.w / 2 - player->render_rect.w / 2;
 				player->render_rect.y = playZone.y + playZone.h - player->render_rect.h;
 				player->getComponent<MovementHandler>()->setPosition(player->render_rect.x, player->render_rect.y);
 				player->score = 0;
