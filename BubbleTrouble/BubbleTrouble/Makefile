@@ -1,10 +1,10 @@
-OBJS = main.cpp 
+OBJS = main.cpp GameEngine/GameEngine.cpp 
 
 CC = g++
 
-COMPILER_FLAGS = -w -std=c++11 -std=gnu++11
+COMPILER_FLAGS = -w -std=c++17 -std=gnu++17 -g
 
-LINKER_FLAGS = -lSDL2 -lSDL2_image
+LINKER_FLAGS = -lSDL2 -lSDL2_image -lSDL2_mixer -lSDL2_ttf
 
 OBJ_NAME = game
 

@@ -25,7 +25,7 @@ public:
 	SDL_Rect dimensions;
 	SDL_Rect imgrect;
 	TTF_Font * font;
-	std::string path;
+	std::string text;
 	SDL_Color color;
 	SDL_Color bgcolor;
 	FontJustified justification;
@@ -46,46 +46,60 @@ public:
 		}
 	}
 
+	FontObject(SDL_Renderer* renderer, TTF_Font * font, SDL_Rect dimensions, Color bgcolor, FontJustified justified) : GameObject(Object_Font) {
+
+		this->renderer = renderer;
+		this->dimensions = dimensions;
+		imgrect.x = dimensions.x;
+		imgrect.y = dimensions.y;
+		this->bgcolor.r = bgcolor.red;
+		this->bgcolor.b = bgcolor.blue;
+		this->bgcolor.g = bgcolor.green;
+		justification = justified;
+		this->font = font;
+	}
+
 	~FontObject() {
 		if (message != nullptr) SDL_DestroyTexture(message);
 		//if(font != nullptr) TTF_CloseFont(font);
 	}
 	/// creates a new texture with the passed text
 	void setText(std::string str, SDL_Color color) {
-		path = str;
+		text = str;
 		this->color = color;
 		if (message != nullptr) SDL_DestroyTexture(message);
-		SDL_Surface * surface = TTF_RenderText_Shaded(font, path.c_str(), this->color, bgcolor);
+		SDL_Surface * surface = TTF_RenderText_Solid(font, text.c_str(), this->color);
+
 		if (surface == NULL) {
 			std::cout << "Error loading text surface\n";
 		}
-		else {
-			imgrect.w = surface->clip_rect.w;
-			imgrect.h = surface->clip_rect.h;
 
-			switch (justification) {
-			case LEFT:
-				//imgrect.y = dimensions.y + (dimensions.h - surface->clip_rect.h); // top justified
-				break;
-			case CENTER:
-				imgrect.x = dimensions.x + (dimensions.w / 2 - surface->clip_rect.w / 2);
-				//imgrect.y = dimensions.y + (dimensions.h/2 - surface->clip_rect.h/2); // center justified
-				break;
-			case RIGHT:
-				imgrect.x = dimensions.x + (dimensions.w - surface->clip_rect.w);
-				//imgrect.y = dimensions.y + (dimensions.h - surface->clip_rect.h); // bottom justified
-				break;
-			default:
-				break;
-			}
+		imgrect.w = surface->clip_rect.w;
+		imgrect.h = surface->clip_rect.h;
 
-			message = SDL_CreateTextureFromSurface(renderer, surface);
-			if (message == NULL) {
-				std::cout << "Error loading text\n";
-			}
-
-			SDL_FreeSurface(surface);
+		switch (justification) {
+		case LEFT:
+			//imgrect.y = dimensions.y + (dimensions.h - surface->clip_rect.h); // top justified
+			break;
+		case CENTER:
+			imgrect.x = dimensions.x + (dimensions.w / 2 - surface->clip_rect.w / 2);
+			//imgrect.y = dimensions.y + (dimensions.h/2 - surface->clip_rect.h/2); // center justified
+			break;
+		case RIGHT:
+			imgrect.x = dimensions.x + (dimensions.w - surface->clip_rect.w);
+			//imgrect.y = dimensions.y + (dimensions.h - surface->clip_rect.h); // bottom justified
+			break;
+		default:
+			break;
 		}
+
+		message = SDL_CreateTextureFromSurface(renderer, surface);
+		if (message == NULL) {
+			std::cout << "Error loading text\n";
+		}
+
+		SDL_FreeSurface(surface);
+		
 	}
 	
 
@@ -96,25 +110,25 @@ public:
 		this->color.b = color.blue;
 		this->color.g = color.green;
 		this->color.a = 255;
-		path = str;
-		setText(str, this->color);
+		text = str;
+		setText(text, this->color);
 	}
 
 	/// Set the text with an already provided color
 	void setText(std::string str) {
-		path = str;
-		setText(str, color);
+		text = str;
+		setText(text, color);
 	}
 
 	/// Set the color of the already provided text
 	void setColor(Color color) {
-		setText(path, color);
+		setText(text, color);
 	}
 
 	/// Set the font style and refresh texture
 	void setFontStyle(int style) {
 		TTF_SetFontStyle(font, style);
-		setText(path, color);
+		setText(text, color);
 	};
 
 	/// Draw

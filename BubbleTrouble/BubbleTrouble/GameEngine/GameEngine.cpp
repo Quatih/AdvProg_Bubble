@@ -26,9 +26,11 @@ GameEngine::GameEngine(std::string title, int winposx, int winposy, int winwidth
 
 /// Free all allocated memory, hopefully.
 GameEngine::~GameEngine() {
+	refresh();
+	TTF_CloseFont(font);
 	TTF_Quit();
 	running = false;
-	
+
 	bubbleTextures.clear();
 	Mix_CloseAudio();
 
@@ -43,14 +45,14 @@ void GameEngine::init() {
 
 	SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
 	SDL_ShowWindow(window);
-	
+
 	if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 4096) == -1) {
 		std::cout << Mix_GetError();
 	}
 	TTF_Init();
 	//std::unique_ptr<ObjectManager> uptr(new ObjectManager);
 	//manager = std::move(uptr);
-
+	font = TTF_OpenFont("assets/FreeSans.ttf", 24);
 	manager = std::make_unique<ObjectManager>();
 	for (int i = 0; i < 4; i++) {
 		TextureLoader * bubb = new TextureLoader(renderer, "assets/WhiteBall_128x128.png");
@@ -101,22 +103,23 @@ void GameEngine::initPlayingObjects() {
 	scorepos.w = 100;
 	scorepos.x = playZone.w - scorepos.w - 10;
 	scorepos.y = 10;
-	scoreText = manager->addObject<FontObject>(renderer, "assets/FreeSans.ttf", 24, scorepos, WHITE, RIGHT);
-	scoreText->setText("Whaddafa", BLACK);
+	scoreText = manager->addObject<FontObject>(renderer, font, scorepos, WHITE, RIGHT);
+
+	scoreText->setText(initString, BLACK);
 	scoreText->hide();
 	scorepos.y = 44;
-	timerText = manager->addObject<FontObject>(renderer, "assets/FreeSans.ttf", 24, scorepos, WHITE, RIGHT);
-	timerText->setText("Whaddafa", BLACK);
+	timerText = manager->addObject<FontObject>(renderer, font, scorepos, WHITE, RIGHT);
+	timerText->setText(initString, BLACK);
 	timerText->hide();
 
 	scorepos.x -= 50;
 	scorepos.y = 10;
-	auto temptext = manager->addObject<FontObject>(renderer, "assets/FreeSans.ttf", 24, scorepos, WHITE, LEFT);
-	temptext->setText("Score: ",BLACK);
+	FontObject* temptext = manager->addObject<FontObject>(renderer, font, scorepos, WHITE, LEFT);
+	temptext->setText("Score: ", BLACK);
 	scorepos.y += 34;
-	temptext = manager->addObject<FontObject>(renderer, "assets/FreeSans.ttf", 24, scorepos, WHITE, LEFT);
+	temptext = manager->addObject<FontObject>(renderer, font, scorepos, WHITE, LEFT);
 	temptext->setText("Time: ", BLACK);
-	
+
 }
 
 
@@ -134,12 +137,12 @@ void GameEngine::allUpdate() {
 	auto bubbles = manager->getObjectTypeVector<BubbleObject>();
 
 	for (auto& bubble : bubbles) {
-		
+
 		if (collidesWithCircle((player->render_rect), (bubble->render_rect))) {
 			auto life = manager->getObjectTypeVector<LifeObject>();
 			Mix_HaltChannel(1);
 			player->getComponent<SoundHandler>()->play();
-			if (life.size() > 1){
+			if (life.size() > 1) {
 				std::cout << "WE COLLIDIN'\n";
 				SDL_Delay(1000);
 				life[life.size() - 1]->destroy();
@@ -186,14 +189,14 @@ void GameEngine::allUpdate() {
 
 				spike->hide();
 				bubble->destroy();
-				
+
 				player->score++;
 				std::cout << "Bubble popped\n";
 				if (bubble->pops > 0) {
 					std::size_t cindex = randInt<std::size_t>(0, bubbleTextures.size() - 1);
 					auto temp = addBubble(bubble->getNextBubble(), bubble->render_rect.x, bubble->render_rect.y, 1, bubbleTextures[cindex].get());
 					temp->getComponent<MovementHandler>()->velocity.y = -abs(bubble->getComponent<MovementHandler>()->baseVelocity.y)*0.6;
-					
+
 					temp = addBubble(bubble->getNextBubble(), bubble->render_rect.x, bubble->render_rect.y, -1, bubbleTextures[cindex].get());
 					temp->getComponent<MovementHandler>()->velocity.y = -abs(bubble->getComponent<MovementHandler>()->baseVelocity.y)*0.6;
 				}
@@ -210,7 +213,7 @@ void GameEngine::allUpdate() {
 /// Updates the game state, all objects.
 void GameEngine::update() {
 
-	
+
 	if (!paused) {
 		// Re-populate the board if all the bubbles are popped.
 		switch (currentState) {
@@ -222,7 +225,7 @@ void GameEngine::update() {
 		case G_LevelSelect:
 			break;
 		case G_Infinite:
-			 
+
 			allUpdate();
 			if (manager->getObjectTypeVector<BubbleObject>().empty()) {
 				for (int i = 0; i < 3; i++) {
@@ -281,7 +284,7 @@ void GameEngine::handleEvents() {
 		if (currentKeyStates[SDL_SCANCODE_P] && paused) {
 			unpause();
 		}
-		else if(currentKeyStates[SDL_SCANCODE_P]){
+		else if (currentKeyStates[SDL_SCANCODE_P]) {
 			pause();
 		}
 
@@ -314,7 +317,7 @@ void GameEngine::unpause() {
 
 
 /// Deletes invalidated game objects
-void GameEngine::cleanObjects() {	
+void GameEngine::cleanObjects() {
 	manager->clean();
 }
 
@@ -325,7 +328,6 @@ void GameEngine::setState(GameState state) {
 	switch (currentState) {
 	case G_Init:
 		init();
-		initPlayingObjects();
 		setState(G_Infinite);
 		break;
 	case G_Menu:
@@ -337,8 +339,8 @@ void GameEngine::setState(GameState state) {
 		break;
 	case G_Infinite:
 		/*manager->getObjectType<BubbleObject>().clear();*/
-		//refresh();
-		//initPlayingObjects();
+		refresh();
+		initPlayingObjects();
 		stageTimer.start();
 		player->score = 0;
 		unpause();
@@ -377,7 +379,7 @@ void inline GameEngine::generateRandomBubble() {
 		(int)(playZone.h / 2.0)),
 		randMinusPlus(),
 		bubbleTextures[randInt<std::size_t>(0, bubbleTextures.size() - 1)].get()
-		);
+	);
 }
 
 void inline GameEngine::addLife() {

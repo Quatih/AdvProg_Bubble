@@ -12,6 +12,7 @@
 #include <random>
 #include <ctime>
 
+const std::string initString = "string";
 
 /// Different states for each different presentation 
 enum GameState {G_Init, G_Menu, G_MenuOptions, G_LevelSelect, G_Infinite, 
@@ -52,7 +53,7 @@ private:
 	std::unique_ptr<TextureLoader> heartTexture;
 	/// Class for stage timing
 	MillisTimer stageTimer;
-
+	TTF_Font * font;
 
 public:
 
