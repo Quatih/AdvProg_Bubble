@@ -68,7 +68,8 @@ public:
 		text = str;
 		this->color = color;
 		if (message != NULL) SDL_DestroyTexture(message);
-		SDL_Surface * surface = TTF_RenderText_Shaded(font, text.c_str(), this->color, bgcolor);
+		//SDL_Surface * surface = TTF_RenderText_Shaded(font, text.c_str(), this->color, bgcolor);
+		SDL_Surface * surface = TTF_RenderText_Blended(font, text.c_str(), this->color);
 		if (surface == NULL) {
 			std::cout << "Error loading text surface\n";
 		}
