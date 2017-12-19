@@ -20,6 +20,7 @@ GameEngine::GameEngine(std::string title, int winposx, int winposy, int winwidth
 	playZone.w = winwidth;
 
 	setState(G_Init);
+
 	// Set render quality to 1, so that scaled objects are dithered a little
 	//SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "1");
 }
@@ -40,7 +41,6 @@ GameEngine::~GameEngine() {
 }
 
 /// Initialize player, spike and bubbles.
-
 void GameEngine::init() {
 
 	SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
@@ -50,8 +50,6 @@ void GameEngine::init() {
 		std::cout << Mix_GetError();
 	}
 	TTF_Init();
-	//std::unique_ptr<ObjectManager> uptr(new ObjectManager);
-	//manager = std::move(uptr);
 	font = TTF_OpenFont("assets/FreeSansBold.ttf", 24);
 	manager = std::make_unique<ObjectManager>();
 	for (int i = 0; i < 4; i++) {
@@ -78,7 +76,7 @@ void GameEngine::initPlayingObjects() {
 	player->addComponent<SoundHandler>("assets/hit.wav");
 
 	player->render_rect.x = playZone.x + playZone.w / 2 - player->render_rect.w / 2 - 5;
-	player->render_rect.y = playZone.y + playZone.h - player->render_rect.h-10;
+	player->render_rect.y = playZone.y + playZone.h - player->render_rect.h;
 	player->getComponent<MovementHandler>()->setPosition(player->render_rect.x, player->render_rect.y);
 
 	player->getComponent<MovementHandler>()->setAcceleration(0, Base_BubbleY_acceleration);
@@ -166,8 +164,7 @@ void GameEngine::allUpdate() {
 				for (int i = 0; i < 3; i++) {
 					generateRandomBubble();
 				}
-				player->render_rect.x = playZone.x + playZone.w / 2 - player->render_rect.w / 2;
-				player->render_rect.y = playZone.y + playZone.h - player->render_rect.h;
+				player->render_rect.x = playZone.x + playZone.w / 2 - player->render_rect.w / 2 - 5;
 				player->getComponent<MovementHandler>()->setPosition(player->render_rect.x, player->render_rect.y);
 				player->score = 0;
 				stageTimer.start();
