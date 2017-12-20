@@ -65,25 +65,13 @@ void GameEngine::init() {
 /// Initialise objects for playing the game
 void GameEngine::initPlayingObjects() {
 
-	spike = manager->addObject<SpikeObject>();
-	player = manager->addObject<PlayerObject>();
+	spike = manager->addObject<SpikeObject>(renderer, &playZone);
+	player = manager->addObject<PlayerObject>(renderer, &playZone, spike, PLAYER1);
 
+	manager->addObject<PlayerObject>(renderer, &playZone, player, PLAYER2);
 	explosionImage = manager->addObject<ExplosionObject>();
-	player->addComponent<KeyboardHandler>(3.8, false, spike);
-	player->addComponent<MovementHandler>(0, 0);
-	player->addComponent<TileHandler>(renderer, "assets/duder4.png", 0.9);
-	player->addComponent<CollisionHandler>(&playZone);
-	player->addComponent<SoundHandler>("assets/hit.wav");
 
-	player->render_rect.x = playZone.x + playZone.w / 2 - player->render_rect.w / 2 - 5;
-	player->render_rect.y = playZone.y + playZone.h - player->render_rect.h;
-	player->getComponent<MovementHandler>()->setPosition(player->render_rect.x, player->render_rect.y);
 
-	player->getComponent<MovementHandler>()->setAcceleration(0, Base_BubbleY_acceleration);
-	spike->addComponent<MovementHandler>(0.0, 0.0, 0.0, -6, 0.0, 0.0);
-	spike->addComponent<TileHandler>(renderer, "assets/spike4.png", 1.0);
-	spike->addComponent<CollisionHandler>(&playZone);
-	spike->addComponent<SoundHandler>("assets/shoot.wav");
 
 	explosionImage->addComponent<TileHandler>(renderer, "assets/collision.png", 0.5);
 	explosionImage->addComponent<MovementHandler>(0.0, 0.0);

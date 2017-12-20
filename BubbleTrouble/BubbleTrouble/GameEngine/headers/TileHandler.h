@@ -14,11 +14,10 @@ private:
 		texture = new TextureLoader(renderer, path);
 		loadedTexture = true;
 	}
-
-	double scale = 1;
 	TextureLoader * texture;
 	SDL_Renderer * renderer;
 public:
+	double scale = 1;
 
 	TileHandler(SDL_Renderer * renderer, TextureLoader* texture, double scale) {
 		this->renderer = renderer;

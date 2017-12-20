@@ -22,6 +22,9 @@
 
 class GameObject;
 
+enum PlayerNumber { SINGLEPLAYER, PLAYER1, PLAYER2 };
+
+
 /// Base component class for inheritance.
 class GameComponent {
 public:
