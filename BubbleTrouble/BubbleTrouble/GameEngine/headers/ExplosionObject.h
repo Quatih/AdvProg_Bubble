@@ -8,7 +8,10 @@ private:
 	int renderedFrames = 0;
 public:
 
-	ExplosionObject() : GameObject(Object_Explosion) {	}
+	ExplosionObject(SDL_Renderer * renderer) : GameObject(Object_Explosion) {
+		addComponent<TileHandler>(renderer, "assets/collision.png", 0.5);
+		addComponent<MovementHandler>(0.0, 0.0);
+	}
 
 	void update() override {
 		if (isVisible()) {

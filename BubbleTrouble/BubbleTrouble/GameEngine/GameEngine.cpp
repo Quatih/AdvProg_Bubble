@@ -60,21 +60,21 @@ void GameEngine::init() {
 
 	//std::unique_ptr<TextureLoader> Textl (new TextureLoader();
 	heartTexture = std::make_unique<TextureLoader>(renderer, "assets/heart.png");
+
+	bubbleExplosion = Mix_LoadWAV("assets/pop.wav");
 }
 
 /// Initialise objects for playing the game
 void GameEngine::initPlayingObjects() {
 
 	spike = manager->addObject<SpikeObject>(renderer, &playZone);
+
 	player = manager->addObject<PlayerObject>(renderer, &playZone, spike, PLAYER1);
 
 	manager->addObject<PlayerObject>(renderer, &playZone, player, PLAYER2);
-	explosionImage = manager->addObject<ExplosionObject>();
 
+	explosionImage = manager->addObject<ExplosionObject>(renderer);
 
-
-	explosionImage->addComponent<TileHandler>(renderer, "assets/collision.png", 0.5);
-	explosionImage->addComponent<MovementHandler>(0.0, 0.0);
 
 	explosionImage->hide();
 	spike->hide();
@@ -87,7 +87,6 @@ void GameEngine::initPlayingObjects() {
 		addLife();
 	}
 
-	bubbleExplosion = Mix_LoadWAV("assets/pop.wav");
 
 	SDL_Rect scorepos;
 	scorepos.h = 48;
