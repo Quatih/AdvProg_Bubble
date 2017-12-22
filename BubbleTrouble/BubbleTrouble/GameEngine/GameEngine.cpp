@@ -75,6 +75,8 @@ void GameEngine::initPlayingObjects() {
 
 	explosionImage = manager->addObject<ExplosionObject>(renderer);
 
+	manager->addObject<GameObject>(Object_Player);
+	manager->addObject(Object_Lives);
 
 	explosionImage->hide();
 	spike->hide();
@@ -124,12 +126,12 @@ void GameEngine::allUpdate() {
 	scoreText->show();
 	timerText->show();
 
-	auto bubbles = manager->getObjectTypeVector<BubbleObject>();
+	auto bubbles = manager->getObjectTypeVector<BubbleObject>(Object_Bubble);
 
 	for (auto& bubble : bubbles) {
 
 		if (collidesWithCircle((player->render_rect), (bubble->render_rect))) {
-			auto life = manager->getObjectTypeVector<LifeObject>();
+			auto life = manager->getObjectTypeVector<LifeObject>(Object_Lives);
 			Mix_HaltChannel(1);
 			player->getComponent<SoundHandler>()->play();
 			if (life.size() > 1) {
@@ -142,8 +144,8 @@ void GameEngine::allUpdate() {
 				life[life.size() - 1]->destroy();
 			}
 
-			if (manager->getObjectTypeVector<LifeObject>().size() > 1) {
-				for (auto a : manager->getObjectTypeVector<BubbleObject>()) {
+			if (manager->getObjectTypeVector<LifeObject>(Object_Lives).size() > 1) {
+				for (auto a : manager->getObjectTypeVector<BubbleObject>(Object_Bubble)) {
 					a->destroy();
 				}
 				cleanObjects();
@@ -219,7 +221,7 @@ void GameEngine::update() {
 		case G_Infinite:
 
 			allUpdate();
-			if (manager->getObjectTypeVector<BubbleObject>().empty()) {
+			if (manager->getObjectTypeVector<BubbleObject>(Object_Bubble).empty()) {
 				for (int i = 0; i < 3; i++) {
 					generateRandomBubble();
 				}
@@ -379,7 +381,7 @@ void inline GameEngine::addLife() {
 	lives->addComponent<MovementHandler>(0, 0);
 	lives->addComponent<TileHandler>(renderer, heartTexture.get(), 1);
 	lives->init();
-	lives->getComponent<MovementHandler>()->setPosition((double)(manager->getObjectTypeVector<LifeObject>().size() - 1) * lives->render_rect.w + 10, 10);
+	lives->getComponent<MovementHandler>()->setPosition((double)(manager->getObjectTypeVector<LifeObject>(Object_Lives).size() - 1) * lives->render_rect.w + 10, 10);
 }
 
 BubbleObject * GameEngine::addBubble(BubbleType type, int posX, int posY, int direction, TextureLoader * texture) {

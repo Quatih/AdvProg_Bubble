@@ -9,18 +9,6 @@ class ObjectManager {
 
 	std::array<std::vector<std::unique_ptr<GameObject>>, maxObjectTypes> objectGroups;
 	
-	std::size_t uniqueID() {
-		static std::size_t ObjectIDs = 0;
-		return ObjectIDs++;
-	}
-
-	/// Purpose is to keep a unique ID to the template Object of type T
-	template <typename T> std::size_t getObjectID() {
-		// Since ID is static, it is stored at run-time, so each different typename T has a different ID
-		static std::size_t ID = uniqueID();
-		return ID;
-	}
-
 public:
 
 	ObjectManager() {}
@@ -30,19 +18,35 @@ public:
 	}
 
 	/// Add an object to the appropriate position, then return a pointer to it.
+	template <typename T> T* addObject(ObjectType type) {
+		// Add the object to the correct vector and forward the arguments
+		T* ptr = (new T(type));
+		objectGroups[type].emplace_back(std::move(ptr));
+		return ptr;
+	}
+
+	/// Add an object to the appropriate position, then return a pointer to it.
+	GameObject* addObject(ObjectType type) {
+		// Add the object to the correct vector and forward the arguments
+		GameObject* ptr = (new GameObject(type));
+		objectGroups[type].emplace_back(std::move(ptr));
+		return ptr;
+	}
+
+	/// Add an object to the appropriate position, then return a pointer to it.
 	template <typename T, typename... Ts> T* addObject(Ts&&... args) {
 		// Add the object to the correct vector and forward the arguments
 		T* ptr = (new T(std::forward<Ts>(args)...));
-		objectGroups[getObjectID<T>()].emplace_back(std::move(ptr));
+		objectGroups[ptr->type].emplace_back(std::move(ptr));
 		return ptr;
 	}
 
 	/// Return a copy of a vector with the type T.
 	/// Necessary in order to use a vector for the subtypes
-	template <typename T> std::vector<T*> getObjectTypeVector() {
+	template <typename T> std::vector<T*> getObjectTypeVector(ObjectType type) {
 		std::vector<T*> vec;
-		for (auto & object : objectGroups[getObjectID<T>()]){
-			vec.push_back(dynamic_cast<T*>(object.get()));
+		for (auto & object : objectGroups[type]){
+			vec.push_back(static_cast<T*>(object.get()));
 		}
 		return vec;	
 	}
