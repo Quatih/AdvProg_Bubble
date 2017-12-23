@@ -4,7 +4,7 @@
 #include "headers/PlayerObject.h"
 #include "headers/SpikeObject.h"
 #include "headers/ExplosionObject.h"
-#include "headers/LifeObject.h"
+#include "headers/GameObject.h"
 #include "headers/Components.h"
 #include "headers/FontObject.h"
 #include "headers/MillisTimer.h"

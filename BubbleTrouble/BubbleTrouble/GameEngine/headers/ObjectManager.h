@@ -1,6 +1,5 @@
 #pragma once
 #include "GameObject.h"
-#include "BubbleObject.h"
 
 const std::size_t maxObjectTypes = MAX_OBJECTS;
 
@@ -18,14 +17,6 @@ public:
 	}
 
 	/// Add an object to the appropriate position, then return a pointer to it.
-	template <typename T> T* addObject(ObjectType type) {
-		// Add the object to the correct vector and forward the arguments
-		T* ptr = (new T(type));
-		objectGroups[type].emplace_back(std::move(ptr));
-		return ptr;
-	}
-
-	/// Add an object to the appropriate position, then return a pointer to it.
 	GameObject* addObject(ObjectType type) {
 		// Add the object to the correct vector and forward the arguments
 		GameObject* ptr = (new GameObject(type));
@@ -37,7 +28,7 @@ public:
 	template <typename T, typename... Ts> T* addObject(Ts&&... args) {
 		// Add the object to the correct vector and forward the arguments
 		T* ptr = (new T(std::forward<Ts>(args)...));
-		objectGroups[ptr->type].emplace_back(std::move(ptr));
+		objectGroups.at(ptr->type).emplace_back(std::move(ptr));
 		return ptr;
 	}
 
@@ -45,15 +36,15 @@ public:
 	/// Necessary in order to use a vector for the subtypes
 	template <typename T> std::vector<T*> getObjectTypeVector(ObjectType type) {
 		std::vector<T*> vec;
-		for (auto & object : objectGroups[type]){
+		for (auto & object : objectGroups.at(type)){
 			vec.push_back(static_cast<T*>(object.get()));
 		}
 		return vec;	
 	}
 
 	/// Return a pointer to the stored vector of type T
-	template <typename T> std::vector<std::unique_ptr<GameComponent>> * getObjectBaseVector() const {
-		return &objectGroups[getObjectID<T>()];
+	const std::vector<std::unique_ptr<GameObject>> * getObjectBaseVector(ObjectType type) const {
+		return &(objectGroups[type]);
 	}
 		
 	/// update each object

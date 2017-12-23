@@ -10,6 +10,6 @@ public:
 		addComponent<TileHandler>(renderer, "assets/spike4.png", 1.0);
 		addComponent<CollisionHandler>(playZone);
 		addComponent<SoundHandler>("assets/shoot.wav");
+		init();
 	}
-
 };

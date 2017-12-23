@@ -17,9 +17,9 @@ struct BubbleProperties {
 	double accelerationY = 0;
 };
 
-const double Base_BubbleX_velocity = 2.1;
-const double Base_BubbleY_velocity = 7.5;
-const double Base_BubbleY_acceleration = 0.15;
+constexpr double Base_BubbleX_velocity = 2.1;
+constexpr double Base_BubbleY_velocity = 7.5;
+constexpr double Base_BubbleY_acceleration = 0.15;
 ///Vector with the bubble properties
 const std::vector<BubbleProperties> Properties = {
 { 8,	0, Base_BubbleX_velocity, Base_BubbleY_velocity,		0, Base_BubbleY_acceleration },
@@ -39,12 +39,13 @@ public:
 	BubbleType bubbleType;
 	BubbleObject(BubbleType type, int posX, int posY, int direction, TextureLoader * texture, SDL_Renderer* renderer, SDL_Rect *playZone, Mix_Chunk* chunk) : GameObject(Object_Bubble) {
 		bubbleType = type;
-		addComponent<MovementHandler>((double)posX, (double)posY, Properties[type].velocityX*direction, 0, Properties[type].accelerationX, Properties[type].accelerationY);
-		addComponent<TileHandler>(renderer, texture, Properties[type].radius * 2 / texture->getRect().h);
+		addComponent<MovementHandler>((double)posX, (double)posY, Properties.at(type).velocityX*direction, 0, Properties.at(type).accelerationX, Properties.at(type).accelerationY);
+		addComponent<TileHandler>(renderer, texture, Properties.at(type).radius * 2 / texture->getRect().h);
 		addComponent<CollisionHandler>(playZone);
  		addComponent<SoundHandler>(chunk);
-		pops = Properties[type].pops;
-		getComponent<MovementHandler>()->baseVelocity.y = Properties[type].velocityY;
+		pops = Properties.at(type).pops;
+		getComponent<MovementHandler>()->baseVelocity.y = Properties.at(type).velocityY;
+		init();
 	}
 
 	/// Get the next bubble type in the line

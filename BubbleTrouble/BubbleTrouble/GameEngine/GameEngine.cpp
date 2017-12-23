@@ -75,19 +75,12 @@ void GameEngine::initPlayingObjects() {
 
 	explosionImage = manager->addObject<ExplosionObject>(renderer);
 
-	manager->addObject<GameObject>(Object_Player);
-	manager->addObject(Object_Lives);
-
 	explosionImage->hide();
 	spike->hide();
 
-	player->init();
-	spike->init();
-	explosionImage->init();
-
-	for (int i = 0; i < 3; i++) {
-		addLife();
-	}
+	addLife(); 
+	addLife(); 
+	addLife();
 
 
 	SDL_Rect scorepos;
@@ -131,7 +124,7 @@ void GameEngine::allUpdate() {
 	for (auto& bubble : bubbles) {
 
 		if (collidesWithCircle((player->render_rect), (bubble->render_rect))) {
-			auto life = manager->getObjectTypeVector<LifeObject>(Object_Lives);
+			auto life = manager->getObjectTypeVector<GameObject>(Object_Lives);
 			Mix_HaltChannel(1);
 			player->getComponent<SoundHandler>()->play();
 			if (life.size() > 1) {
@@ -144,7 +137,7 @@ void GameEngine::allUpdate() {
 				life[life.size() - 1]->destroy();
 			}
 
-			if (manager->getObjectTypeVector<LifeObject>(Object_Lives).size() > 1) {
+			if (manager->getObjectTypeVector<GameObject>(Object_Lives).size() > 1) {
 				for (auto a : manager->getObjectTypeVector<BubbleObject>(Object_Bubble)) {
 					a->destroy();
 				}
@@ -377,16 +370,15 @@ void inline GameEngine::generateRandomBubble() {
 }
 
 void inline GameEngine::addLife() {
-	auto lives = manager->addObject<LifeObject>();
+	auto lives = manager->addObject(Object_Lives);
 	lives->addComponent<MovementHandler>(0, 0);
 	lives->addComponent<TileHandler>(renderer, heartTexture.get(), 1);
 	lives->init();
-	lives->getComponent<MovementHandler>()->setPosition((double)(manager->getObjectTypeVector<LifeObject>(Object_Lives).size() - 1) * lives->render_rect.w + 10, 10);
+	lives->getComponent<MovementHandler>()->setPosition((double)(manager->getObjectBaseVector(Object_Lives)->size() - 1) * lives->render_rect.w + 10, 10);
 }
 
 BubbleObject * GameEngine::addBubble(BubbleType type, int posX, int posY, int direction, TextureLoader * texture) {
 	auto bubble = manager->addObject<BubbleObject>(type, posX, posY, direction, texture, renderer, &playZone, bubbleExplosion);
-	bubble->init();
 	return bubble;
 }
 

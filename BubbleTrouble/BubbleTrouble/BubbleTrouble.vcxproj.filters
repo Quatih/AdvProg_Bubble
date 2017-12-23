@@ -63,9 +63,6 @@
     <ClInclude Include="GameEngine\headers\ObjectManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="GameEngine\headers\LifeObject.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="GameEngine\headers\MillisTimer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
