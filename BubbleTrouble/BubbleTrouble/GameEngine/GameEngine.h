@@ -15,7 +15,7 @@
 const std::string initString = "string";
 
 /// Different states for each different presentation 
-enum GameState {G_Init, G_Menu, G_MenuOptions, G_LevelSelect, G_Infinite, 
+enum GameState { G_Menu, G_MenuOptions, G_LevelSelect, G_Infinite, 
 	G_Level1, G_Level2, G_Level3, G_Level4, G_Level5, G_Level6, G_Level7, G_Level8, G_Level9, G_Level10
 };
 

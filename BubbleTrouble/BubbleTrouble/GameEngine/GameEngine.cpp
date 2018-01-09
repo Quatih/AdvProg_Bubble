@@ -19,7 +19,8 @@ GameEngine::GameEngine(std::string title, int winposx, int winposy, int winwidth
 	playZone.h = winheight;
 	playZone.w = winwidth;
 
-	setState(G_Init);
+	init();
+	setState(G_Infinite);
 
 	// Set render quality to 1, so that scaled objects are dithered a little
 	//SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "1");
@@ -191,9 +192,6 @@ void GameEngine::allUpdate() {
 			}
 		}
 	}
-
-
-
 }
 
 
@@ -205,7 +203,6 @@ void GameEngine::update() {
 		// Re-populate the board if all the bubbles are popped.
 		switch (currentState) {
 		case G_Menu:
-
 			break;
 		case G_MenuOptions:
 			break;
@@ -313,12 +310,7 @@ void GameEngine::setState(GameState state) {
 	currentState = state;
 
 	switch (currentState) {
-	case G_Init:
-		init();
-		setState(G_Infinite);
-		break;
 	case G_Menu:
-
 		break;
 	case G_MenuOptions:
 		break;
