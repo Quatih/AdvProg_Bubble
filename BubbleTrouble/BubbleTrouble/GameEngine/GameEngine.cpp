@@ -19,7 +19,8 @@ GameEngine::GameEngine(std::string title, int winposx, int winposy, int winwidth
 	playZone.h = winheight;
 	playZone.w = winwidth;
 
-	setState(G_Init);
+	init();
+	setState(G_Infinite);
 
 	// Set render quality to 1, so that scaled objects are dithered a little
 	//SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "1");
@@ -35,8 +36,6 @@ GameEngine::~GameEngine() {
 	bubbleTextures.clear();
 	Mix_CloseAudio();
 
-	paths.clear();
-	powerUpObject->destroy();
 	SDL_DestroyWindow(window);
 	SDL_DestroyRenderer(renderer);
 	SDL_Quit();
@@ -44,10 +43,6 @@ GameEngine::~GameEngine() {
 
 /// Initialize player, spike and bubbles.
 void GameEngine::init() {
-
-
-	paths.push_back("assets/heart.png");
-	paths.push_back("assets/coin.png");
 
 	SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
 	SDL_ShowWindow(window);
@@ -81,15 +76,11 @@ void GameEngine::initPlayingObjects() {
 
 	explosionImage = manager->addObject<ExplosionObject>(renderer);
 
-	powerUpObject = manager->addObject<PowerUpObject>();
-
-
 	explosionImage->hide();
 	spike->hide();
-	powerUpObject->hide();
 
-	addLife();
-	addLife();
+	addLife(); 
+	addLife(); 
 	addLife();
 
 
@@ -119,6 +110,8 @@ void GameEngine::initPlayingObjects() {
 
 
 void GameEngine::allUpdate() {
+
+
 
 	manager->update();
 
@@ -151,7 +144,6 @@ void GameEngine::allUpdate() {
 				}
 				cleanObjects();
 				spike->hide();
-				powerUpObject->destroy();
 				for (int i = 0; i < 3; i++) {
 					generateRandomBubble();
 				}
@@ -179,23 +171,9 @@ void GameEngine::allUpdate() {
 				bubble->getComponent<SoundHandler>()->play();
 
 				explosionImage->show();
+
 				explosionImage->render_rect = bubble->render_rect;
 				explosionImage->getComponent<MovementHandler>()->setPosition(explosionImage->render_rect.x, explosionImage->render_rect.y);
-
-				//Add power ups functionality here. If the spike hits the bubble, randomly make a powerup fall from the place where the spike has hit the bubbles.
-				//make sure the small bubbles doesn't contain any powerups
-				//add more power ups..like faster spikes, faster player movement etcc..
-
-				if (/*(randInt(1, 10) % 2 == 0) && */ (bubble->bubbleType == Bubble3 || bubble->bubbleType == Bubble2)) {
-					powerUpTimer.start();
-					powerUpObject->destroy();
-					randomPathIndex = randInt(0, 1);
-					index = getNextIndex(randomPathIndex);
-					powerUpObject = manager->addObject<PowerUpObject>(renderer, &playZone, paths[index]);
-					powerUpObject->show();
-					powerUpObject->render_rect = bubble->render_rect;
-					powerUpObject->getComponent<MovementHandler>()->setPosition(powerUpObject->render_rect.x, powerUpObject->render_rect.y);
-				}
 
 				spike->hide();
 				bubble->destroy();
@@ -214,26 +192,8 @@ void GameEngine::allUpdate() {
 			}
 		}
 	}
-
-	//the code is placed here because, once the spike hits the bubble, isVisible() = false, hence in the next update call the if (spike->isVisible()) is never entered.
-	if (collidesWithRect(player->render_rect, powerUpObject->render_rect)) {
-		std::cout << "poweerup gained\n";
-		if (index == 0) {
-			auto life = manager->getObjectTypeVector<GameObject>(Object_Lives);
-			if (life.size() < 4) {
-				addLife();
-			}
-		}
-		else
-			player->score = player->score + 5;
-
-		powerUpObject->destroy();
-	}
-
-	if (powerUpTimer.getMillis() >= 3000) {
-		powerUpObject->destroy();
-	}
 }
+
 
 /// Updates the game state, all objects.
 void GameEngine::update() {
@@ -243,7 +203,6 @@ void GameEngine::update() {
 		// Re-populate the board if all the bubbles are popped.
 		switch (currentState) {
 		case G_Menu:
-
 			break;
 		case G_MenuOptions:
 			break;
@@ -351,12 +310,7 @@ void GameEngine::setState(GameState state) {
 	currentState = state;
 
 	switch (currentState) {
-	case G_Init:
-		init();
-		setState(G_Infinite);
-		break;
 	case G_Menu:
-
 		break;
 	case G_MenuOptions:
 		break;
@@ -400,26 +354,11 @@ void inline GameEngine::generateRandomBubble() {
 	addBubble(
 		static_cast<BubbleType>(randInt(1, 3)),
 		randInt(0, playZone.w),
-		randInt((int)(playZone.h / 3.0), (int)(playZone.h / 2.0)),
+		randInt((int)(playZone.h / 3.0),
+		(int)(playZone.h / 2.0)),
 		randMinusPlus(),
 		bubbleTextures[randInt<std::size_t>(0, bubbleTextures.size() - 1)].get()
 	);
-}
-
-std::size_t GameEngine::getNextIndex(std::size_t index)
-{
-	switch (index)
-	{
-	case 0:
-		return index = 1;
-		break;
-	case 1:
-		return index = 0;
-		break;
-	default:
-		return index = 0;
-		break;
-	}
 }
 
 void inline GameEngine::addLife() {
