@@ -4,3 +4,4 @@
 #include "MovementHandler.h"
 #include "CollisionHandler.h"
 #include "SoundHandler.h"
+#include "PowerUpObject.h"

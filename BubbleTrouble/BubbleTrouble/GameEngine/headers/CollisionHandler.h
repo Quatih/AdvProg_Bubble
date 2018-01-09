@@ -64,6 +64,21 @@ public:
 			break;
 		case Object_Explosion:
 			break;
+		case Object_PowerUp:
+			if (objectRect->x < playZone->x) {
+				mover->velocity.x *= -1;
+			}
+			if (objectRect->x + objectRect->w > playZone->x + playZone->w) {
+				mover->velocity.x *= -1;
+			}
+
+			if (objectRect->y < playZone->y) {
+				mover->velocity.y = mover->baseVelocity.y;
+			}
+			if (objectRect->y + objectRect->h > playZone->y + playZone->h) {
+				mover->velocity.y = mover->baseVelocity.y*-1;
+			}
+			break;
 		default:
 			break;
 		}

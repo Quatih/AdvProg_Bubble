@@ -8,6 +8,7 @@
 #include "headers/Components.h"
 #include "headers/FontObject.h"
 #include "headers/MillisTimer.h"
+#include "headers/PowerUpObject.h"
 #include <vector>	
 #include <random>
 #include <ctime>
@@ -31,6 +32,8 @@ private:
 	FontObject* scoreText;
 	FontObject* timerText;
 	ExplosionObject* explosionImage;
+	PowerUpObject* powerUpObject;
+	
 	
 	SDL_Window * window;
 
@@ -54,6 +57,11 @@ private:
 	/// Class for stage timing
 	MillisTimer stageTimer;
 	TTF_Font * font;
+
+	std::vector<std::string> paths;
+	std::size_t randomPathIndex;
+	std::size_t index;
+	MillisTimer powerUpTimer;
 
 public:
 
@@ -107,6 +115,8 @@ public:
 
 	/// Generate a random bubble
 	void inline generateRandomBubble();
+
+	std::size_t getNextIndex(std::size_t index);
 
 	/// Add a bubble to the bubble vector and initialize.
 	BubbleObject * addBubble(BubbleType type, int posX, int posY, int direction, TextureLoader * texture);

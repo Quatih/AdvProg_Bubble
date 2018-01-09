@@ -38,7 +38,7 @@ public:
 
 /// Hold the different types of objects
 // Order of enums determines the order they are drawn.
-enum ObjectType : std::size_t { Object_Spike, Object_Player, Object_Bubble, Object_Explosion, Object_Lives, Object_Font, MAX_OBJECTS};
+enum ObjectType : std::size_t { Object_Spike, Object_Player, Object_Bubble, Object_Explosion, Object_PowerUp,Object_Lives, Object_Font, MAX_OBJECTS};
 
 const std::size_t maxComponents = 10;
 

@@ -163,6 +163,7 @@
     <ClInclude Include="GameEngine\headers\MovementHandler.h" />
     <ClInclude Include="GameEngine\headers\ObjectManager.h" />
     <ClInclude Include="GameEngine\headers\PlayerObject.h" />
+    <ClInclude Include="GameEngine\headers\PowerUpObject.h" />
     <ClInclude Include="GameEngine\headers\RandomInterface.h" />
     <ClInclude Include="GameEngine\headers\SoundHandler.h" />
     <ClInclude Include="GameEngine\headers\SpikeObject.h" />

@@ -60,7 +60,7 @@ public:
 	}
 
 	~FontObject() {
-		if (message != NULL) SDL_DestroyTexture(message);
+ 		if (message != NULL) SDL_DestroyTexture(message);
 		//if(font != nullptr) TTF_CloseFont(font);
 	}
 	/// creates a new texture with the passed text
