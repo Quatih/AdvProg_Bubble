@@ -84,7 +84,7 @@ void GameEngine::initPlayingObjects() {
 
 	manager->addObject<PlayerObject>(&playZone, player, PLAYER2);
 
-	explosionImage = manager->addObject<ExplosionObject>(renderer);
+	explosionImage = manager->addObject<ExplosionObject>();
 	
 	powerUpObject = manager->addObject<PowerUpObject>();
 
@@ -197,7 +197,7 @@ void GameEngine::allUpdate() {
 					powerUpObject->destroy();
 					randomPathIndex = randInt(0, 1);
 					index = getNextIndex(randomPathIndex);
-					powerUpObject = manager->addObject<PowerUpObject>(renderer, &playZone, paths[index]);
+					powerUpObject = manager->addObject<PowerUpObject>(&playZone, paths[index]);
 					powerUpObject->show();
 					powerUpObject->render_rect = bubble->render_rect;
 					powerUpObject->getComponent<MovementHandler>()->setPosition(powerUpObject->render_rect.x, powerUpObject->render_rect.y);

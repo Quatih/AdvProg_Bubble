@@ -9,8 +9,8 @@ public:
 		std::cout << "poweerUp object created";
 	}
 
-	PowerUpObject(SDL_Renderer * renderer, SDL_Rect* playZone, std::string path) : GameObject(Object_PowerUp) {
-		addComponent<TileHandler>(renderer, path.c_str(),0.3f);
+	PowerUpObject(SDL_Rect* playZone, std::string path) : GameObject(Object_PowerUp) {
+		addComponent<TileHandler>(path.c_str(),0.3f);
 		addComponent<MovementHandler>(0.0, 0.0,0.0,2.0f,0.0,0.0);
 		addComponent<CollisionHandler>(playZone);
 		init();
