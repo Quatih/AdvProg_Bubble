@@ -9,9 +9,11 @@
 #include "headers/FontObject.h"
 #include "headers/MillisTimer.h"
 #include "headers/PowerUpObject.h"
+#include "headers/Menu.h"
 #include <vector>	
 #include <random>
 #include <ctime>
+#include <map>
 
 const std::string initString = "string";
 
@@ -32,16 +34,13 @@ private:
 	FontObject* scoreText;
 	FontObject* timerText;
 	ExplosionObject* explosionImage;
-	
-	SDL_Window * window;
-
+	 
 	SDL_Event events;
 	bool running, paused;
 
 	/// Re-use the explosion audio clip
 	Mix_Chunk * bubbleExplosion;
-	/// Rectangle for the playingZone objects can be within
-	SDL_Rect playZone;
+
 	/// The zone the Spike can be within
 	SDL_Rect spikeZone;
 
@@ -54,9 +53,11 @@ private:
 	std::unique_ptr<TextureLoader> heartTexture;
 	/// Class for stage timing
 	MillisTimer stageTimer;
-	TTF_Font * font;
+	std::unique_ptr<MenuManager> menu;
+
 
 public:
+	std::map<Uint8, Uint8> keystates;
 
 	/// Constructor creates the window and renderer
 	GameEngine(std::string title, int winposx, int winposy, int winwidth, int winheight, SDL_WindowFlags flag);;

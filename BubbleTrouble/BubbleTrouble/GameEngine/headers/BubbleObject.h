@@ -42,7 +42,7 @@ public:
 		bubbleType = type;
 		addComponent<MovementHandler>((double)posX, (double)posY, Properties.at(type).velocityX*direction, 0, Properties.at(type).accelerationX, Properties.at(type).accelerationY);
 		addComponent<TileHandler>(texture, Properties.at(type).radius * 2 / texture->getRect().h);
-		addComponent<CollisionHandler>(playZone);
+		addComponent<CollisionHandler>();
  		addComponent<SoundHandler>(chunk);
 		pops = Properties.at(type).pops;
 		getComponent<MovementHandler>()->baseVelocity.y = Properties.at(type).velocityY;

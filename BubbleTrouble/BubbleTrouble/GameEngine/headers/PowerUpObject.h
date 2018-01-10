@@ -29,7 +29,7 @@ public:
 			break;
 		}
 		addComponent<MovementHandler>(0.0, 0.0,0.0,2.0f,0.0,0.0);
-		addComponent<CollisionHandler>(playZone);
+		addComponent<CollisionHandler>();
 		powerUpTimer.start();
 		init();
 	}

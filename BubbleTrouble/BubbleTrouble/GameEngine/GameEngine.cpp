@@ -12,6 +12,7 @@
 GameEngine::GameEngine(std::string title, int winposx, int winposy, int winwidth, int winheight, SDL_WindowFlags flag) {
 	SDL_Init(SDL_INIT_EVERYTHING);
 	window = SDL_CreateWindow(title.c_str(), winposx, winposy, winwidth, winheight, flag);
+	
 	renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
 	std::cout << "Game Engine Constructed.\n";
 	running = true;
@@ -23,7 +24,7 @@ GameEngine::GameEngine(std::string title, int winposx, int winposy, int winwidth
 	playZone.w = winwidth;
 
 	init();
-	setState(G_Infinite);
+	setState(G_Menu);
 
 	// Set render quality to 1, so that scaled objects are dithered a little
 	//SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "1");
@@ -64,18 +65,25 @@ void GameEngine::init() {
 
 	//std::unique_ptr<TextureLoader> Textl (new TextureLoader();
 	heartTexture = std::make_unique<TextureLoader>("assets/heart.png");
-
+	menu = std::make_unique<MenuManager>();
 	bubbleExplosion = Mix_LoadWAV("assets/pop.wav");
+
+	keystates[SDL_SCANCODE_UP] = 0;
+	keystates[SDL_SCANCODE_DOWN] = 0;
+	keystates[SDL_SCANCODE_RETURN] = 0;
+	keystates[SDL_SCANCODE_ESCAPE] = 0;
+	keystates[SDL_SCANCODE_P] = 0;
+
 }
 
 /// Initialise objects for playing the game
 void GameEngine::initPlayingObjects() {
 
-	spike = manager->addObject<SpikeObject>(&playZone);
+	spike = manager->addObject<SpikeObject>();
 
-	player = manager->addObject<PlayerObject>(&playZone, spike, PLAYER1);
+	player = manager->addObject<PlayerObject>(spike, PLAYER1);
 
-	manager->addObject<PlayerObject>(&playZone, player, PLAYER2);
+	manager->addObject<PlayerObject>(player, PLAYER2);
 
 	explosionImage = manager->addObject<ExplosionObject>();
 	
@@ -113,9 +121,7 @@ void GameEngine::initPlayingObjects() {
 
 
 void GameEngine::allUpdate() {
-
-
-
+	
 	manager->update();
 
 	timerText->setText(std::to_string(stageTimer.getMillis() / 1000));
@@ -247,7 +253,7 @@ void GameEngine::update() {
 			allUpdate();
 
 			// Re-populate the board if all the bubbles are popped.
-			if (manager->getObjectTypeVector<BubbleObject>(Object_Bubble).empty()) {
+			if (manager->getObjectVector(Object_Bubble).empty()) {
 				for (int i = 0; i < 3; i++) {
 					generateRandomBubble();
 				}
@@ -283,9 +289,8 @@ void GameEngine::update() {
 /// Render each object on the screen.
 void GameEngine::render() {
 	SDL_RenderClear(renderer);
-
-	manager->draw();
-
+	if(menu->menu.empty()) manager->draw();
+	else menu->draw();
 	SDL_RenderPresent(renderer);
 }
 
@@ -298,24 +303,63 @@ void GameEngine::handleEvents() {
 	if (events.type == SDL_QUIT) {
 		running = false;
 	}
-	const Uint8* currentKeyStates = SDL_GetKeyboardState(NULL);
 
-	if (events.type == SDL_KEYDOWN) {
-		if (currentKeyStates[SDL_SCANCODE_P] && paused && !manager->getObjectBaseVector(Object_Lives)->empty()) {
+	bool KEY_UP = false, KEY_DOWN = false, KEY_RETURN = false, KEY_P = false, KEY_ESCAPE = false;
+	
+	const Uint8* currentKeyStates = SDL_GetKeyboardState(NULL);
+	if (events.type == SDL_KEYDOWN && events.key.repeat == 0) {
+		if (keystates[SDL_SCANCODE_UP] == 0 && currentKeyStates[SDL_SCANCODE_UP]) KEY_UP = true; keystates[SDL_SCANCODE_UP] = 1;
+		if (keystates[SDL_SCANCODE_DOWN] == 0 && currentKeyStates[SDL_SCANCODE_DOWN]) KEY_DOWN = true; keystates[SDL_SCANCODE_DOWN] = 1;
+		if (keystates[SDL_SCANCODE_RETURN] == 0 && currentKeyStates[SDL_SCANCODE_RETURN]) KEY_RETURN = true; keystates[SDL_SCANCODE_RETURN] = 1;
+		if (keystates[SDL_SCANCODE_ESCAPE] == 0 && currentKeyStates[SDL_SCANCODE_ESCAPE]) KEY_ESCAPE = true; keystates[SDL_SCANCODE_ESCAPE] = 1;
+		if (keystates[SDL_SCANCODE_P] == 0 && currentKeyStates[SDL_SCANCODE_P]) KEY_P = true; keystates[SDL_SCANCODE_P] = 1;
+
+	}
+	else if (events.type == SDL_KEYUP && events.key.repeat == 0) {
+		if (keystates[SDL_SCANCODE_UP] && currentKeyStates[SDL_SCANCODE_UP] == 0) keystates[SDL_SCANCODE_UP] = 0;
+		if (keystates[SDL_SCANCODE_DOWN] && currentKeyStates[SDL_SCANCODE_DOWN] == 0) keystates[SDL_SCANCODE_DOWN] = 0;
+		if (keystates[SDL_SCANCODE_RETURN] && currentKeyStates[SDL_SCANCODE_RETURN] == 0) keystates[SDL_SCANCODE_RETURN] = 0;
+		if (keystates[SDL_SCANCODE_ESCAPE] && currentKeyStates[SDL_SCANCODE_ESCAPE] == 0) keystates[SDL_SCANCODE_ESCAPE] = 0;
+		if (keystates[SDL_SCANCODE_P] && currentKeyStates[SDL_SCANCODE_P] == 0) keystates[SDL_SCANCODE_P] = 0;
+	}
+
+	if (currentState == G_Infinite) {
+
+		if (KEY_P && paused && !manager->getObjectBaseVector(Object_Lives)->empty()) {
 			unpause();
 		}
-		else if (currentKeyStates[SDL_SCANCODE_P]) {
+
+		else if (KEY_P) {
 			pause();
 		}
 
-		if (currentKeyStates[SDL_SCANCODE_RETURN] && paused) {
+		if (KEY_RETURN && paused) {
 			setState(G_Infinite);
 		}
-		if (currentKeyStates[SDL_SCANCODE_ESCAPE]) {
+		if (KEY_ESCAPE) {
+			pause();
+			setState(G_Menu);
+
+		}
+	}
+	else if (currentState == G_Menu) {
+		if (KEY_DOWN) {
+			menu->nextButton();
+		}
+		else if (KEY_UP) {
+			menu->previousButton();
+		}
+
+		if (KEY_RETURN) {
+			menu->popMenu();
+			setState(G_Infinite);
+
+		}
+
+		if (KEY_ESCAPE) {
 			running = false;
 		}
 	}
-
 }
 
 void GameEngine::refresh() {
@@ -347,6 +391,7 @@ void GameEngine::setState(GameState state) {
 
 	switch (currentState) {
 	case G_Menu:
+		menu->pushMenu(M_Main);
 		break;
 	case G_MenuOptions:
 		break;
@@ -356,6 +401,7 @@ void GameEngine::setState(GameState state) {
 
 		refresh();
 		initPlayingObjects();
+
 		stageTimer.start();
 		player->score = 0;
 		unpause();

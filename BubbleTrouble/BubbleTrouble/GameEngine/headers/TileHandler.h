@@ -60,6 +60,22 @@ public:
 	TextureLoader * getTextureLoader() const {
 		return texture;
 	}
+	
+	void setTextureLoader(TextureLoader * textureLoader) {
+		if (loadedTexture) delete texture;
+		loadedTexture = false;
+		texture = textureLoader;
+		init();
+	}
+
+	TextureLoader * loadNewTexture(std::string path) {
+		if (loadedTexture) delete texture;
+
+		loadTexture(path);
+
+		init();
+		return texture;
+	}
 
 	/// Apply a color modification to the loaded texture.
 	void applyColor(Color applied) {

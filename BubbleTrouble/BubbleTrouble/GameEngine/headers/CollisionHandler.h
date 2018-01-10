@@ -1,15 +1,14 @@
 #pragma once
 #include "GameObject.h"
 
+extern SDL_Rect playZone;
 /// Handles collision of the object to a specific zone rectangle, playZone.
 class CollisionHandler : public GameComponent {
 public:
 	MovementHandler * mover;
-	SDL_Rect * playZone;
 	SDL_Rect * objectRect;
 
-	CollisionHandler(SDL_Rect * playZone) {
-		this->playZone = playZone;
+	CollisionHandler() {
 	}
 
 	/// Set the object pointers from the owner.
@@ -24,58 +23,58 @@ public:
 		switch (owner->type) {
 
 		case Object_Bubble:
-			if (objectRect->x < playZone->x) {
+			if (objectRect->x < playZone.x) {
 				mover->velocity.x *= -1;
 			}
-			if (objectRect->x + objectRect->w > playZone->x + playZone->w) {
+			if (objectRect->x + objectRect->w > playZone.x + playZone.w) {
 				mover->velocity.x *= -1;
 			}
 
-			if (objectRect->y < playZone->y) {
+			if (objectRect->y < playZone.y) {
 				mover->velocity.y = mover->baseVelocity.y;
 			}
-			if (objectRect->y + objectRect->h > playZone->y + playZone->h) {
+			if (objectRect->y + objectRect->h > playZone.y + playZone.h) {
 				mover->velocity.y = mover->baseVelocity.y*-1;
 			}
 			[[fallthrough]]; // Indicates that the next case statement will also be executed, and that it is intentional. Requires C++17.
 
 		case Object_Player:
-			if (objectRect->x < playZone->x) {
-				mover->position.x = (double)playZone->x;
+			if (objectRect->x < playZone.x) {
+				mover->position.x = (double)playZone.x;
 			}
-			if (objectRect->x + objectRect->w > playZone->x + playZone->w) {
-				mover->position.x = (double)(playZone->x + playZone->w - objectRect->w);
+			if (objectRect->x + objectRect->w > playZone.x + playZone.w) {
+				mover->position.x = (double)(playZone.x + playZone.w - objectRect->w);
 			}
 
-			if (objectRect->y < playZone->y) {
-				mover->position.y = (double)playZone->y;
+			if (objectRect->y < playZone.y) {
+				mover->position.y = (double)playZone.y;
 			}
-			if (objectRect->y + objectRect->h > playZone->y + playZone->h) {
-				mover->position.y = (double)(playZone->y + playZone->h - objectRect->h);
+			if (objectRect->y + objectRect->h > playZone.y + playZone.h) {
+				mover->position.y = (double)(playZone.y + playZone.h - objectRect->h);
 			}
 
 			objectRect->x = (int)mover->position.x;
 			objectRect->y = (int)mover->position.y;
 			break;
 		case Object_Spike:
-			if (objectRect->y < playZone->y) {
+			if (objectRect->y < playZone.y) {
 				owner->hide();
 			}
 			break;
 		case Object_Explosion:
 			break;
 		case Object_PowerUp:
-			if (objectRect->x < playZone->x) {
+			if (objectRect->x < playZone.x) {
 				mover->velocity.x *= -1;
 			}
-			if (objectRect->x + objectRect->w > playZone->x + playZone->w) {
+			if (objectRect->x + objectRect->w > playZone.x + playZone.w) {
 				mover->velocity.x *= -1;
 			}
 
-			if (objectRect->y < playZone->y) {
+			if (objectRect->y < playZone.y) {
 				mover->velocity.y = mover->baseVelocity.y;
 			}
-			if (objectRect->y + objectRect->h > playZone->y + playZone->h) {
+			if (objectRect->y + objectRect->h > playZone.y + playZone.h) {
 				mover->velocity.y = mover->baseVelocity.y*-1;
 			}
 			break;

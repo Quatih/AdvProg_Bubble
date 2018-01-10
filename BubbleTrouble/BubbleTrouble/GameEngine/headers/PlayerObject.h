@@ -7,24 +7,24 @@ class PlayerObject : public GameObject {
 public:
 	int score = 0;
 	///Specific collider for the player in order to compensate for whitespace in the image
-	PlayerObject(SDL_Rect * playZone, GameObject * spike, PlayerNumber playerNumber) : GameObject(Object_Player) {
+	PlayerObject(GameObject * spike, PlayerNumber playerNumber) : GameObject(Object_Player) {
 		addComponent<KeyboardHandler>(3.8, false, spike, playerNumber);
 		addComponent<MovementHandler>(0, 0);
 		addComponent<TileHandler>("assets/duder4.png", 0.9);
-		addComponent<CollisionHandler>(playZone);
+		addComponent<CollisionHandler>();
 		addComponent<SoundHandler>("assets/hit.wav");
 
-		render_rect.y = playZone->y + playZone->h - render_rect.h;
+		render_rect.y = playZone.y + playZone.h - render_rect.h;
 
 		switch (playerNumber) {
 		case SINGLEPLAYER:
-			render_rect.x = playZone->x + playZone->w / 2 - render_rect.w / 2 - 5;
+			render_rect.x = playZone.x + playZone.w / 2 - render_rect.w / 2 - 5;
 			break;
 		case PLAYER1:
-			render_rect.x = playZone->x + playZone->w / 4 - render_rect.w / 2 - 5;
+			render_rect.x = playZone.x + playZone.w / 4 - render_rect.w / 2 - 5;
 			break;
 		case PLAYER2:
-			render_rect.x = playZone->x + 3*playZone->w / 4 - render_rect.w / 2 - 5;
+			render_rect.x = playZone.x + 3*playZone.w / 4 - render_rect.w / 2 - 5;
 			break;
 		default:
 			break;

@@ -37,10 +37,12 @@ public:
 };
 
 /// Hold the different types of objects
-// Order of enums determines the order they are drawn.
-enum ObjectType : std::size_t { Object_Spike, Object_Player, Object_Bubble, Object_Explosion, Object_Lives, Object_Font, Object_PowerUp, Object_StaticImage, MAX_OBJECTS};
+// Order of enums determines the order in which they are drawn.
+enum ObjectType : std::size_t { Object_Spike, Object_Player, Object_Bubble, Object_Explosion, Object_Lives, Object_PowerUp, Object_StaticImage, Object_Font, MAX_OBJECTS};
 
 const std::size_t maxComponents = 6;
+
+extern SDL_Rect playZone;
 
 /// Class used for each individual Game Object which has modularity with components.
 class GameObject {
@@ -51,12 +53,18 @@ protected:
 	std::array<GameComponent*, maxComponents> componentsArray;
 	bool valid = true;
 	bool visible = true;
-	std::size_t componentIDs = 0;
+
+	/// Returns unique ID for component placement.
+	std::size_t getUniqueID() {
+		/// Maintains value during runtime
+		static std::size_t ID = 0;
+		return ID++;
+	}
 
 	/// Purpose is to keep a unique ID to the template component of type T
 	template <typename T> std::size_t getComponentID() {
 		// Since ID is static, it is stored at run-time, so each different typename T has a different ID
-		static std::size_t ID = componentIDs++;
+		static std::size_t ID = getUniqueID();
 		return ID;
 	}
 
