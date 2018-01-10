@@ -2,7 +2,7 @@
 #include "GameObject.h"
 #include "TextureLoader.h"
 
-
+extern SDL_Renderer * renderer;
 /// Takes care of loading and rendering the texture for the objects
 class TileHandler : public GameComponent {
 
@@ -11,22 +11,20 @@ private:
 
 	/// load a texture et the path with TextureLoader class
 	void loadTexture(std::string path) {
-		texture = new TextureLoader(renderer, path);
+		texture = new TextureLoader(path);
 		loadedTexture = true;
 	}
 	TextureLoader * texture;
-	SDL_Renderer * renderer;
 public:
+
 	double scale = 1;
 
-	TileHandler(SDL_Renderer * renderer, TextureLoader* texture, double scale) {
-		this->renderer = renderer;
+	TileHandler(TextureLoader* texture, double scale) {
 		this->texture = texture;
 		this->scale = scale;
 	}
 
-	TileHandler(SDL_Renderer * renderer, std::string path, double scale) {
-		this->renderer = renderer;
+	TileHandler(std::string path, double scale) {
 		loadTexture(path);
 		this->scale = scale;
 	}

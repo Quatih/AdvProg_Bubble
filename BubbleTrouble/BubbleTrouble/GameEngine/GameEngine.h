@@ -8,6 +8,7 @@
 #include "headers/Components.h"
 #include "headers/FontObject.h"
 #include "headers/MillisTimer.h"
+
 #include <vector>	
 #include <random>
 #include <ctime>
@@ -56,8 +57,6 @@ private:
 	TTF_Font * font;
 
 public:
-
-	SDL_Renderer * renderer;
 
 	/// Constructor creates the window and renderer
 	GameEngine(std::string title, int winposx, int winposy, int winwidth, int winheight, SDL_WindowFlags flag);;

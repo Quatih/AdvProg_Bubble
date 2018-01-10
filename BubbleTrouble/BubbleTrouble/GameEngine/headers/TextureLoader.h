@@ -27,18 +27,18 @@ Color const BLUE = { 0, 0, 255 };
 Color const WHITE = { 255, 255, 255 };
 Color const BLACK = { 0, 0, 0 };
 
+extern SDL_Renderer * renderer;
+
 /// TextureLoader is in charge of loading a texture from an image and freeing it upon destruction.
 class TextureLoader {
 private:
-	SDL_Renderer * global_renderer;
 	SDL_Texture * texture;
 	std::string path;
 	SDL_Rect img_rect;
 public:
 
 	/// Constructor loads the texture at the passed path
-	TextureLoader(SDL_Renderer * renderer, std::string path) {
-		global_renderer = renderer;
+	TextureLoader(std::string path) {
 		this->path = path;
 		loadTexture();
 	}
@@ -61,7 +61,7 @@ public:
 		img_rect.x = 0;
 		img_rect.y = 0;
 
-		texture = SDL_CreateTextureFromSurface(global_renderer, loadedSurface);
+		texture = SDL_CreateTextureFromSurface(renderer, loadedSurface);
 
 		SDL_FreeSurface(loadedSurface);
 		if (texture == NULL) {

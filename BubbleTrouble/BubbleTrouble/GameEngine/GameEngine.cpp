@@ -4,7 +4,10 @@
 #include "headers/RandomInterface.h"
 #include "headers/SoundHandler.h"
 #include "headers/CollisionChecks.h"
+#include "headers/Globals.h"
 #include <string>
+
+
 /// Constructor creates the window and renderer
 GameEngine::GameEngine(std::string title, int winposx, int winposy, int winwidth, int winheight, SDL_WindowFlags flag) {
 	SDL_Init(SDL_INIT_EVERYTHING);
@@ -54,13 +57,13 @@ void GameEngine::init() {
 	font = TTF_OpenFont("assets/FreeSansBold.ttf", 24);
 	manager = std::make_unique<ObjectManager>();
 	for (int i = 0; i < 4; i++) {
-		TextureLoader * bubb = new TextureLoader(renderer, "assets/WhiteBall_128x128.png");
+		TextureLoader * bubb = new TextureLoader("assets/WhiteBall_128x128.png");
 		bubbleTextures.emplace_back(std::move(bubb));
 		bubb->applyColor(colorarray[i]);
 	}
 
 	//std::unique_ptr<TextureLoader> Textl (new TextureLoader();
-	heartTexture = std::make_unique<TextureLoader>(renderer, "assets/heart.png");
+	heartTexture = std::make_unique<TextureLoader>("assets/heart.png");
 
 	bubbleExplosion = Mix_LoadWAV("assets/pop.wav");
 }
@@ -68,13 +71,13 @@ void GameEngine::init() {
 /// Initialise objects for playing the game
 void GameEngine::initPlayingObjects() {
 
-	spike = manager->addObject<SpikeObject>(renderer, &playZone);
+	spike = manager->addObject<SpikeObject>(&playZone);
 
-	player = manager->addObject<PlayerObject>(renderer, &playZone, spike, PLAYER1);
+	player = manager->addObject<PlayerObject>(&playZone, spike, PLAYER1);
 
-	manager->addObject<PlayerObject>(renderer, &playZone, player, PLAYER2);
+	manager->addObject<PlayerObject>(&playZone, player, PLAYER2);
 
-	explosionImage = manager->addObject<ExplosionObject>(renderer);
+	explosionImage = manager->addObject<ExplosionObject>();
 
 	explosionImage->hide();
 	spike->hide();
@@ -89,21 +92,21 @@ void GameEngine::initPlayingObjects() {
 	scorepos.w = 100;
 	scorepos.x = playZone.w - scorepos.w - 10;
 	scorepos.y = 10;
-	scoreText = manager->addObject<FontObject>(renderer, font, scorepos, WHITE, RIGHT);
+	scoreText = manager->addObject<FontObject>(font, scorepos, WHITE, RIGHT);
 
 	scoreText->setText(initString, BLACK);
 	scoreText->hide();
 	scorepos.y = 44;
-	timerText = manager->addObject<FontObject>(renderer, font, scorepos, WHITE, RIGHT);
+	timerText = manager->addObject<FontObject>(font, scorepos, WHITE, RIGHT);
 	timerText->setText(initString, BLACK);
 	timerText->hide();
 
 	scorepos.x -= 50;
 	scorepos.y = 10;
-	FontObject* temptext = manager->addObject<FontObject>(renderer, font, scorepos, WHITE, LEFT);
+	FontObject* temptext = manager->addObject<FontObject>(font, scorepos, WHITE, LEFT);
 	temptext->setText("Score: ", BLACK);
 	scorepos.y += 34;
-	temptext = manager->addObject<FontObject>(renderer, font, scorepos, WHITE, LEFT);
+	temptext = manager->addObject<FontObject>(font, scorepos, WHITE, LEFT);
 	temptext->setText("Time: ", BLACK);
 
 }
@@ -155,7 +158,7 @@ void GameEngine::allUpdate() {
 			}
 			else {
 				SDL_Rect a = { playZone.w / 2 - 24, playZone.h / 2 - 50, 100, 48 };
-				auto text = manager->addObject<FontObject>(renderer, font, a, WHITE, CENTER);
+				auto text = manager->addObject<FontObject>(font, a, WHITE, CENTER);
 				text->setText("You died! Press Enter to restart.", BLACK);
 				pause();
 			}
@@ -364,13 +367,13 @@ void inline GameEngine::generateRandomBubble() {
 void inline GameEngine::addLife() {
 	auto lives = manager->addObject(Object_Lives);
 	lives->addComponent<MovementHandler>(0, 0);
-	lives->addComponent<TileHandler>(renderer, heartTexture.get(), 1);
+	lives->addComponent<TileHandler>(heartTexture.get(), 1);
 	lives->init();
 	lives->getComponent<MovementHandler>()->setPosition((double)(manager->getObjectBaseVector(Object_Lives)->size() - 1) * lives->render_rect.w + 10, 10);
 }
 
 BubbleObject * GameEngine::addBubble(BubbleType type, int posX, int posY, int direction, TextureLoader * texture) {
-	auto bubble = manager->addObject<BubbleObject>(type, posX, posY, direction, texture, renderer, &playZone, bubbleExplosion);
+	auto bubble = manager->addObject<BubbleObject>(type, posX, posY, direction, texture, &playZone, bubbleExplosion);
 	return bubble;
 }
 

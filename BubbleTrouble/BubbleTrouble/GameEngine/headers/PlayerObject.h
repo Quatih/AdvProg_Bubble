@@ -7,10 +7,10 @@ class PlayerObject : public GameObject {
 public:
 	int score = 0;
 	///Specific collider for the player in order to compensate for whitespace in the image
-	PlayerObject(SDL_Renderer * renderer, SDL_Rect * playZone, GameObject * spike, PlayerNumber playerNumber) : GameObject(Object_Player) {
+	PlayerObject(SDL_Rect * playZone, GameObject * spike, PlayerNumber playerNumber) : GameObject(Object_Player) {
 		addComponent<KeyboardHandler>(3.8, false, spike, playerNumber);
 		addComponent<MovementHandler>(0, 0);
-		addComponent<TileHandler>(renderer, "assets/duder4.png", 0.9);
+		addComponent<TileHandler>("assets/duder4.png", 0.9);
 		addComponent<CollisionHandler>(playZone);
 		addComponent<SoundHandler>("assets/hit.wav");
 

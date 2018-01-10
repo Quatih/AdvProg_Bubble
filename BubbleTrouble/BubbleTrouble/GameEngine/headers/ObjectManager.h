@@ -75,12 +75,9 @@ public:
 				else {
 					++object;
 				}
-
 			}
 		}
-
 	}
-
 
 	/// Clear each object Vector
 	void freeAll() {

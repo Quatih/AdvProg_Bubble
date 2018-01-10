@@ -15,12 +15,13 @@
 
 enum FontJustified{LEFT, CENTER, RIGHT};
 
+extern SDL_Renderer * renderer;
+
 /// Object that renders text
 class FontObject : public GameObject {
 private:
 
 public:
-	SDL_Renderer * renderer;
 	SDL_Texture * message = NULL;
 	SDL_Rect dimensions;
 	SDL_Rect imgrect;
@@ -30,9 +31,8 @@ public:
 	SDL_Color bgcolor;
 	FontJustified justification;
 
-	FontObject(SDL_Renderer* renderer, std::string fontpath, int size, SDL_Rect dimensions, Color bgcolor, FontJustified justified) : GameObject(Object_Font) {
+	FontObject(std::string fontpath, int size, SDL_Rect dimensions, Color bgcolor, FontJustified justified) : GameObject(Object_Font) {
 
-		this->renderer = renderer;
 		this->dimensions = dimensions;
 		imgrect.x = dimensions.x;
 		imgrect.y = dimensions.y;
@@ -46,9 +46,7 @@ public:
 		}
 	}
 
-	FontObject(SDL_Renderer* renderer, TTF_Font * font, SDL_Rect dimensions, Color bgcolor, FontJustified justified) : GameObject(Object_Font) {
-
-		this->renderer = renderer;
+	FontObject(TTF_Font * font, SDL_Rect dimensions, Color bgcolor, FontJustified justified) : GameObject(Object_Font) {
 		this->dimensions = dimensions;
 		imgrect.x = dimensions.x;
 		imgrect.y = dimensions.y;

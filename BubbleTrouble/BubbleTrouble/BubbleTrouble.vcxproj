@@ -159,7 +159,9 @@
     <ClInclude Include="GameEngine\headers\ExplosionObject.h" />
     <ClInclude Include="GameEngine\headers\FontObject.h" />
     <ClInclude Include="GameEngine\headers\GameObject.h" />
+    <ClInclude Include="GameEngine\headers\Globals.h" />
     <ClInclude Include="GameEngine\headers\KeyboardHandler.h" />
+    <ClInclude Include="GameEngine\headers\Menu.h" />
     <ClInclude Include="GameEngine\headers\MovementHandler.h" />
     <ClInclude Include="GameEngine\headers\ObjectManager.h" />
     <ClInclude Include="GameEngine\headers\PlayerObject.h" />

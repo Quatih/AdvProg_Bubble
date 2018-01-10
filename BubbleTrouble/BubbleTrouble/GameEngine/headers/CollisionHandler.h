@@ -37,7 +37,7 @@ public:
 			if (objectRect->y + objectRect->h > playZone->y + playZone->h) {
 				mover->velocity.y = mover->baseVelocity.y*-1;
 			}
-			[[fallthrough]]; // Indicates that the next case statement will also be executed, and that it is intentional.
+			[[fallthrough]]; // Indicates that the next case statement will also be executed, and that it is intentional. Requires C++17.
 
 		case Object_Player:
 			if (objectRect->x < playZone->x) {

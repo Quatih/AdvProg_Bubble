@@ -38,9 +38,9 @@ public:
 
 /// Hold the different types of objects
 // Order of enums determines the order they are drawn.
-enum ObjectType : std::size_t { Object_Spike, Object_Player, Object_Bubble, Object_Explosion, Object_Lives, Object_Font, MAX_OBJECTS};
+enum ObjectType : std::size_t { Object_Spike, Object_Player, Object_Bubble, Object_Explosion, Object_Lives, Object_Font, Object_StaticImage, MAX_OBJECTS};
 
-const std::size_t maxComponents = 10;
+const std::size_t maxComponents = 6;
 
 /// Class used for each individual Game Object which has modularity with components.
 class GameObject {
