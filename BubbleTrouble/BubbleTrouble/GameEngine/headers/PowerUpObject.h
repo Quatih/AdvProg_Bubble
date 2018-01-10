@@ -3,16 +3,31 @@
 #include "MillisTimer.h"
 #include <cmath>
 
+enum PowerUpType : std::size_t { PU_Life, PU_Coin };
+
 class PowerUpObject : public GameObject {
 public:
+	PowerUpType powerUpType;
 	MillisTimer powerUpTimer;
 
-	PowerUpObject():GameObject(Object_PowerUp) {
-		std::cout << "poweerUp object created";
+	PowerUpObject(PowerUpType type):GameObject(Object_PowerUp) {
+		this->powerUpType = type;
+		std::cout << "PowerUp object created";
 	}
 
-	PowerUpObject(SDL_Rect* playZone, std::string path) : GameObject(Object_PowerUp) {
-		addComponent<TileHandler>(path.c_str(),0.3f);
+	PowerUpObject(PowerUpType type, SDL_Rect* playZone) : GameObject(Object_PowerUp) {
+		powerUpType = type;
+		std::string path;
+		switch (powerUpType) {
+		case PU_Life:
+			addComponent<TileHandler>("assets/heart.png", 0.5);
+			break;
+		case PU_Coin:
+			addComponent<TileHandler>("assets/coin.png", 0.5);
+			break;
+		default:
+			break;
+		}
 		addComponent<MovementHandler>(0.0, 0.0,0.0,2.0f,0.0,0.0);
 		addComponent<CollisionHandler>(playZone);
 		powerUpTimer.start();

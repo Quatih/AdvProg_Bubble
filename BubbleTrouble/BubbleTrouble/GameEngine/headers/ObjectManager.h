@@ -46,6 +46,14 @@ public:
 	const std::vector<std::unique_ptr<GameObject>> * getObjectBaseVector(ObjectType type) const {
 		return &(objectGroups[type]);
 	}
+
+	std::vector<GameObject*> getObjectVector(ObjectType type) {
+		std::vector<GameObject*> vec;
+		for (auto & object : objectGroups.at(type)) {
+			vec.push_back(object.get());
+		}
+		return vec;
+	}
 		
 	/// update each object
 	void update() {

@@ -47,6 +47,8 @@ public:
 	void setPosition(double x, double y) {
 		position.x = x;
 		position.y = y;
+		owner->render_rect.x = (int)x;
+		owner->render_rect.y = (int)y;
 	}
 
 	void setVelocity(double x, double y) {

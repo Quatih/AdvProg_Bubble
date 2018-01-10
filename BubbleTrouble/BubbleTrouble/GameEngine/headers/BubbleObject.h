@@ -20,6 +20,7 @@ struct BubbleProperties {
 constexpr double Base_BubbleX_velocity = 2.1;
 constexpr double Base_BubbleY_velocity = 7.5;
 constexpr double Base_BubbleY_acceleration = 0.15;
+
 ///Vector with the bubble properties
 const std::vector<BubbleProperties> Properties = {
 { 8,	0, Base_BubbleX_velocity, Base_BubbleY_velocity,		0, Base_BubbleY_acceleration },

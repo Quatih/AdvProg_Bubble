@@ -56,10 +56,6 @@ private:
 	MillisTimer stageTimer;
 	TTF_Font * font;
 
-	std::vector<std::string> paths;
-	std::size_t randomPathIndex;
-	std::size_t index;
-
 public:
 
 	/// Constructor creates the window and renderer

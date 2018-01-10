@@ -1,6 +1,7 @@
 #pragma once
 #include <vector>
 #include "ObjectManager.h"
+#include "TileHandler.h"
 
 enum MenuType{M_Main, M_Start, M_1Player, M_2Player, M_Options, M_Pause};
 

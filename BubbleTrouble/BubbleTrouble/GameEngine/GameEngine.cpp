@@ -39,8 +39,6 @@ GameEngine::~GameEngine() {
 	bubbleTextures.clear();
 	Mix_CloseAudio();
 
-	paths.clear();
-
 	SDL_DestroyWindow(window);
 	SDL_DestroyRenderer(renderer);
 	SDL_Quit();
@@ -48,10 +46,6 @@ GameEngine::~GameEngine() {
 
 /// Initialize player, spike and bubbles.
 void GameEngine::init() {
-
-
-	paths.push_back("assets/heart.png");
-	paths.push_back("assets/coin.png");
 
 	SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
 	SDL_ShowWindow(window);
@@ -140,11 +134,11 @@ void GameEngine::allUpdate() {
 			if (life.size() > 1) {
 				std::cout << "WE COLLIDIN'\n";
 				SDL_Delay(1000);
-				life[life.size() - 1]->destroy();
+				life.back()->destroy();
 			}
 			if (life.size() == 1) {
 				std::cout << "WE DEAD!\n";
-				life[life.size() - 1]->destroy();
+				life.back()->destroy();
 			}
 
 			if (manager->getObjectTypeVector<GameObject>(Object_Lives).size() > 1) {
@@ -191,13 +185,14 @@ void GameEngine::allUpdate() {
 				//make sure the small bubbles doesn't contain any powerups
 				//add more power ups..like faster spikes, faster player movement etcc..
 
-				if ((randInt(1, 10) % 2 == 0) &&  (bubble->bubbleType != Bubble0 )) {
-					randomPathIndex = randInt(0, 1);
-					index = getNextIndex(randomPathIndex);
-					auto powerUpObject = manager->addObject<PowerUpObject>(&playZone, paths[index]);
-					powerUpObject->show();
-					powerUpObject->render_rect = bubble->render_rect;
-					powerUpObject->getComponent<MovementHandler>()->setPosition(powerUpObject->render_rect.x, powerUpObject->render_rect.y);
+				if ((randInt(1, 5) == 1 ) /* 20% chance */ &&  (bubble->bubbleType != Bubble0 )) {
+					std::size_t randint = randInt<std::size_t>(1, 10);
+					PowerUpType PUtype;
+					if (randint <= 3) PUtype = PU_Life; // 30% chance
+					else PUtype = PU_Coin;
+
+					auto powerUpObject = manager->addObject<PowerUpObject>(PUtype, &playZone);
+					powerUpObject->getComponent<MovementHandler>()->setPosition(bubble->render_rect.x, bubble->render_rect.y);
 				}
 
 				spike->hide();
@@ -222,10 +217,10 @@ void GameEngine::allUpdate() {
 		//the code is placed here because, once the spike hits the bubble, isVisible() = false, hence in the next update call the if (spike->isVisible()) is never entered.
 		if (collidesWithRect(player->render_rect, a->render_rect)) {
 			std::cout << "powerup gained\n";
-			if (index == 0) {
+			if (a->powerUpType == PU_Life && manager->getObjectBaseVector(Object_PowerUp)->size() <= 5) {
 				addLife();
 			}
-			else
+			else if (a->powerUpType == PU_Coin)
 				player->score = player->score + 5;
 
 			a->destroy();
@@ -240,7 +235,6 @@ void GameEngine::update() {
 
 
 	if (!paused) {
-		// Re-populate the board if all the bubbles are popped.
 		switch (currentState) {
 		case G_Menu:
 			break;
@@ -251,6 +245,8 @@ void GameEngine::update() {
 		case G_Infinite:
 
 			allUpdate();
+
+			// Re-populate the board if all the bubbles are popped.
 			if (manager->getObjectTypeVector<BubbleObject>(Object_Bubble).empty()) {
 				for (int i = 0; i < 3; i++) {
 					generateRandomBubble();
@@ -305,7 +301,7 @@ void GameEngine::handleEvents() {
 	const Uint8* currentKeyStates = SDL_GetKeyboardState(NULL);
 
 	if (events.type == SDL_KEYDOWN) {
-		if (currentKeyStates[SDL_SCANCODE_P] && paused) {
+		if (currentKeyStates[SDL_SCANCODE_P] && paused && !manager->getObjectBaseVector(Object_Lives)->empty()) {
 			unpause();
 		}
 		else if (currentKeyStates[SDL_SCANCODE_P]) {
@@ -357,7 +353,7 @@ void GameEngine::setState(GameState state) {
 	case G_LevelSelect:
 		break;
 	case G_Infinite:
-		/*manager->getObjectType<BubbleObject>().clear();*/
+
 		refresh();
 		initPlayingObjects();
 		stageTimer.start();
