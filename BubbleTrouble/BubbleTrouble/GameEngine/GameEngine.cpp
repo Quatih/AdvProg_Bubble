@@ -40,7 +40,6 @@ GameEngine::~GameEngine() {
 	Mix_CloseAudio();
 
 	paths.clear();
-	powerUpObject->destroy();
 
 	SDL_DestroyWindow(window);
 	SDL_DestroyRenderer(renderer);
@@ -86,8 +85,6 @@ void GameEngine::initPlayingObjects() {
 
 	explosionImage = manager->addObject<ExplosionObject>();
 	
-	powerUpObject = manager->addObject<PowerUpObject>();
-
 	explosionImage->hide();
 	spike->hide();
 
@@ -154,9 +151,11 @@ void GameEngine::allUpdate() {
 				for (auto a : manager->getObjectTypeVector<BubbleObject>(Object_Bubble)) {
 					a->destroy();
 				}
+				for (auto & a : manager->getObjectTypeVector<PowerUpObject>(Object_PowerUp)) {
+					a->destroy();
+				}
 				cleanObjects();
 				spike->hide();
-				powerUpObject->destroy();
 				for (int i = 0; i < 3; i++) {
 					generateRandomBubble();
 				}
@@ -192,12 +191,10 @@ void GameEngine::allUpdate() {
 				//make sure the small bubbles doesn't contain any powerups
 				//add more power ups..like faster spikes, faster player movement etcc..
 
-				if ((randInt(1, 10) % 2 == 0) &&  (bubble->bubbleType == Bubble3 || bubble->bubbleType == Bubble2)) {
-					powerUpTimer.start();
-					powerUpObject->destroy();
+				if ((randInt(1, 10) % 2 == 0) &&  (bubble->bubbleType != Bubble0 )) {
 					randomPathIndex = randInt(0, 1);
 					index = getNextIndex(randomPathIndex);
-					powerUpObject = manager->addObject<PowerUpObject>(&playZone, paths[index]);
+					auto powerUpObject = manager->addObject<PowerUpObject>(&playZone, paths[index]);
 					powerUpObject->show();
 					powerUpObject->render_rect = bubble->render_rect;
 					powerUpObject->getComponent<MovementHandler>()->setPosition(powerUpObject->render_rect.x, powerUpObject->render_rect.y);
@@ -220,25 +217,21 @@ void GameEngine::allUpdate() {
 			}
 		}
 	}
-	//the code is placed here because, once the spike hits the bubble, isVisible() = false, hence in the next update call the if (spike->isVisible()) is never entered.
-	if (collidesWithRect(player->render_rect, powerUpObject->render_rect)) {
-		std::cout << "poweerup gained\n";
-		if (index == 0) {
-			auto life = manager->getObjectTypeVector<GameObject>(Object_Lives);
-			if (life.size() < 4) {
+
+	for (auto& a : manager->getObjectTypeVector<PowerUpObject>(Object_PowerUp)) {
+		//the code is placed here because, once the spike hits the bubble, isVisible() = false, hence in the next update call the if (spike->isVisible()) is never entered.
+		if (collidesWithRect(player->render_rect, a->render_rect)) {
+			std::cout << "powerup gained\n";
+			if (index == 0) {
 				addLife();
 			}
+			else
+				player->score = player->score + 5;
+
+			a->destroy();
 		}
-		else
-			player->score = player->score + 5;
 
-		powerUpObject->destroy();
 	}
-
-	if (powerUpTimer.getMillis() >= 3000) {
-		powerUpObject->destroy();
-	}
-
 }
 
 
@@ -408,21 +401,20 @@ void inline GameEngine::generateRandomBubble() {
 	);
 }
 
-std::size_t GameEngine::getNextIndex(std::size_t index)
-{
-	switch (index)
-	{
+std::size_t GameEngine::getNextIndex(std::size_t index) {
+	switch (index) {
 	case 0:
-		return index = 1;
+		return 1;
 		break;
 	case 1:
-		return index = 0;
+		return 0;
 		break;
 	default:
-		return index = 0;
+		return 0;
 		break;
 	}
 }
+
 
 void inline GameEngine::addLife() {
 	auto lives = manager->addObject(Object_Lives);

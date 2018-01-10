@@ -32,8 +32,6 @@ private:
 	FontObject* scoreText;
 	FontObject* timerText;
 	ExplosionObject* explosionImage;
-	PowerUpObject* powerUpObject;
-	
 	
 	SDL_Window * window;
 
@@ -61,7 +59,6 @@ private:
 	std::vector<std::string> paths;
 	std::size_t randomPathIndex;
 	std::size_t index;
-	MillisTimer powerUpTimer;
 
 public:
 
