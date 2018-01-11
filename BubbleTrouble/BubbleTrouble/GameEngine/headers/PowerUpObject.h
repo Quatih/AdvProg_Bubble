@@ -28,7 +28,7 @@ public:
 		default:
 			break;
 		}
-		addComponent<MovementHandler>(0.0, 0.0,0.0,2.0f,0.0,0.0);
+		addComponent<MovementHandler>(0.0, 0.0, 0.0, 3.0 ,0.0, 0.0);
 		addComponent<CollisionHandler>();
 		powerUpTimer.start();
 		init();

@@ -18,10 +18,14 @@ public:
 	std::unique_ptr<GameObject> backgroundObject;
 	TextureLoader * buttonTexture;
 	TextureLoader * activeButtonTexture;
-	Uint64 activeButton;
 
-	std::map <ButtonID, std::pair<std::unique_ptr<GameObject>, std::unique_ptr<GameObject>>> buttons;
+	/// Active button index in the buttonIDs vector.
+	Uint64 activeButton = 0;
+
+	/// Map using the buttonIds to store a pair of objects, a button image and font
+	std::map <ButtonID, std::pair<std::unique_ptr<GameObject>, std::unique_ptr<FontObject>>> buttons;
 	std::vector<ButtonID> buttonIDs;
+
 	BaseMenu(MenuType type, TextureLoader * button, TextureLoader * activeButton) {
 		buttonTexture = button;
 		activeButtonTexture = activeButton;
@@ -70,6 +74,7 @@ public:
 		setActiveButton(0);
 	}
 
+	/// Add a button to the map with the specific ID.
 	void addButton(ButtonID ID) {
 		GameObject * button;
 		FontObject * fontobject;
@@ -85,12 +90,13 @@ public:
 		fontobject = new FontObject(font, rect, WHITE, CENTER);
 		fontobject->setText(buttonText[ID]);
 		std::unique_ptr<GameObject> uButton { button };
-		std::unique_ptr<GameObject> uFont { fontobject};
+		std::unique_ptr<FontObject> uFont { fontobject};
 
 		buttons[ID] = std::make_pair(std::move(uButton), std::move(uFont));
 		buttonIDs.push_back(ID);
 	}
 
+	/// Set the next button as the active button
 	void nextButton() {
 		if (activeButton < buttonIDs.size() - 1) {
 			buttons[buttonIDs[activeButton]].first->getComponent<TileHandler>()->setTextureLoader(buttonTexture);
@@ -98,6 +104,7 @@ public:
 		}
 	}
 
+	/// Set the previous button as the active button
 	void previousButton() {
 		
 		if (activeButton > 0) {
@@ -106,6 +113,7 @@ public:
 		}
 	}
 
+	/// Set a soecufuc button as the active button
 	void setActiveButton(Uint64 number) {
 		buttons[buttonIDs[number]].first->getComponent<TileHandler>()->setTextureLoader(activeButtonTexture);
 		activeButton = number;

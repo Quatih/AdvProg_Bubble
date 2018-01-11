@@ -81,7 +81,7 @@ public:
 			break;
 		case CENTER:
 			imgrect.x = dimensions.x + (dimensions.w / 2 - surface->clip_rect.w / 2);
-			imgrect.y = dimensions.y + (dimensions.h/2 - surface->clip_rect.h/2); // center justified
+			imgrect.y = dimensions.y + (dimensions.h / 2 - surface->clip_rect.h / 2); // center justified
 			break;
 		case RIGHT:
 			imgrect.x = dimensions.x + (dimensions.w - surface->clip_rect.w);
@@ -129,7 +129,6 @@ public:
 		setText(text, color);
 	};
 
-	/// Draw
 	void draw() override {
 		if(visible) SDL_RenderCopyEx(renderer, message, NULL, &imgrect, 0, 0, SDL_FLIP_NONE);
 	}
