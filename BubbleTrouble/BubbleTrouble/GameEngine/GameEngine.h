@@ -41,9 +41,6 @@ private:
 	/// Re-use the explosion audio clip
 	Mix_Chunk * bubbleExplosion;
 
-	/// The zone the Spike can be within
-	SDL_Rect spikeZone;
-
 	/// Used for random access of color.
 	const Color colorarray[4] = { RED, GREEN, BLUE, BLACK };
 
