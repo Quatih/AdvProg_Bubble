@@ -6,7 +6,11 @@
 #include "headers/CollisionChecks.h"
 #include <string>
 
-
+#ifdef __linux__
+#include <unistd.h>
+#else
+#include <windows.h>
+#endif
 SDL_Renderer * renderer;
 SDL_Window * window;
 TTF_Font * font;
@@ -145,7 +149,11 @@ void GameEngine::allUpdate() {
 			player->getComponent<SoundHandler>()->play();
 			if (life.size() > 1) {
 				std::cout << "WE COLLIDIN'\n";
-				SDL_Delay(1000);
+				#ifdef __linux__
+				nanosleep(1500 * 1000 * 1000);
+				#else
+				Sleep(1500);
+				#endif
 				life.back()->destroy();
 			}
 			if (life.size() == 1) {
