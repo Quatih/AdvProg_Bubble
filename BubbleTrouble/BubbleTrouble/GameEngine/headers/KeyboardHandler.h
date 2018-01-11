@@ -28,7 +28,7 @@ public:
 		case SINGLEPLAYER:
 			MOVELEFT.push_back(SDL_SCANCODE_LEFT);
 			MOVERIGHT.push_back(SDL_SCANCODE_RIGHT);
-			SHOOTSPIKE.push_back(SDL_SCANCODE_LSHIFT);
+			SHOOTSPIKE.push_back(SDL_SCANCODE_RSHIFT);
 			MOVEUP.push_back(SDL_SCANCODE_UP);
 			MOVEDOWN.push_back(SDL_SCANCODE_DOWN);
 			[[fallthrough]];

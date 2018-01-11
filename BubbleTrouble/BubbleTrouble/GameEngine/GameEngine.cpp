@@ -4,8 +4,15 @@
 #include "headers/RandomInterface.h"
 #include "headers/SoundHandler.h"
 #include "headers/CollisionChecks.h"
-#include "headers/Globals.h"
 #include <string>
+
+
+SDL_Renderer * renderer;
+SDL_Window * window;
+TTF_Font * font;
+
+/// Rectangle for the playingZone objects can be within
+SDL_Rect playZone;
 
 
 /// Constructor creates the window and renderer
@@ -73,6 +80,7 @@ void GameEngine::init() {
 	keystates[SDL_SCANCODE_RETURN] = 0;
 	keystates[SDL_SCANCODE_ESCAPE] = 0;
 	keystates[SDL_SCANCODE_P] = 0;
+	keystates[SDL_SCANCODE_SPACE] = 0;
 
 }
 
@@ -302,7 +310,7 @@ void GameEngine::handleEvents() {
 		running = false;
 	}
 
-	bool KEY_UP = false, KEY_DOWN = false, KEY_RETURN = false, KEY_P = false, KEY_ESCAPE = false;
+	bool KEY_UP = false, KEY_DOWN = false, KEY_RETURN = false, KEY_P = false, KEY_ESCAPE = false, KEY_SPACE = false;
 	
 	const Uint8* currentKeyStates = SDL_GetKeyboardState(NULL);
 	if (events.type == SDL_KEYDOWN && events.key.repeat == 0) {
@@ -312,7 +320,7 @@ void GameEngine::handleEvents() {
 		if (keystates[SDL_SCANCODE_RETURN] == 0 && currentKeyStates[SDL_SCANCODE_RETURN]) KEY_RETURN = true; keystates[SDL_SCANCODE_RETURN] = 1;
 		if (keystates[SDL_SCANCODE_ESCAPE] == 0 && currentKeyStates[SDL_SCANCODE_ESCAPE]) KEY_ESCAPE = true; keystates[SDL_SCANCODE_ESCAPE] = 1;
 		if (keystates[SDL_SCANCODE_P] == 0 && currentKeyStates[SDL_SCANCODE_P]) KEY_P = true; keystates[SDL_SCANCODE_P] = 1;
-
+		if (keystates[SDL_SCANCODE_SPACE] == 0 && currentKeyStates[SDL_SCANCODE_SPACE]) KEY_SPACE = true; keystates[SDL_SCANCODE_SPACE] = 1;
 	}
 	else if (events.type == SDL_KEYUP && events.key.repeat == 0) {
 		// reset the keypress action if applicable
@@ -321,6 +329,7 @@ void GameEngine::handleEvents() {
 		if (keystates[SDL_SCANCODE_RETURN] && currentKeyStates[SDL_SCANCODE_RETURN] == 0) keystates[SDL_SCANCODE_RETURN] = 0;
 		if (keystates[SDL_SCANCODE_ESCAPE] && currentKeyStates[SDL_SCANCODE_ESCAPE] == 0) keystates[SDL_SCANCODE_ESCAPE] = 0;
 		if (keystates[SDL_SCANCODE_P] && currentKeyStates[SDL_SCANCODE_P] == 0) keystates[SDL_SCANCODE_P] = 0;
+		if (keystates[SDL_SCANCODE_SPACE] && currentKeyStates[SDL_SCANCODE_SPACE] == 0) keystates[SDL_SCANCODE_SPACE] = 0;
 	}
 
 	if (currentState == G_Infinite) {
@@ -350,7 +359,7 @@ void GameEngine::handleEvents() {
 			menu->previousButton();
 		}
 
-		if (KEY_RETURN) {
+		if (KEY_RETURN || KEY_SPACE) {
 			ButtonID ID = menu->activeButtonID();
 			switch (ID) {
 			case BID_PlayMode:
@@ -379,9 +388,7 @@ void GameEngine::handleEvents() {
 			default:
 				break;
 			}
-
 		}
-
 		if (KEY_ESCAPE) {
 			running = false;
 		}
