@@ -2,11 +2,14 @@
 #include <vector>
 #include "ObjectManager.h"
 #include "Components.h"
+#include <map>
 
-enum MenuType{M_Main, M_Start, M_1Player, M_2Player, M_Options, M_Pause};
+
+enum MenuType {M_Main, M_PlayMode, M_Infinite, M_Options};
 extern SDL_Window * window;
 extern TTF_Font * font;
-
+enum ButtonID : Uint64 {BID_PlayMode, BID_Options, BID_Exit, BID_Back, BID_Infinite, BID_Level, BID_1Player, BID_2Player};
+const std::string buttonText[] = {"Play", "Options", "Quit", "Back", "Infinite Mode", "Level Mode", "1 Player", "2 Player"};
 
 class BaseMenu {
 private:
@@ -15,10 +18,10 @@ public:
 	std::unique_ptr<GameObject> backgroundObject;
 	TextureLoader * buttonTexture;
 	TextureLoader * activeButtonTexture;
-	Uint64 activeButton = 0;
+	Uint64 activeButton;
 
-	std::vector < std::pair<std::unique_ptr<GameObject>, std::unique_ptr<GameObject>>> buttons;
-
+	std::map <ButtonID, std::pair<std::unique_ptr<GameObject>, std::unique_ptr<GameObject>>> buttons;
+	std::vector<ButtonID> buttonIDs;
 	BaseMenu(MenuType type, TextureLoader * button, TextureLoader * activeButton) {
 		buttonTexture = button;
 		activeButtonTexture = activeButton;
@@ -28,7 +31,6 @@ public:
 
 	~BaseMenu() {
 		buttons.clear();
-
 	}
 
 	void init() {
@@ -44,28 +46,31 @@ public:
 
 		switch (type) {
 		case M_Main:
-			addButton("Play");
-			addButton("Options");
-			addButton("Exit");
-			setActiveButton(0);
-
+			addButton(BID_PlayMode);
+			addButton(BID_Options);
+			addButton(BID_Exit);
+			
 			break;
-		case M_Start:
+		case M_PlayMode:
+			//addButton(BID_Level);
+			addButton(BID_Infinite);
+			addButton(BID_Back);
 			break;
-		case M_1Player:
-			break;
-		case M_2Player:
+		case M_Infinite:
+			addButton(BID_1Player);
+			addButton(BID_2Player);
+			addButton(BID_Back);
 			break;
 		case M_Options:
-			break;
-		case M_Pause:
+			addButton(BID_Back);
 			break;
 		default:
 			break;
 		}
+		setActiveButton(0);
 	}
 
-	void addButton(std::string text) {
+	void addButton(ButtonID ID) {
 		GameObject * button;
 		FontObject * fontobject;
 
@@ -74,17 +79,21 @@ public:
 		button->addComponent<MovementHandler>(0, 0);
 
 		button->init();
-		button->getComponent<MovementHandler>()->setPosition(double(backgroundObject->render_rect.w / 2 - button->render_rect.w / 2), 
-					(double)(backgroundObject->render_rect.h / 2 - button->render_rect.h / 2 + buttons.size()*(button->render_rect.h + 10)));
+		button->getComponent<MovementHandler>()->setPosition(double(backgroundObject->render_rect.w / 2 - button->render_rect.w / 2),
+			(double)(backgroundObject->render_rect.h / 2 - button->render_rect.h / 2 + buttons.size()*(button->render_rect.h + 10)));
 		SDL_Rect rect = button->render_rect;
 		fontobject = new FontObject(font, rect, WHITE, CENTER);
-		fontobject->setText(text);
-		buttons.emplace_back(std::make_pair(std::move(button), std::move(fontobject)));
+		fontobject->setText(buttonText[ID]);
+		std::unique_ptr<GameObject> uButton { button };
+		std::unique_ptr<GameObject> uFont { fontobject};
+
+		buttons[ID] = std::make_pair(std::move(uButton), std::move(uFont));
+		buttonIDs.push_back(ID);
 	}
 
 	void nextButton() {
-		if (activeButton < buttons.size() - 1) {
-			buttons.at(activeButton).first->getComponent<TileHandler>()->setTextureLoader(buttonTexture);
+		if (activeButton < buttonIDs.size() - 1) {
+			buttons[buttonIDs[activeButton]].first->getComponent<TileHandler>()->setTextureLoader(buttonTexture);
 			setActiveButton(activeButton + 1);
 		}
 	}
@@ -92,21 +101,21 @@ public:
 	void previousButton() {
 		
 		if (activeButton > 0) {
-			buttons.at(activeButton).first->getComponent<TileHandler>()->setTextureLoader(buttonTexture);
+			buttons[buttonIDs[activeButton]].first->getComponent<TileHandler>()->setTextureLoader(buttonTexture);
 			setActiveButton(activeButton - 1);
 		}
 	}
 
 	void setActiveButton(Uint64 number) {
-		buttons.at(number).first->getComponent<TileHandler>()->setTextureLoader(activeButtonTexture);
+		buttons[buttonIDs[number]].first->getComponent<TileHandler>()->setTextureLoader(activeButtonTexture);
 		activeButton = number;
 	}
 
 	void draw() {
 		backgroundObject->draw();
-		for (auto& a : buttons) {
-			a.first->draw();
-			a.second->draw();
+		for (auto& a : buttonIDs) {
+			buttons[a].first->draw();
+			buttons[a].second->draw();
 		}
 	}
 
@@ -116,7 +125,6 @@ public:
 class MenuManager {
 public:
 	std::vector<std::unique_ptr<BaseMenu>> menu;
-
 
 	std::unique_ptr<TextureLoader> buttonTexture;
 	std::unique_ptr<TextureLoader> activeButtonTexture;
@@ -134,8 +142,8 @@ public:
 		menu.back()->previousButton();
 	}
 
-	void activateButton() {
-
+	ButtonID activeButtonID() {
+		return menu.back()->buttonIDs[menu.back()->activeButton];
 	}
 
 	void draw() {
@@ -145,7 +153,7 @@ public:
 	}
 
 	void pushMenu(MenuType type) {
-		auto pushedmenu = new BaseMenu(type, buttonTexture.get(), activeButtonTexture.get());
+		BaseMenu * pushedmenu = new BaseMenu(type, buttonTexture.get(), activeButtonTexture.get());
 
 		menu.emplace_back(std::move(pushedmenu));
 	}

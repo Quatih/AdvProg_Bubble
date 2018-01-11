@@ -81,9 +81,7 @@ void GameEngine::initPlayingObjects() {
 
 	spike = manager->addObject<SpikeObject>();
 
-	player = manager->addObject<PlayerObject>(spike, PLAYER1);
-
-	manager->addObject<PlayerObject>(player, PLAYER2);
+	player = manager->addObject<PlayerObject>(spike, SINGLEPLAYER);
 
 	explosionImage = manager->addObject<ExplosionObject>();
 	
@@ -308,6 +306,7 @@ void GameEngine::handleEvents() {
 	
 	const Uint8* currentKeyStates = SDL_GetKeyboardState(NULL);
 	if (events.type == SDL_KEYDOWN && events.key.repeat == 0) {
+		// Only want to allow one action per keypress
 		if (keystates[SDL_SCANCODE_UP] == 0 && currentKeyStates[SDL_SCANCODE_UP]) KEY_UP = true; keystates[SDL_SCANCODE_UP] = 1;
 		if (keystates[SDL_SCANCODE_DOWN] == 0 && currentKeyStates[SDL_SCANCODE_DOWN]) KEY_DOWN = true; keystates[SDL_SCANCODE_DOWN] = 1;
 		if (keystates[SDL_SCANCODE_RETURN] == 0 && currentKeyStates[SDL_SCANCODE_RETURN]) KEY_RETURN = true; keystates[SDL_SCANCODE_RETURN] = 1;
@@ -316,6 +315,7 @@ void GameEngine::handleEvents() {
 
 	}
 	else if (events.type == SDL_KEYUP && events.key.repeat == 0) {
+		// reset the keypress action if applicable
 		if (keystates[SDL_SCANCODE_UP] && currentKeyStates[SDL_SCANCODE_UP] == 0) keystates[SDL_SCANCODE_UP] = 0;
 		if (keystates[SDL_SCANCODE_DOWN] && currentKeyStates[SDL_SCANCODE_DOWN] == 0) keystates[SDL_SCANCODE_DOWN] = 0;
 		if (keystates[SDL_SCANCODE_RETURN] && currentKeyStates[SDL_SCANCODE_RETURN] == 0) keystates[SDL_SCANCODE_RETURN] = 0;
@@ -351,8 +351,34 @@ void GameEngine::handleEvents() {
 		}
 
 		if (KEY_RETURN) {
-			menu->popMenu();
-			setState(G_Infinite);
+			ButtonID ID = menu->activeButtonID();
+			switch (ID) {
+			case BID_PlayMode:
+				menu->pushMenu(M_PlayMode);
+				break;
+			case BID_Options:
+				menu->pushMenu(M_Options);
+				break;
+			case BID_Exit:
+				running = false;
+				break;
+			case BID_Back:
+				menu->popMenu();
+				break;
+			case BID_Infinite:
+				menu->pushMenu(M_Infinite);
+				break;
+			case BID_Level:
+				break;
+			case BID_1Player:
+				setState(G_Infinite);
+				menu->menu.clear();
+				break;
+			case BID_2Player:
+				break;
+			default:
+				break;
+			}
 
 		}
 

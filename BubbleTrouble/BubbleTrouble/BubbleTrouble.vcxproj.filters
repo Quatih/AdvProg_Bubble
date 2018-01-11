@@ -72,7 +72,7 @@
     <ClInclude Include="GameEngine\headers\ExplosionObject.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-	    <ClInclude Include="GameEngine\headers\PowerUpObject.h">
+    <ClInclude Include="GameEngine\headers\PowerUpObject.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="GameEngine\headers\Menu.h">
