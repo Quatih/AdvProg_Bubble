@@ -47,7 +47,6 @@ GameEngine::~GameEngine() {
 	refresh();
 	TTF_CloseFont(font);
 	TTF_Quit();
-	running = false;
 
 	bubbleTextures.clear();
 	Mix_CloseAudio();
@@ -78,8 +77,10 @@ void GameEngine::init() {
 	//std::unique_ptr<TextureLoader> Textl (new TextureLoader();
 	heartTexture = std::make_unique<TextureLoader>("assets/heart.png");
 	menu = std::make_unique<MenuManager>();
+
 	bubbleExplosion = Mix_LoadWAV("assets/pop.wav");
 
+	// Add entries to the keystates map
 	keystates[SDL_SCANCODE_UP] = false;
 	keystates[SDL_SCANCODE_DOWN] = false;
 	keystates[SDL_SCANCODE_RETURN] = false;
@@ -92,6 +93,7 @@ void GameEngine::init() {
 /// Initialise objects for playing the game
 void GameEngine::initPlayingObjects() {
 	score = 0;
+
 	if (currentState == G_Infinite_1Player) {
 		auto spike = manager->addObject<SpikeObject>();
 		manager->addObject<PlayerObject>(spike, SINGLEPLAYER);
@@ -103,9 +105,6 @@ void GameEngine::initPlayingObjects() {
 		manager->addObject<PlayerObject>(spike2, PLAYER2);
 	}
 
-	explosionImage = manager->addObject<ExplosionObject>();
-	
-	explosionImage->hide();
 	for (auto& spike = manager->getObjectBaseVector(Object_Spike)->begin(); spike != manager->getObjectBaseVector(Object_Spike)->end(); spike++) {
 		(*spike)->hide();
 	}
@@ -238,7 +237,7 @@ void GameEngine::playLogicUpdate() {
 					Mix_HaltChannel(1);
 					bubble->getComponent<SoundHandler>()->play();
 
-					explosionImage->show();
+					auto explosionImage = manager->addObject<ExplosionObject>();
 
 					explosionImage->render_rect = bubble->render_rect;
 					explosionImage->getComponent<MovementHandler>()->setPosition(explosionImage->render_rect.x, explosionImage->render_rect.y);

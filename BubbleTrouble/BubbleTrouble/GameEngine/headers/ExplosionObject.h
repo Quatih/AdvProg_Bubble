@@ -24,7 +24,7 @@ public:
 			}
 			else {
 				renderedFrames = 0;
-				hide();
+				destroy();
 			}
 		}
 	}

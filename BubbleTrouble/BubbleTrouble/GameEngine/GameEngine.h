@@ -31,7 +31,6 @@ private:
 
 	FontObject* scoreText;
 	FontObject* timerText;
-	ExplosionObject* explosionImage;
 
 	SDL_Event events;
 	bool running, paused;
