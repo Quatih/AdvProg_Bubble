@@ -18,10 +18,9 @@ public:
 	std::unique_ptr<GameObject> backgroundObject;
 	TextureLoader * buttonTexture;
 	TextureLoader * activeButtonTexture;
-
+	std::unique_ptr<FontObject> titleText;
 	/// Active button index in the buttonIDs vector.
 	Uint64 activeButton = 0;
-
 	/// Map using the buttonIds to store a pair of objects, a button image and font
 	std::map <ButtonID, std::pair<std::unique_ptr<GameObject>, std::unique_ptr<FontObject>>> buttons;
 	std::vector<ButtonID> buttonIDs;
@@ -41,12 +40,20 @@ public:
 		backgroundObject = std::make_unique<GameObject>(Object_StaticImage);
 		backgroundObject->addComponent<TileHandler>("assets/square.png", 1);
 		backgroundObject->init();
-		backgroundObject->getComponent<TileHandler>()->applyColor({ 200, 0, 0 });
+		backgroundObject->getComponent<TileHandler>()->applyColor({ 180, 0, 0 });
 		int h;
 		int w;
 		SDL_GetWindowSize(window, &w, &h);
 		backgroundObject->render_rect.h = h;
 		backgroundObject->render_rect.w = w;
+		SDL_Rect titleRect;
+		titleRect.h = 50;
+		titleRect.w = 10;
+		titleRect.x = backgroundObject->render_rect.w / 2 - titleRect.w/2;
+		titleRect.y = backgroundObject->render_rect.h / 4 - titleRect.h/2;
+
+		titleText = std::make_unique<FontObject>("assets/FreeSansBold.ttf", 80, titleRect, FontJustified_CENTER);
+		titleText->setText("Bubble Trouble", BLACK);
 
 		switch (type) {
 		case M_Main:
@@ -87,7 +94,7 @@ public:
 		button->getComponent<MovementHandler>()->setPosition(double(backgroundObject->render_rect.w / 2 - button->render_rect.w / 2),
 			(double)(backgroundObject->render_rect.h / 2 - button->render_rect.h / 2 + buttons.size()*(button->render_rect.h + 10)));
 		SDL_Rect rect = button->render_rect;
-		fontobject = new FontObject(font, rect, WHITE, FontJustified_CENTER);
+		fontobject = new FontObject(font, rect, FontJustified_CENTER);
 		fontobject->setText(buttonText[ID]);
 		std::unique_ptr<GameObject> uButton { button };
 		std::unique_ptr<FontObject> uFont { fontobject};
@@ -125,6 +132,7 @@ public:
 			buttons[a].first->draw();
 			buttons[a].second->draw();
 		}
+		titleText->draw();
 	}
 
 };
@@ -169,4 +177,11 @@ public:
 	void popMenu() {
 		if(!menu.empty()) menu.pop_back();
 	}
+
+	void clearMenu() {
+		while (!menu.empty()) {
+			menu.pop_back();
+		}
+	}
+
 };

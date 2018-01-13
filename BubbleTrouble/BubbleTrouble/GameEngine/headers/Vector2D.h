@@ -18,14 +18,14 @@ public:
 		this->y = y;
 	}
 
-	friend Vector2D& operator+(const Vector2D& lhs, const Vector2D& rhs) {
+	friend Vector2D operator+(const Vector2D& lhs, const Vector2D& rhs) {
 		Vector2D out;
 		out.x = lhs.x + rhs.x;
 		out.y = lhs.y + rhs.y;
 		return out;
 	}
 
-	friend Vector2D& operator-(const Vector2D& lhs, const Vector2D& rhs) {
+	friend Vector2D operator-(const Vector2D& lhs, const Vector2D& rhs) {
 		Vector2D out;
 		out.x = lhs.x - rhs.x;
 		out.y = lhs.y - rhs.y;
@@ -46,7 +46,7 @@ public:
 		return *this;
 	}
 
-	Vector2D& operator*(const T rhs) {
+	Vector2D operator*(const T rhs) {
 		Vector2D out;
 		out.x = this->x*rhs;
 		out.y = this->y * rhs;

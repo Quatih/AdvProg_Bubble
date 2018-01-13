@@ -4,7 +4,7 @@
 #ifdef __linux__ 
 #include <SDL2/SDL.h>
 #else
-#include "SDL.h"
+#include <SDL.h>
 #endif
 
 /// Checks the collision bounds of two SDL_Rects and returns true if the rectangles collide.

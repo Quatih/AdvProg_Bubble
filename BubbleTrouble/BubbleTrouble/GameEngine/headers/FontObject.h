@@ -1,16 +1,5 @@
 #pragma once
 #include "GameObject.h"
-#ifdef __linux__ 
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_image.h>
-#include <SDL2/SDL_ttf.h>
-#else
-#include "SDL.h"
-#include "SDL_image.h"
-#include "SDL_ttf.h"
-#endif
-
-#include <iostream>
 #include <string>
 
 enum FontJustified{FontJustified_LEFT, FontJustified_CENTER, FontJustified_RIGHT}; 
@@ -24,34 +13,33 @@ private:
 public:
 	SDL_Texture * message = NULL;
 	SDL_Rect dimensions;
-	SDL_Rect imgrect;
 	TTF_Font * font;
 	std::string text;
 	SDL_Color color;
-	SDL_Color bgcolor;
+	//SDL_Color bgcolor;
 	FontJustified justification;
 	bool loadedFont = false;
 
 	/// Load object with a specific font
-	FontObject(std::string fontpath, int size, SDL_Rect dimensions, Color bgcolor, FontJustified justified) : GameObject(Object_Font) {
+	FontObject(std::string fontpath, int size, SDL_Rect dimensions, FontJustified justified) : GameObject(Object_Font) {
 
 		this->dimensions = dimensions;
-		imgrect.x = dimensions.x;
-		imgrect.y = dimensions.y;
-		this->bgcolor.r = bgcolor.red;
-		this->bgcolor.b = bgcolor.blue;
-		this->bgcolor.g = bgcolor.green;
+		img_rect.x = dimensions.x;
+		img_rect.y = dimensions.y;
+		//this->bgcolor.r = bgcolor.red;
+		//this->bgcolor.b = bgcolor.blue;
+		//this->bgcolor.g = bgcolor.green;
 		justification = justified;
 		loadFont(fontpath, size);
 	}
 	/// Load object with existing font reference.
-	FontObject(TTF_Font * font, SDL_Rect dimensions, Color bgcolor, FontJustified justified) : GameObject(Object_Font) {
+	FontObject(TTF_Font * font, SDL_Rect dimensions, FontJustified justified) : GameObject(Object_Font) {
 		this->dimensions = dimensions;
-		imgrect.x = dimensions.x;
-		imgrect.y = dimensions.y;
-		this->bgcolor.r = bgcolor.red;
-		this->bgcolor.b = bgcolor.blue;
-		this->bgcolor.g = bgcolor.green;
+		img_rect.x = dimensions.x;
+		img_rect.y = dimensions.y;
+		//this->bgcolor.r = bgcolor.red;
+		//this->bgcolor.b = bgcolor.blue;
+		//this->bgcolor.g = bgcolor.green;
 		justification = justified;
 		this->font = font;
 	}
@@ -74,19 +62,19 @@ public:
 			std::cout << "Error loading text surface\n";
 		}
 
-		imgrect.w = surface->clip_rect.w;
-		imgrect.h = surface->clip_rect.h;
+		img_rect.w = surface->clip_rect.w;
+		img_rect.h = surface->clip_rect.h;
 
 		switch (justification) {
 		case FontJustified_LEFT:
 			//imgrect.y = dimensions.y + (dimensions.h - surface->clip_rect.h); // top justified
 			break;
 		case FontJustified_CENTER:
-			imgrect.x = dimensions.x + (dimensions.w / 2 - surface->clip_rect.w / 2);
-			imgrect.y = dimensions.y + (dimensions.h / 2 - surface->clip_rect.h / 2); // center justified
+			img_rect.x = dimensions.x + (dimensions.w / 2 - surface->clip_rect.w / 2);
+			img_rect.y = dimensions.y + (dimensions.h / 2 - surface->clip_rect.h / 2); // center justified
 			break;
 		case FontJustified_RIGHT:
-			imgrect.x = dimensions.x + (dimensions.w - surface->clip_rect.w);
+			img_rect.x = dimensions.x + (dimensions.w - surface->clip_rect.w);
 			//imgrect.y = dimensions.y + (dimensions.h - surface->clip_rect.h); // bottom justified
 			break;
 		default:
@@ -141,6 +129,6 @@ public:
 	};
 
 	void draw() override {
-		if(visible) SDL_RenderCopyEx(renderer, message, NULL, &imgrect, 0, 0, SDL_FLIP_NONE);
+		if(visible) SDL_RenderCopyEx(renderer, message, NULL, &img_rect, 0, 0, SDL_FLIP_NONE);
 	}
 };

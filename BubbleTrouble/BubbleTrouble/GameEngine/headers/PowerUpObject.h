@@ -10,12 +10,7 @@ public:
 	PowerUpType powerUpType;
 	MillisTimer powerUpTimer;
 
-	PowerUpObject(PowerUpType type):GameObject(Object_PowerUp) {
-		this->powerUpType = type;
-		std::cout << "PowerUp object created";
-	}
-
-	PowerUpObject(PowerUpType type, SDL_Rect* playZone) : GameObject(Object_PowerUp) {
+	PowerUpObject(PowerUpType type) : GameObject(Object_PowerUp) {
 		powerUpType = type;
 		std::string path;
 		switch (powerUpType) {

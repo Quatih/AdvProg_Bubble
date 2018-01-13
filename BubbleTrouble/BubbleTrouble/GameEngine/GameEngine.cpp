@@ -46,6 +46,7 @@ GameEngine::GameEngine(std::string title, int winposx, int winposy, int winwidth
 GameEngine::~GameEngine() {
 	refresh();
 	TTF_CloseFont(font);
+	menu->clearMenu();
 	TTF_Quit();
 
 	bubbleTextures.clear();
@@ -117,21 +118,21 @@ void GameEngine::initPlayingObjects() {
 	scorepos.w = 100;
 	scorepos.x = playZone.w - scorepos.w - 10;
 	scorepos.y = 10;
-	scoreText = manager->addObject<FontObject>(font, scorepos, WHITE, FontJustified_RIGHT);
+	scoreText = manager->addObject<FontObject>(font, scorepos, FontJustified_RIGHT);
 
 	scoreText->setText(initString, BLACK);
 	scoreText->hide();
 	scorepos.y = 44;
-	timerText = manager->addObject<FontObject>(font, scorepos, WHITE, FontJustified_RIGHT);
+	timerText = manager->addObject<FontObject>(font, scorepos, FontJustified_RIGHT);
 	timerText->setText(initString, BLACK);
 	timerText->hide();
 
 	scorepos.x -= 50;
 	scorepos.y = 10;
-	FontObject* temptext = manager->addObject<FontObject>(font, scorepos, WHITE, FontJustified_LEFT);
+	FontObject* temptext = manager->addObject<FontObject>(font, scorepos, FontJustified_LEFT);
 	temptext->setText("Score: ", BLACK);
 	scorepos.y += 34;
-	temptext = manager->addObject<FontObject>(font, scorepos, WHITE, FontJustified_LEFT);
+	temptext = manager->addObject<FontObject>(font, scorepos, FontJustified_LEFT);
 	temptext->setText("Time: ", BLACK);
 
 }
@@ -170,7 +171,7 @@ void GameEngine::resetLevel() {
 	}
 	else {
 		SDL_Rect a = { playZone.w / 2 - 24, playZone.h / 2 - 50, 100, 48 };
-		auto text = manager->addObject<FontObject>(font, a, WHITE, FontJustified_CENTER);
+		auto text = manager->addObject<FontObject>(font, a, FontJustified_CENTER);
 		text->setText("You died! Press Enter to restart.", BLACK);
 		pause();
 	}
@@ -252,7 +253,7 @@ void GameEngine::playLogicUpdate() {
 						if (randint <= 3) PUtype = PU_Life; // 30% chance
 						else PUtype = PU_Coin;
 
-						auto powerUpObject = manager->addObject<PowerUpObject>(PUtype, &playZone);
+						auto powerUpObject = manager->addObject<PowerUpObject>(PUtype);
 						powerUpObject->getComponent<MovementHandler>()->setPosition(bubble->render_rect.x, bubble->render_rect.y);
 					}
 
@@ -274,6 +275,13 @@ void GameEngine::playLogicUpdate() {
 			}
 		}
 	}
+
+	// Re-populate the board if all the bubbles are popped.
+	if (manager->getObjectVector(Object_Bubble).empty()) {
+		for (int i = 0; i < 3; i++) {
+			generateRandomBubble();
+		}
+	}
 }
 
 
@@ -284,29 +292,15 @@ void GameEngine::update() {
 		switch (currentState) {
 		case G_Menu:
 			break;
-			break;
 		case G_Infinite_1Player:
 
 			playLogicUpdate();
 
-			// Re-populate the board if all the bubbles are popped.
-			if (manager->getObjectVector(Object_Bubble).empty()) {
-				for (int i = 0; i < 3; i++) {
-					generateRandomBubble();
-				}
-			}
 
 			break;
 		case G_Infinite_2Player:
 
 			playLogicUpdate();
-
-			// Re-populate the board if all the bubbles are popped.
-			if (manager->getObjectVector(Object_Bubble).empty()) {
-				for (int i = 0; i < 3; i++) {
-					generateRandomBubble();
-				}
-			}
 
 			break;
 		case G_Level1:
@@ -466,7 +460,7 @@ void GameEngine::cleanObjects() {
 }
 
 /// Set the game state
-void GameEngine::setState(GameState state) {
+void GameEngine::setState(GameStates state) {
 	currentState = state;
 
 	switch (currentState) {
