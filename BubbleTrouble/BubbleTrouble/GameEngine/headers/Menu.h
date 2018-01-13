@@ -87,7 +87,7 @@ public:
 		button->getComponent<MovementHandler>()->setPosition(double(backgroundObject->render_rect.w / 2 - button->render_rect.w / 2),
 			(double)(backgroundObject->render_rect.h / 2 - button->render_rect.h / 2 + buttons.size()*(button->render_rect.h + 10)));
 		SDL_Rect rect = button->render_rect;
-		fontobject = new FontObject(font, rect, WHITE, CENTER);
+		fontobject = new FontObject(font, rect, WHITE, FontJustified_CENTER);
 		fontobject->setText(buttonText[ID]);
 		std::unique_ptr<GameObject> uButton { button };
 		std::unique_ptr<FontObject> uFont { fontobject};

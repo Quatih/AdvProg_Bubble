@@ -18,7 +18,7 @@
 const std::string initString = "string";
 
 /// Different states for each different presentation 
-enum GameState { G_Menu, G_MenuOptions, G_LevelSelect, G_Infinite, 
+enum GameState { G_Menu, G_Infinite_1Player, G_Infinite_2Player,
 	G_Level1, G_Level2, G_Level3, G_Level4, G_Level5, G_Level6, G_Level7, G_Level8, G_Level9, G_Level10
 };
 
@@ -29,12 +29,10 @@ private:
 
 	std::unique_ptr<ObjectManager> manager;
 
-	PlayerObject* player;
-	SpikeObject* spike;
 	FontObject* scoreText;
 	FontObject* timerText;
 	ExplosionObject* explosionImage;
-	 
+
 	SDL_Event events;
 	bool running, paused;
 
@@ -54,8 +52,8 @@ private:
 
 
 public:
-	std::map<Uint8, Uint8> keystates;
-
+	std::map<Uint8, bool> keystates;
+	int score = 0;
 	/// Constructor creates the window and renderer
 	GameEngine(std::string title, int winposx, int winposy, int winwidth, int winheight, SDL_WindowFlags flag);;
 
@@ -87,8 +85,11 @@ public:
 	/// Deletes invalidated game objects
 	void cleanObjects();
 
+	/// Resets the current playing level
+	void resetLevel();
+
 	/// Main gameplay update function
-	void allUpdate();
+	void playLogicUpdate();
 
 	/// Pause the game, the timer in use
 	void pause();
@@ -104,8 +105,6 @@ public:
 
 	/// Generate a random bubble
 	void inline generateRandomBubble();
-
-	std::size_t getNextIndex(std::size_t index);
 
 	/// Add a bubble to the bubble vector and initialize.
 	BubbleObject * addBubble(BubbleType type, int posX, int posY, int direction, TextureLoader * texture);

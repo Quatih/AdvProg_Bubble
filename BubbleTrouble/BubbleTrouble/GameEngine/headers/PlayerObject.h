@@ -5,7 +5,6 @@
 /// Handles score for the player object
 class PlayerObject : public GameObject {
 public:
-	int score = 0;
 	///Specific collider for the player in order to compensate for whitespace in the image
 	PlayerObject(GameObject * spike, PlayerNumber playerNumber) : GameObject(Object_Player) {
 		addComponent<KeyboardHandler>(3.8, false, spike, playerNumber);
@@ -36,10 +35,4 @@ public:
 		init();
 	}
 
-	void init() override {
-		score = 0;
-		for (auto& comps : components) {
-			comps->init();
-		}
-	}
 };

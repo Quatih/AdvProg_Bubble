@@ -13,7 +13,7 @@
 #include <iostream>
 #include <string>
 
-enum FontJustified{LEFT, CENTER, RIGHT};
+enum FontJustified{FontJustified_LEFT, FontJustified_CENTER, FontJustified_RIGHT}; 
 
 extern SDL_Renderer * renderer;
 
@@ -30,7 +30,9 @@ public:
 	SDL_Color color;
 	SDL_Color bgcolor;
 	FontJustified justification;
+	bool loadedFont = false;
 
+	/// Load object with a specific font
 	FontObject(std::string fontpath, int size, SDL_Rect dimensions, Color bgcolor, FontJustified justified) : GameObject(Object_Font) {
 
 		this->dimensions = dimensions;
@@ -40,12 +42,9 @@ public:
 		this->bgcolor.b = bgcolor.blue;
 		this->bgcolor.g = bgcolor.green;
 		justification = justified;
-		font = TTF_OpenFont(fontpath.c_str(), size);
-		if (font == NULL) {
-			std::cout << "Error loading font " << fontpath << std::endl;
-		}
+		loadFont(fontpath, size);
 	}
-
+	/// Load object with existing font reference.
 	FontObject(TTF_Font * font, SDL_Rect dimensions, Color bgcolor, FontJustified justified) : GameObject(Object_Font) {
 		this->dimensions = dimensions;
 		imgrect.x = dimensions.x;
@@ -59,13 +58,16 @@ public:
 
 	~FontObject() {
  		if (message != NULL) SDL_DestroyTexture(message);
+		if (loadedFont) TTF_CloseFont(font);
 		//if(font != nullptr) TTF_CloseFont(font);
 	}
+
 	/// creates a new texture with the passed text
 	void setText(std::string str, SDL_Color color) {
 		text = str;
 		this->color = color;
 		if (message != NULL) SDL_DestroyTexture(message);
+
 		//SDL_Surface * surface = TTF_RenderText_Shaded(font, text.c_str(), this->color, bgcolor);
 		SDL_Surface * surface = TTF_RenderText_Blended(font, text.c_str(), this->color);
 		if (surface == NULL) {
@@ -76,14 +78,14 @@ public:
 		imgrect.h = surface->clip_rect.h;
 
 		switch (justification) {
-		case LEFT:
+		case FontJustified_LEFT:
 			//imgrect.y = dimensions.y + (dimensions.h - surface->clip_rect.h); // top justified
 			break;
-		case CENTER:
+		case FontJustified_CENTER:
 			imgrect.x = dimensions.x + (dimensions.w / 2 - surface->clip_rect.w / 2);
 			imgrect.y = dimensions.y + (dimensions.h / 2 - surface->clip_rect.h / 2); // center justified
 			break;
-		case RIGHT:
+		case FontJustified_RIGHT:
 			imgrect.x = dimensions.x + (dimensions.w - surface->clip_rect.w);
 			//imgrect.y = dimensions.y + (dimensions.h - surface->clip_rect.h); // bottom justified
 			break;
@@ -121,6 +123,15 @@ public:
 	/// Set the color of the already provided text
 	void setColor(Color color) {
 		setText(text, color);
+	}
+
+	void loadFont(std::string path, int size) {
+		if (loadedFont) TTF_CloseFont(font);
+		font = TTF_OpenFont(path.c_str(), size);
+		if (font == NULL) {
+			std::cout << "Error loading font at " << path << std::endl;
+		}
+		loadedFont = true;
 	}
 
 	/// Set the font style and refresh texture
