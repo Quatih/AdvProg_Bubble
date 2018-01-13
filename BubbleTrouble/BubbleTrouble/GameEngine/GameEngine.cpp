@@ -106,8 +106,8 @@ void GameEngine::initPlayingObjects() {
 		manager->addObject<PlayerObject>(spike2, PLAYER2);
 	}
 
-	for (auto& spike = manager->getObjectBaseVector(Object_Spike)->begin(); spike != manager->getObjectBaseVector(Object_Spike)->end(); spike++) {
-		(*spike)->hide();
+	for (auto& spike : *manager->getObjectBaseVector(Object_Spike)) {
+		spike->hide();
 	}
 	addLife(); 
 	addLife(); 
@@ -146,8 +146,8 @@ void GameEngine::resetLevel() {
 			a->destroy();
 		}
 		cleanObjects();
-		for (auto& spike = manager->getObjectBaseVector(Object_Spike)->begin(); spike != manager->getObjectBaseVector(Object_Spike)->end(); spike++) {
-			(*spike)->hide();
+		for (auto &spike : *(manager->getObjectBaseVector(Object_Spike))) {
+			spike->hide();
 		}
 		for (int i = 0; i < 3; i++) {
 			generateRandomBubble();
@@ -175,6 +175,7 @@ void GameEngine::resetLevel() {
 		text->setText("You died! Press Enter to restart.", BLACK);
 		pause();
 	}
+
 }
 
 /// Method for condensing some code, updates each object while playing and do appropriate actions/processing.
@@ -187,27 +188,27 @@ void GameEngine::playLogicUpdate() {
 	scoreText->show();
 	timerText->show();
 
-	auto bubbles = manager->getObjectTypeVector<BubbleObject>(Object_Bubble);
-
-	for (auto & player = manager->getObjectBaseVector(Object_Player)->begin(); player != manager->getObjectBaseVector(Object_Player)->end(); player++) {
-		for (auto & bubble : bubbles) {
-			if (collidesWithCircle(((*player)->render_rect), (bubble->render_rect))) {
+	for (auto& player : *(manager->getObjectBaseVector(Object_Player))) {
+		for (auto & bubble : *(manager->getObjectBaseVector(Object_Bubble))) {
+			if (collidesWithCircle((player->render_rect), (bubble->render_rect))) {
 				auto life = manager->getObjectTypeVector<GameObject>(Object_Lives);
 				Mix_HaltChannel(1);
-				(*player)->getComponent<SoundHandler>()->play();
+				player->getComponent<SoundHandler>()->play();
+
 				if (life.size() > 1) {
 					std::cout << "WE COLLIDIN'\n";
-#ifdef __linux__
-					nanosleep(1500 * 1000 * 1000);
-#else
-					Sleep(1500);
-#endif
+
 					life.back()->destroy();
 				}
 				if (life.size() == 1) {
 					std::cout << "WE DEAD!\n";
 					life.back()->destroy();
 				}
+#ifdef __linux__
+				nanosleep(1500 * 1000 * 1000);
+#else
+				Sleep(1500);
+#endif
 
 				resetLevel();
 
@@ -216,7 +217,7 @@ void GameEngine::playLogicUpdate() {
 
 		for (auto& a : manager->getObjectTypeVector<PowerUpObject>(Object_PowerUp)) {
 			//the code is placed here because, once the spike hits the bubble, isVisible() = false, hence in the next update call the if (spike->isVisible()) is never entered.
-			if (collidesWithRect((*player)->render_rect, a->render_rect)) {
+			if (collidesWithRect(player->render_rect, a->render_rect)) {
 				std::cout << "powerup gained\n";
 				if (a->powerUpType == PU_Life && manager->getObjectBaseVector(Object_Lives)->size() <= 5) {
 					addLife();
@@ -228,13 +229,12 @@ void GameEngine::playLogicUpdate() {
 			}
 		}
 	}
-
-	for (auto& spike = manager->getObjectBaseVector(Object_Spike)->begin(); spike != manager->getObjectBaseVector(Object_Spike)->end(); spike++) {
+	for (auto& spike : (*(manager->getObjectBaseVector(Object_Spike)))) {
 	
-		if ((*spike)->isVisible()) {
+		if (spike->isVisible()) {
 
-			for (auto& bubble : bubbles) {
-				if ((*spike)->isVisible() && collidesWithCircle(((*spike)->render_rect), (bubble->render_rect))) {
+			for (auto& bubble : manager->getObjectTypeVector<BubbleObject>(Object_Bubble)) {
+				if (spike->isVisible() && collidesWithCircle((spike->render_rect), (bubble->render_rect))) {
 					Mix_HaltChannel(1);
 					bubble->getComponent<SoundHandler>()->play();
 
@@ -257,7 +257,7 @@ void GameEngine::playLogicUpdate() {
 						powerUpObject->getComponent<MovementHandler>()->setPosition(bubble->render_rect.x, bubble->render_rect.y);
 					}
 
-					(*spike)->hide();
+					spike->hide();
 					bubble->destroy();
 
 					score++;
