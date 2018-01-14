@@ -96,7 +96,7 @@ public:
 	void unpause();
 
 	/// Add a life to the board
-	void addLife();
+	void addLife(PlayerNumber playerType);
 
 	/// Set the State of the game, takes appropriate action.
 	void setState(GameStates state);

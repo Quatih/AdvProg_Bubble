@@ -98,20 +98,27 @@ void GameEngine::initPlayingObjects() {
 	if (currentState == G_Infinite_1Player) {
 		auto spike = manager->addObject<SpikeObject>();
 		manager->addObject<PlayerObject>(spike, SINGLEPLAYER);
+		addLife(SINGLEPLAYER);
+		addLife(SINGLEPLAYER);
+		addLife(SINGLEPLAYER);
 	}
 	else if (currentState == G_Infinite_2Player) {
 		auto spike1 = manager->addObject<SpikeObject>();
 		auto spike2 = manager->addObject<SpikeObject>();
 		manager->addObject<PlayerObject>(spike1, PLAYER1);
 		manager->addObject<PlayerObject>(spike2, PLAYER2);
+		addLife(PLAYER1);
+		addLife(PLAYER1);
+		addLife(PLAYER1);
+		addLife(PLAYER2);
+		addLife(PLAYER2);
+		addLife(PLAYER2);
 	}
 
 	for (auto& spike : *manager->getObjectBaseVector(Object_Spike)) {
 		spike->hide();
 	}
-	addLife(); 
-	addLife(); 
-	addLife();
+
 
 	SDL_Rect scorepos;
 	scorepos.h = 48;
@@ -138,7 +145,7 @@ void GameEngine::initPlayingObjects() {
 }
 
 void GameEngine::resetLevel() {
-	if (manager->getObjectVector(Object_Lives).size() > 1) {
+	if (manager->getObjectVector(Object_Life_P1).size() > 1) {
 		for (auto a : manager->getObjectTypeVector<BubbleObject>(Object_Bubble)) {
 			a->destroy();
 		}
@@ -259,14 +266,14 @@ bool GameEngine::handleCollision(GameObject * thing, GameObject * other) {
 				Mix_HaltChannel(1);
 				thing->getComponent<SoundHandler>()->play();
 
-				if (manager->getObjectBaseVector(Object_Lives)->size() > 1) {
+				if (manager->getObjectBaseVector(Object_Life_P1)->size() > 1) {
 					std::cout << "WE COLLIDIN'\n";
 
-					manager->getObjectBaseVector(Object_Lives)->back()->destroy();
+					manager->getObjectBaseVector(Object_Life_P1)->back()->destroy();
 				}
-				if (manager->getObjectBaseVector(Object_Lives)->size() <= 1) {
+				if (manager->getObjectBaseVector(Object_Life_P1)->size() <= 1) {
 					std::cout << "WE DEAD!\n";
-					manager->getObjectBaseVector(Object_Lives)->back()->destroy();
+					manager->getObjectBaseVector(Object_Life_P1)->back()->destroy();
 				}
 #ifdef __linux__
 				nanosleep(1500 * 1000 * 1000);
@@ -279,8 +286,8 @@ bool GameEngine::handleCollision(GameObject * thing, GameObject * other) {
 				break;
 			case Object_PowerUp:
 				std::cout << "powerup gained\n";
-				if (static_cast<PowerUpObject*>(thing)->powerUpType == PU_Life && manager->getObjectBaseVector(Object_Lives)->size() <= 5) {
-					addLife();
+				if (static_cast<PowerUpObject*>(thing)->powerUpType == PU_Life && manager->getObjectBaseVector(Object_Life_P1)->size() <= 5) {
+					addLife(static_cast<PlayerObject*>(other)->playerType);
 				}
 				else if (static_cast<PowerUpObject*>(thing)->powerUpType == PU_Coin)
 					score += 5;
@@ -456,7 +463,7 @@ void GameEngine::handleEvents() {
 
 	if (currentState == G_Infinite_1Player || currentState == G_Infinite_2Player) {
 
-		if (keyMap[SDL_SCANCODE_P] && paused && !manager->getObjectBaseVector(Object_Lives)->empty()) {
+		if (keyMap[SDL_SCANCODE_P] && paused && !manager->getObjectBaseVector(Object_Life_P1)->empty()) {
 			unpause();
 		}
 
@@ -606,13 +613,24 @@ void inline GameEngine::generateRandomBubble() {
 }
 
 /// Add a life to the board
-void inline GameEngine::addLife() {
-	auto lives = manager->addObject(Object_Lives);
-	lives->addComponent<MovementHandler>(0, 0);
-	lives->addComponent<TileHandler>(heartTexture.get(), 1);
-	lives->init();
-	// set the position in the succession
-	lives->getComponent<MovementHandler>()->setPosition((double)(manager->getObjectBaseVector(Object_Lives)->size() - 1) * lives->render_rect.w + 10, 10);
+void inline GameEngine::addLife(PlayerNumber playerType) {
+	if (playerType == PLAYER2) {
+		auto lives = manager->addObject(Object_Life_P2);
+		lives->addComponent<MovementHandler>(0, 0);
+		lives->addComponent<TileHandler>(heartTexture.get(), 1);
+		lives->init();
+		// set the position in the succession
+		lives->getComponent<MovementHandler>()->setPosition((double)(manager->getObjectBaseVector(Object_Life_P2)->size() - 1) * lives->render_rect.w + 10, 60);
+	}
+	else {
+		auto lives = manager->addObject(Object_Life_P1);
+		lives->addComponent<MovementHandler>(0, 0);
+		lives->addComponent<TileHandler>(heartTexture.get(), 1);
+		lives->init();
+		// set the position in the succession
+		lives->getComponent<MovementHandler>()->setPosition((double)(manager->getObjectBaseVector(Object_Life_P1)->size() - 1) * lives->render_rect.w + 10, 10);
+
+	}
 }
 
 /// 
