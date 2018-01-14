@@ -50,6 +50,7 @@ private:
 	std::unique_ptr<MenuManager> menu;
 
 public:
+	Uint8 svolume = 50;
 	std::map<Uint8, bool> keystates;
 	int score = 0;
 	/// Constructor creates the window and renderer

@@ -516,12 +516,40 @@ void GameEngine::handleEvents() {
 				setState(G_Infinite_2Player);
 				menu->menu.clear();
 				break;
+			case BID_Volume:
+				menu->pushMenu(M_Volume);
+				break;
+			case BID_Mute:
+				svolume = 0;
+				Mix_Volume(-1, svolume);
+				menu->popMenu();
+				menu->popMenu();
+				break;
+			case BID_Min:
+				svolume = 25;
+				Mix_Volume(-1, svolume);
+				menu->popMenu();
+				menu->popMenu();
+				break;
+			case BID_Med:
+				svolume = 50;
+				Mix_Volume(-1, svolume);
+				menu->popMenu();
+				menu->popMenu();
+				break;
+			case BID_Max:
+				svolume = 100;
+				Mix_Volume(-1, svolume);
+				menu->popMenu();
+				menu->popMenu();
+				break;
 			default:
 				break;
 			}
 		}
 		if (keyMap[SDL_SCANCODE_ESCAPE]) {
-			running = false;
+			if (menu->menu.size() > 0) menu->popMenu();
+			else running = false;
 		}
 	}
 }
