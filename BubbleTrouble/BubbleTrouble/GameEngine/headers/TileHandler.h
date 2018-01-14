@@ -5,7 +5,6 @@
 extern SDL_Renderer * renderer;
 /// Takes care of loading and rendering the texture for the objects
 class TileHandler : public GameComponent {
-
 private:
 	bool loadedTexture = false;
 
@@ -15,6 +14,8 @@ private:
 		loadedTexture = true;
 	}
 	TextureLoader * texture;
+
+
 public:
 
 	double scale = 1;
@@ -60,7 +61,8 @@ public:
 	TextureLoader * getTextureLoader() const {
 		return texture;
 	}
-	
+
+	/// Change the texture to the loaded texture.
 	void setTextureLoader(TextureLoader * textureLoader) {
 		if (loadedTexture) delete texture;
 		loadedTexture = false;
@@ -68,6 +70,7 @@ public:
 		init();
 	}
 
+	/// Load a new texture from the path.
 	TextureLoader * loadNewTexture(std::string path) {
 		if (loadedTexture) delete texture;
 

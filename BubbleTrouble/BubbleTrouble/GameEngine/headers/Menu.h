@@ -136,7 +136,6 @@ public:
 		}
 		titleText->draw();
 	}
-
 };
 
 /// Keeps track of the menu overlays
@@ -157,6 +156,7 @@ public:
 	void nextButton() {
 		menu.back()->nextButton();
 	}
+
 	/// Set the previous button above
 	void previousButton() {
 		menu.back()->previousButton();
@@ -177,7 +177,6 @@ public:
 	/// Add a new menu of the type to the stack
 	void pushMenu(MenuType type) {
 		BaseMenu * pushedmenu = new BaseMenu(type, buttonTexture.get(), activeButtonTexture.get());
-
 		menu.emplace_back(std::move(pushedmenu));
 	}
 

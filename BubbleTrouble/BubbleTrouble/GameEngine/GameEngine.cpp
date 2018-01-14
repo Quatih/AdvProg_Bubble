@@ -293,15 +293,10 @@ void GameEngine::update() {
 		case G_Menu:
 			break;
 		case G_Infinite_1Player:
-
 			playLogicUpdate();
-
-
 			break;
 		case G_Infinite_2Player:
-
 			playLogicUpdate();
-
 			break;
 		case G_Level1:
 			break;
