@@ -16,6 +16,7 @@ SDL_Renderer * renderer;
 SDL_Window * window;
 TTF_Font * font;
 
+int svolume = 0;
 /// Rectangle for the playingZone objects can be within
 SDL_Rect playZone;
 
@@ -81,6 +82,8 @@ void GameEngine::init() {
 
 	bubbleExplosion = Mix_LoadWAV("assets/pop.wav");
 
+
+
 	// Add entries to the keystates map
 	keystates[SDL_SCANCODE_UP] = false;
 	keystates[SDL_SCANCODE_DOWN] = false;
@@ -98,20 +101,27 @@ void GameEngine::initPlayingObjects() {
 	if (currentState == G_Infinite_1Player) {
 		auto spike = manager->addObject<SpikeObject>();
 		manager->addObject<PlayerObject>(spike, SINGLEPLAYER);
+		addLife(Object_Lives);
+		addLife(Object_Lives);
+		addLife(Object_Lives);
 	}
 	else if (currentState == G_Infinite_2Player) {
 		auto spike1 = manager->addObject<SpikeObject>();
 		auto spike2 = manager->addObject<SpikeObject>();
 		manager->addObject<PlayerObject>(spike1, PLAYER1);
+		addLife(Object_Lives);
+		addLife(Object_Lives);
+		addLife(Object_Lives);
 		manager->addObject<PlayerObject>(spike2, PLAYER2);
+		addLife(Object_Lives2);
+		addLife(Object_Lives2);
+		addLife(Object_Lives2);
 	}
 
 	for (auto& spike : *manager->getObjectBaseVector(Object_Spike)) {
 		spike->hide();
 	}
-	addLife(); 
-	addLife(); 
-	addLife();
+	
 
 	SDL_Rect scorepos;
 	scorepos.h = 48;
@@ -138,7 +148,13 @@ void GameEngine::initPlayingObjects() {
 }
 
 void GameEngine::resetLevel() {
-	if (manager->getObjectVector(Object_Lives).size() > 1) {
+	if (manager->getObjectVector(Object_Lives).size() == 1 || manager->getObjectVector(Object_Lives2).size() == 1) {
+		SDL_Rect a = { playZone.w / 2 - 24, playZone.h / 2 - 50, 100, 48 };
+		auto text = manager->addObject<FontObject>(font, a, FontJustified_CENTER);
+		text->setText("You died! Press Enter to restart.", BLACK);
+		pause();
+	}
+	else {
 		for (auto a : manager->getObjectTypeVector<BubbleObject>(Object_Bubble)) {
 			a->destroy();
 		}
@@ -153,7 +169,7 @@ void GameEngine::resetLevel() {
 			generateRandomBubble();
 		}
 
-		if (currentState == G_Infinite_1Player) { 
+		if (currentState == G_Infinite_1Player) {
 			auto player = manager->getObjectBaseVector(Object_Player)->front().get();
 			player->render_rect.x = playZone.x + playZone.w / 2 - player->render_rect.w / 2 - 5;
 			player->getComponent<MovementHandler>()->setPosition(player->render_rect.x, player->render_rect.y);
@@ -169,58 +185,89 @@ void GameEngine::resetLevel() {
 		stageTimer.start();
 		unpause();
 	}
-	else {
-		SDL_Rect a = { playZone.w / 2 - 24, playZone.h / 2 - 50, 100, 48 };
-		auto text = manager->addObject<FontObject>(font, a, FontJustified_CENTER);
-		text->setText("You died! Press Enter to restart.", BLACK);
-		pause();
 	}
 
-}
+
 
 /// Method for condensing some code, updates each object while playing and do appropriate actions/processing.
 void GameEngine::playLogicUpdate() {
 	
 	manager->update();
 
+	Mix_Volume(-1, svolume);
+
 	timerText->setText(std::to_string(stageTimer.getMillis() / 1000));
 	scoreText->setText(std::to_string(score));
 	scoreText->show();
 	timerText->show();
 
-	for (auto& player : *(manager->getObjectBaseVector(Object_Player))) {
+	for (auto& player : manager->getObjectTypeVector<PlayerObject>(Object_Player)) {
 		for (auto & bubble : *(manager->getObjectBaseVector(Object_Bubble))) {
 			if (collidesWithCircle((player->render_rect), (bubble->render_rect))) {
-				auto life = manager->getObjectTypeVector<GameObject>(Object_Lives);
-				Mix_HaltChannel(1);
-				player->getComponent<SoundHandler>()->play();
+				if (player->playerType == SINGLEPLAYER) {
+					auto life = manager->getObjectTypeVector<GameObject>(Object_Lives);
+					Mix_HaltChannel(1);
+					player->getComponent<SoundHandler>()->play();
 
-				if (life.size() > 1) {
-					std::cout << "WE COLLIDIN'\n";
+					if (life.size() > 1) {
+						std::cout << "WE COLLIDIN'\n";
 
-					life.back()->destroy();
+						life.back()->destroy();
+					}
+					if (life.size() == 1) {
+						std::cout << "WE DEAD!\n";
+						life.back()->destroy();
+					}
 				}
-				if (life.size() == 1) {
-					std::cout << "WE DEAD!\n";
-					life.back()->destroy();
+				if (player->playerType == PLAYER1) {
+					auto life = manager->getObjectTypeVector<GameObject>(Object_Lives);
+					Mix_HaltChannel(1);
+					player->getComponent<SoundHandler>()->play();
+
+					if (life.size() > 1) {
+						std::cout << "WE COLLIDIN'\n";
+
+						life.back()->destroy();
+					}
+					if (life.size() == 1) {
+						std::cout << "WE DEAD!\n";
+						life.back()->destroy();
+					}
 				}
+				if (player->playerType == PLAYER2) {
+					auto life = manager->getObjectTypeVector<GameObject>(Object_Lives2);
+					Mix_HaltChannel(1);
+					player->getComponent<SoundHandler>()->play();
+
+					if (life.size() > 1) {
+						std::cout << "WE COLLIDIN'\n";
+
+						life.back()->destroy();
+					}
+					if (life.size() == 1) {
+						std::cout << "WE DEAD!\n";
+						life.back()->destroy();
+					}
+			}
 #ifdef __linux__
-				nanosleep(1500 * 1000 * 1000);
+					nanosleep(1500 * 1000 * 1000);
 #else
-				Sleep(1500);
+					Sleep(1500);
 #endif
 
-				resetLevel();
-
+					resetLevel();
+				}
+			
+	
 			}
-		}
+		
 
 		for (auto& a : manager->getObjectTypeVector<PowerUpObject>(Object_PowerUp)) {
 			//the code is placed here because, once the spike hits the bubble, isVisible() = false, hence in the next update call the if (spike->isVisible()) is never entered.
 			if (collidesWithRect(player->render_rect, a->render_rect)) {
 				std::cout << "powerup gained\n";
 				if (a->powerUpType == PU_Life && manager->getObjectBaseVector(Object_Lives)->size() <= 5) {
-					addLife();
+				//	addLife(ObjectType);
 				}
 				else if (a->powerUpType == PU_Coin)
 					score += 5;
@@ -229,6 +276,8 @@ void GameEngine::playLogicUpdate() {
 			}
 		}
 	}
+	
+
 	for (auto& spike : (*(manager->getObjectBaseVector(Object_Spike)))) {
 	
 		if (spike->isVisible()) {
@@ -421,6 +470,24 @@ void GameEngine::handleEvents() {
 				setState(G_Infinite_2Player);
 				menu->menu.clear();
 				break;
+			case BID_Volume:
+				menu->pushMenu(M_Volume);
+				break;
+			case BID_Mute:
+				svolume=0;
+				menu->popMenu();
+				menu->popMenu();
+				break;
+			case BID_Min:
+			    svolume=50;
+				menu->popMenu();
+				menu->popMenu();
+				break;
+			case BID_Max:
+				svolume = 128;
+				menu->popMenu();
+				menu->popMenu();
+				break;
 			default:
 				break;
 			}
@@ -519,14 +586,21 @@ void inline GameEngine::generateRandomBubble() {
 }
 
 /// Add a life to the board
-void inline GameEngine::addLife() {
-	auto lives = manager->addObject(Object_Lives);
+void inline GameEngine::addLife(ObjectType type) {
+	auto lives = manager->addObject(type);
 	lives->addComponent<MovementHandler>(0, 0);
 	lives->addComponent<TileHandler>(heartTexture.get(), 1);
 	lives->init();
 	// set the position in the succession
-	lives->getComponent<MovementHandler>()->setPosition((double)(manager->getObjectBaseVector(Object_Lives)->size() - 1) * lives->render_rect.w + 10, 10);
+	if(type == Object_Lives){
+		lives->getComponent<MovementHandler>()->setPosition((double)(manager->getObjectBaseVector(Object_Lives)->size() - 1) * lives->render_rect.w + 10, 10);
+	}
+	else {
+		lives->getComponent<MovementHandler>()->setPosition((double)(manager->getObjectBaseVector(Object_Lives2)->size() - 1) * lives->render_rect.w + 10, 50);
+	}
+	
 }
+
 
 /// 
 BubbleObject * GameEngine::addBubble(BubbleType type, int posX, int posY, int direction, TextureLoader * texture) {

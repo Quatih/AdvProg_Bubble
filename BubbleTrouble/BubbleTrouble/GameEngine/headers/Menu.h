@@ -5,11 +5,12 @@
 #include <map>
 
 
-enum MenuType {M_Main, M_PlayMode, M_Infinite, M_Options};
+enum MenuType {M_Main, M_PlayMode, M_Infinite, M_Options, M_Volume};
 extern SDL_Window * window;
 extern TTF_Font * font;
-enum ButtonID : Uint64 {BID_PlayMode, BID_Options, BID_Exit, BID_Back, BID_Infinite, BID_Level, BID_1Player, BID_2Player};
-const std::string buttonText[] = {"Play", "Options", "Quit", "Back", "Infinite Mode", "Level Mode", "1 Player", "2 Player"};
+enum ButtonID : Uint64 {BID_PlayMode, BID_Options, BID_Exit, BID_Back, BID_Infinite, BID_Level, BID_1Player, BID_2Player, BID_Volume, BID_Min, BID_Max, BID_Mute
+};
+const std::string buttonText[] = {"Play", "Options", "Quit", "Back", "Infinite Mode", "Level Mode", "1 Player", "2 Player", "Set Volume", "Minimum", "Maximum" , "Mute" };
 
 /// Menu class that keeps track of all objects in the menu
 class BaseMenu {
@@ -75,6 +76,13 @@ public:
 			addButton(BID_Back);
 			break;
 		case M_Options:
+			addButton(BID_Volume);
+			addButton(BID_Back);
+			break;
+		case M_Volume:
+			addButton(BID_Min);
+			addButton(BID_Max);
+			addButton(BID_Mute);
 			addButton(BID_Back);
 			break;
 		default:

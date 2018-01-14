@@ -62,6 +62,7 @@ public:
 		if (Mix_PlayChannel(ch, audio, 0) == -1) {
 			std::cout << "Error playing sound\n";
 		}
+
 	}
 
 
