@@ -11,6 +11,7 @@ extern TTF_Font * font;
 enum ButtonID : Uint64 {BID_PlayMode, BID_Options, BID_Exit, BID_Back, BID_Infinite, BID_Level, BID_1Player, BID_2Player};
 const std::string buttonText[] = {"Play", "Options", "Quit", "Back", "Infinite Mode", "Level Mode", "1 Player", "2 Player"};
 
+/// Menu class that keeps track of all objects in the menu
 class BaseMenu {
 private:
 	MenuType type;
@@ -54,6 +55,7 @@ public:
 
 		titleText = std::make_unique<FontObject>("assets/FreeSansBold.ttf", 80, titleRect, FontJustified_CENTER);
 		titleText->setText("Bubble Trouble", BLACK);
+
 
 		switch (type) {
 		case M_Main:
@@ -137,9 +139,10 @@ public:
 
 };
 
-
+/// Keeps track of the menu overlays
 class MenuManager {
 public:
+	/// The Menu stack
 	std::vector<std::unique_ptr<BaseMenu>> menu;
 
 	std::unique_ptr<TextureLoader> buttonTexture;
@@ -150,34 +153,40 @@ public:
 		activeButtonTexture = std::make_unique<TextureLoader>("assets/MenuSelected.png");
 	}
 
+	/// Set the next button below
 	void nextButton() {
 		menu.back()->nextButton();
 	}
-
+	/// Set the previous button above
 	void previousButton() {
 		menu.back()->previousButton();
 	}
 
+	/// Returns which button is currently active or highlighted
 	ButtonID activeButtonID() {
 		return menu.back()->buttonIDs[menu.back()->activeButton];
 	}
 
 	void draw() {
+		// We only want to draw top of the stack if it has any items
 		if (!menu.empty()) {
 			menu.back()->draw();
 		}
 	}
 
+	/// Add a new menu of the type to the stack
 	void pushMenu(MenuType type) {
 		BaseMenu * pushedmenu = new BaseMenu(type, buttonTexture.get(), activeButtonTexture.get());
 
 		menu.emplace_back(std::move(pushedmenu));
 	}
 
+	/// Pop a menu from the stack.
 	void popMenu() {
 		if(!menu.empty()) menu.pop_back();
 	}
 
+	/// Clear all the menus
 	void clearMenu() {
 		while (!menu.empty()) {
 			menu.pop_back();
