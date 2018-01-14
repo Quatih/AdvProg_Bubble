@@ -49,7 +49,6 @@ private:
 	MillisTimer stageTimer;
 	std::unique_ptr<MenuManager> menu;
 
-
 public:
 	std::map<Uint8, bool> keystates;
 	int score = 0;
@@ -107,5 +106,7 @@ public:
 
 	/// Add a bubble to the bubble vector and initialize.
 	BubbleObject * addBubble(BubbleType type, int posX, int posY, int direction, TextureLoader * texture);
+
+	bool handleCollision(GameObject * thing, GameObject * other);
 	//BubbleObject * addBubble(int radius, int posX, int posY, double velocityX, double velocityY, double acceleration, int pops, TextureLoader * texture);
 };	
