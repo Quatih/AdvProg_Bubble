@@ -5,6 +5,11 @@
 #include "headers/SoundHandler.h"
 #include "headers/CollisionChecks.h"
 #include <string>
+#include <iostream>
+#include <fstream>
+#include <ctime>
+
+
 
 #ifdef __linux__
 #include <unistd.h>
@@ -137,7 +142,57 @@ void GameEngine::initPlayingObjects() {
 
 }
 
+void GameEngine::fileHandling(void)
+{
+	std::time_t result = std::time(nullptr);
+	
+	std::ofstream myfile("scoreboard.txt", std::ios::app);
+	if (myfile.is_open())
+	{
+		if (this->score)
+		{
+			myfile << this->score << std::endl;
+			//myfile << std::asctime(std::localtime(&result)) << std::endl;
+			//myfile << "    " << dt << std::endl;
+			myfile.close();
+		}
+	}
+}
+
+struct greater
+{
+	template<class T>
+	bool operator()(T const &a, T const &b) const { return a > b; }
+};
+
+void GameEngine::readScores(void){
+
+	std::vector <int> fScore;
+
+	std::string line;
+	std::ifstream myfile("scoreboard.txt");
+	if (myfile.is_open())
+	{
+		while (getline(myfile, line))
+		{
+			fScore.push_back( std::stoi(line));
+		}
+		myfile.close();
+
+		;
+
+		//std::sort(numbers.begin(), numbers.end(), greater());
+
+		std::sort(fScore.begin(), fScore.end(), greater());
+		for (auto &fScore_print : fScore)
+		{
+			std::cout << "score = " << fScore_print << std::endl;
+		}
+	}
+}
 void GameEngine::resetLevel() {
+	fileHandling();
+	readScores();
 	if (manager->getObjectVector(Object_Lives).size() > 1) {
 		for (auto a : manager->getObjectTypeVector<BubbleObject>(Object_Bubble)) {
 			a->destroy();
@@ -165,6 +220,7 @@ void GameEngine::resetLevel() {
 			player2->getComponent<MovementHandler>()->setPosition(playZone.x + 3 * playZone.w / 4 - player2->render_rect.w / 2 - 5, player2->render_rect.y);
 
 		}
+		
 		score = 0;
 		stageTimer.start();
 		unpause();
@@ -173,6 +229,7 @@ void GameEngine::resetLevel() {
 		SDL_Rect a = { playZone.w / 2 - 24, playZone.h / 2 - 50, 100, 48 };
 		auto text = manager->addObject<FontObject>(font, a, FontJustified_CENTER);
 		text->setText("You died! Press Enter to restart.", BLACK);
+		
 		pause();
 	}
 
@@ -211,7 +268,7 @@ void GameEngine::playLogicUpdate() {
 #endif
 
 				resetLevel();
-
+				break;
 			}
 		}
 

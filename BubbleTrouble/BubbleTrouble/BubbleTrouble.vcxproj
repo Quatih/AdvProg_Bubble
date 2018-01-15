@@ -105,6 +105,7 @@
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>C:\Dev\SDL2_mixer\include;C:\Dev\SDL2_image\include;C:\Dev\SDL2\include;C:\Dev\SDL2_ttf\include</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <AdditionalLibraryDirectories>C:\Dev\SDL2_ttf\lib\x64;C:\Dev\SDL2_image\lib\x64;C:\Dev\SDL2\lib\x64;C:\Dev\SDL2_mixer\lib\x64</AdditionalLibraryDirectories>

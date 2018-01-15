@@ -105,6 +105,9 @@ public:
 	/// Generate a random bubble
 	void inline generateRandomBubble();
 
+	void fileHandling(void);
+	void readScores(void);
+
 	/// Add a bubble to the bubble vector and initialize.
 	BubbleObject * addBubble(BubbleType type, int posX, int posY, int direction, TextureLoader * texture);
 	//BubbleObject * addBubble(int radius, int posX, int posY, double velocityX, double velocityY, double acceleration, int pops, TextureLoader * texture);
