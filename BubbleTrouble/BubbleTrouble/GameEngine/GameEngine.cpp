@@ -24,7 +24,7 @@ SDL_Rect playZone;
 GameEngine::GameEngine(std::string title, int winposx, int winposy, int winwidth, int winheight, SDL_WindowFlags flag) {
 	SDL_Init(SDL_INIT_EVERYTHING);
 	window = SDL_CreateWindow(title.c_str(), winposx, winposy, winwidth, winheight, flag);
-	
+
 	renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
 	std::cout << "Game Engine Constructed.\n";
 	running = true;
@@ -94,15 +94,7 @@ void GameEngine::init() {
 /// Initialise objects for playing the game
 void GameEngine::initPlayingObjects() {
 	score = 0;
-
-	if (currentState == G_Infinite_1Player) {
-		auto spike = manager->addObject<SpikeObject>();
-		manager->addObject<PlayerObject>(spike, SINGLEPLAYER);
-		addLife(SINGLEPLAYER);
-		addLife(SINGLEPLAYER);
-		addLife(SINGLEPLAYER);
-	}
-	else if (currentState == G_Infinite_2Player) {
+	 if (currentState == G_Infinite_2Player) {
 		auto spike1 = manager->addObject<SpikeObject>();
 		auto spike2 = manager->addObject<SpikeObject>();
 		manager->addObject<PlayerObject>(spike1, PLAYER1);
@@ -113,6 +105,13 @@ void GameEngine::initPlayingObjects() {
 		addLife(PLAYER2);
 		addLife(PLAYER2);
 		addLife(PLAYER2);
+	}
+	else {
+		auto spike = manager->addObject<SpikeObject>();
+		manager->addObject<PlayerObject>(spike, SINGLEPLAYER);
+		addLife(SINGLEPLAYER);
+		addLife(SINGLEPLAYER);
+		addLife(SINGLEPLAYER);
 	}
 
 	for (auto& spike : *manager->getObjectBaseVector(Object_Spike)) {
@@ -152,27 +151,65 @@ void GameEngine::resetLevel() {
 		for (auto & a : manager->getObjectTypeVector<PowerUpObject>(Object_PowerUp)) {
 			a->destroy();
 		}
-		
+
 		cleanObjects();
-		
+
 		for (auto &spike : *(manager->getObjectBaseVector(Object_Spike))) {
 			spike->hide();
 		}
-		for (int i = 0; i < 3; i++) {
-			generateRandomBubble();
+
+		switch (currentState)
+		{
+		case G_Level1:
+			for (int i = 0; i < 1; i++) {
+				generateRandomBubble();
+			}
+			break;
+		case G_Level2:
+			for (int i = 0; i < 2; i++) {
+				generateRandomBubble();
+			}
+			break;
+		case G_Level3:
+			for (int i = 0; i < 3; i++) {
+				generateRandomBubble();
+			}
+			break;
+		case G_Level4:
+			for (int i = 0; i < 4; i++) {
+				generateRandomBubble();
+			}
+			break;
+		case G_Level5:
+			for (int i = 0; i < 5; i++) {
+				generateRandomBubble();
+			}
+			break;
+		default:
+			break;
 		}
-		if (currentState == G_Infinite_1Player) { 
-			auto player = manager->getObjectBaseVector(Object_Player)->front().get();
-			player->render_rect.x = playZone.x + playZone.w / 2 - player->render_rect.w / 2 - 5;
-			player->getComponent<MovementHandler>()->setPosition(player->render_rect.x, player->render_rect.y);
-		}
-		else if (currentState == G_Infinite_2Player) {
+
+		if (currentState == G_Infinite_2Player) {
 			auto player1 = manager->getObjectBaseVector(Object_Player)->at(0).get();
 			auto player2 = manager->getObjectBaseVector(Object_Player)->at(1).get();
 			player1->getComponent<MovementHandler>()->setPosition(playZone.x + playZone.w / 4 - player1->render_rect.w / 2 - 5, player1->render_rect.y);
 			player2->getComponent<MovementHandler>()->setPosition(playZone.x + 3 * playZone.w / 4 - player2->render_rect.w / 2 - 5, player2->render_rect.y);
+			if (manager->getObjectVector(Object_Bubble).empty()) {
+				for (int i = 0; i < 3; i++) {
+					generateRandomBubble();
+				}
+			}
 		}
-		
+		else if (currentState == G_Infinite_1Player) {
+			auto player = manager->getObjectBaseVector(Object_Player)->front().get();
+			player->render_rect.x = playZone.x + playZone.w / 2 - player->render_rect.w / 2 - 5;
+			player->getComponent<MovementHandler>()->setPosition(player->render_rect.x, player->render_rect.y);
+			if (manager->getObjectVector(Object_Bubble).empty()) {
+				for (int i = 0; i < 3; i++) {
+					generateRandomBubble();
+				}
+			}
+		}
 		score = 0;
 		stageTimer.start();
 		unpause();
@@ -293,7 +330,7 @@ bool GameEngine::handleCollision(GameObject * thing, GameObject * other) {
 					score += 5;
 
 				thing->destroy();
-				
+
 				break;
 			default:
 				break;
@@ -325,7 +362,7 @@ bool GameEngine::handleCollision(GameObject * thing, GameObject * other) {
 					auto powerUpObject = manager->addObject<PowerUpObject>(PUtype);
 					powerUpObject->getComponent<MovementHandler>()->setPosition(thing->render_rect.x, thing->render_rect.y);
 				}
-				
+
 				std::cout << "Bubble popped\n";
 				if (dynamic_cast<BubbleObject*>(thing)->pops > 0) {
 					std::size_t cindex = randInt<std::size_t>(0, bubbleTextures.size() - 1);
@@ -343,7 +380,7 @@ bool GameEngine::handleCollision(GameObject * thing, GameObject * other) {
 
 /// Method for condensing some code, updates each object while playing and do appropriate actions/processing.
 void GameEngine::playLogicUpdate() {
-	
+
 	manager->update();
 
 	timerText->setText(std::to_string(stageTimer.getMillis() / 1000));
@@ -353,7 +390,7 @@ void GameEngine::playLogicUpdate() {
 
 	for (auto& player : *(manager->getObjectBaseVector(Object_Player))) {
 		for (auto _bubble = manager->getObjectBaseVector(Object_Bubble)->begin(); _bubble != manager->getObjectBaseVector(Object_Bubble)->end(); ++_bubble) {
-			if(handleCollision((*_bubble).get(), player.get())) break;
+			if (handleCollision((*_bubble).get(), player.get())) break;
 		}
 
 		for (auto& powerup : *(manager->getObjectBaseVector(Object_PowerUp))) {
@@ -362,21 +399,15 @@ void GameEngine::playLogicUpdate() {
 		}
 	}
 	for (auto& spike : (*(manager->getObjectBaseVector(Object_Spike)))) {
-	
+
 		if (spike->isVisible()) {
 
-			for (auto _bubble = manager->getObjectBaseVector(Object_Bubble)->begin(); _bubble != manager->getObjectBaseVector(Object_Bubble)->end(); ++_bubble){
+			for (auto _bubble = manager->getObjectBaseVector(Object_Bubble)->begin(); _bubble != manager->getObjectBaseVector(Object_Bubble)->end(); ++_bubble) {
 				if (handleCollision((*_bubble).get(), spike.get())) break;
 			}
 		}
 	}
 
-	// Re-populate the board if all the bubbles are popped.
-	if (manager->getObjectVector(Object_Bubble).empty()) {
-		for (int i = 0; i < 3; i++) {
-			generateRandomBubble();
-		}
-	}
 }
 
 
@@ -394,14 +425,59 @@ void GameEngine::update() {
 			playLogicUpdate();
 			break;
 		case G_Level1:
+			playLogicUpdate();
+			if (manager->getObjectVector(Object_Bubble).empty()) {
+				setState(G_Level2);
+				pause();
+				SDL_Rect a = { playZone.w / 2 - 24, playZone.h / 2 - 50, 100, 48 };
+				auto text = manager->addObject<FontObject>(font, a, FontJustified_CENTER);
+				text->setText("Level 1 completed. Press Enter to start Level 2", BLACK);
+				text->show();
+			}
 			break;
 		case G_Level2:
+			playLogicUpdate();
+			if (manager->getObjectVector(Object_Bubble).empty()) {
+				setState(G_Level3);
+				pause();
+				SDL_Rect a = { playZone.w / 2 - 24, playZone.h / 2 - 50, 100, 48 };
+				auto text = manager->addObject<FontObject>(font, a, FontJustified_CENTER);
+				text->setText("Level 2 completed. Press Enter to start Level 3", BLACK);
+				text->show();
+			}
 			break;
 		case G_Level3:
+			playLogicUpdate();
+			if (manager->getObjectVector(Object_Bubble).empty()) {
+				setState(G_Level4);
+				pause();
+				SDL_Rect a = { playZone.w / 2 - 24, playZone.h / 2 - 50, 100, 48 };
+				auto text = manager->addObject<FontObject>(font, a, FontJustified_CENTER);
+				text->setText("Level 3 completed. Press Enter to start Level 4", BLACK);
+				text->show();
+			}
 			break;
 		case G_Level4:
+			playLogicUpdate();
+			if (manager->getObjectVector(Object_Bubble).empty()) {
+				setState(G_Level5);
+				pause();
+				SDL_Rect a = { playZone.w / 2 - 24, playZone.h / 2 - 50, 100, 48 };
+				auto text = manager->addObject<FontObject>(font, a, FontJustified_CENTER);
+				text->setText("Level 4 completed. Press Enter to start Level 5", BLACK);
+				text->show();
+			}
 			break;
 		case G_Level5:
+			playLogicUpdate();
+			if (manager->getObjectVector(Object_Bubble).empty()) {
+				//setState(G_Level2);
+				pause();
+				SDL_Rect a = { playZone.w / 2 - 24, playZone.h / 2 - 50, 100, 48 };
+				auto text = manager->addObject<FontObject>(font, a, FontJustified_CENTER);
+				text->setText("Level 5 completed. You are a winner", BLACK);
+				text->show();
+			}
 			break;
 		case G_Level6:
 			break;
@@ -422,7 +498,7 @@ void GameEngine::update() {
 /// Render each object on the screen.
 void GameEngine::render() {
 	SDL_RenderClear(renderer);
-	if(menu->menu.empty()) manager->draw();
+	if (menu->menu.empty()) manager->draw();
 	else menu->draw();
 	SDL_RenderPresent(renderer);
 }
@@ -461,7 +537,8 @@ void GameEngine::handleEvents() {
 		}
 	}
 
-	if (currentState == G_Infinite_1Player || currentState == G_Infinite_2Player) {
+	if (currentState == G_Infinite_1Player || currentState == G_Infinite_2Player || currentState == G_Level1 || currentState == G_Level2 || currentState == G_Level2 || currentState == G_Level3 ||
+		currentState == G_Level4 || currentState == G_Level5) {
 
 		if (keyMap[SDL_SCANCODE_P] && paused && !manager->getObjectBaseVector(Object_Life_P1)->empty()) {
 			unpause();
@@ -507,6 +584,27 @@ void GameEngine::handleEvents() {
 				menu->pushMenu(M_Infinite);
 				break;
 			case BID_Level:
+				menu->pushMenu(M_Level);
+				break;
+			case BID_Level1:
+				setState(G_Level1);
+				menu->menu.clear();
+				break;
+			case BID_Level2:
+				setState(G_Level2);
+				menu->menu.clear();
+				break;
+			case BID_Level3:
+				setState(G_Level3);
+				menu->menu.clear();
+				break;
+			case BID_Level4:
+				setState(G_Level4);
+				menu->menu.clear();
+				break;
+			case BID_Level5:
+				setState(G_Level5);
+				menu->menu.clear();
 				break;
 			case BID_1Player:
 				setState(G_Infinite_1Player);
@@ -594,6 +692,11 @@ void GameEngine::setState(GameStates state) {
 		stageTimer.start();
 		score = 0;
 		unpause();
+		if (manager->getObjectVector(Object_Bubble).empty()) {
+			for (int i = 0; i < 3; i++) {
+				generateRandomBubble();
+			}
+		}
 		break;
 	case G_Infinite_2Player:
 
@@ -602,16 +705,72 @@ void GameEngine::setState(GameStates state) {
 		stageTimer.start();
 		score = 0;
 		unpause();
+		if (manager->getObjectVector(Object_Bubble).empty()) {
+			for (int i = 0; i < 3; i++) {
+				generateRandomBubble();
+			}
+		}
 		break;
 	case G_Level1:
+
+		initPlayingObjects();
+
+		stageTimer.start();
+		score = 0;
+		unpause();
+		if (manager->getObjectVector(Object_Bubble).empty()) {
+			for (int i = 0; i < 1; i++) {
+				generateRandomBubble();
+			}
+		}
 		break;
 	case G_Level2:
+		initPlayingObjects();
+
+		stageTimer.start();
+		score = 0;
+		unpause();
+		if (manager->getObjectVector(Object_Bubble).empty()) {
+			for (int i = 0; i < 2; i++) {
+				generateRandomBubble();
+			}
+		}
 		break;
 	case G_Level3:
+		initPlayingObjects();
+
+		stageTimer.start();
+		score = 0;
+		unpause();
+		if (manager->getObjectVector(Object_Bubble).empty()) {
+			for (int i = 0; i < 3; i++) {
+				generateRandomBubble();
+			}
+		}
 		break;
 	case G_Level4:
+		initPlayingObjects();
+
+		stageTimer.start();
+		score = 0;
+		unpause();
+		if (manager->getObjectVector(Object_Bubble).empty()) {
+			for (int i = 0; i < 4; i++) {
+				generateRandomBubble();
+			}
+		}
 		break;
 	case G_Level5:
+		initPlayingObjects();
+
+		stageTimer.start();
+		score = 0;
+		unpause();
+		if (manager->getObjectVector(Object_Bubble).empty()) {
+			for (int i = 0; i < 5; i++) {
+				generateRandomBubble();
+			}
+		}
 		break;
 	case G_Level6:
 		break;
