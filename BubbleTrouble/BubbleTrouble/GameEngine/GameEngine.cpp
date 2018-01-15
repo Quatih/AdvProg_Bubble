@@ -95,12 +95,24 @@ void GameEngine::init() {
 void GameEngine::initPlayingObjects() {
 	score = 0;
 
-
-	if (currentState == G_Infinite_2Player) {
+	if (currentState == G_Infinite_1Player) {
+		auto spike = manager->addObject<SpikeObject>();
+		manager->addObject<PlayerObject>(spike, SINGLEPLAYER);
+		addLife(SINGLEPLAYER);
+		addLife(SINGLEPLAYER);
+		addLife(SINGLEPLAYER);
+	}
+	else if (currentState == G_Infinite_2Player) {
 		auto spike1 = manager->addObject<SpikeObject>();
 		auto spike2 = manager->addObject<SpikeObject>();
 		manager->addObject<PlayerObject>(spike1, PLAYER1);
 		manager->addObject<PlayerObject>(spike2, PLAYER2);
+		addLife(PLAYER1);
+		addLife(PLAYER1);
+		addLife(PLAYER1);
+		addLife(PLAYER2);
+		addLife(PLAYER2);
+		addLife(PLAYER2);
 	}
 
 	else {
@@ -111,10 +123,16 @@ void GameEngine::initPlayingObjects() {
 	for (auto& spike : *manager->getObjectBaseVector(Object_Spike)) {
 		spike->hide();
 	}
+<<<<<<< .mine
 
 	addLife();
+=======
+
+
+>>>>>>> .theirs
 	addLife();
 	addLife();
+
 
 	SDL_Rect scorepos;
 	scorepos.h = 48;
@@ -141,14 +159,16 @@ void GameEngine::initPlayingObjects() {
 }
 
 void GameEngine::resetLevel() {
-	if (manager->getObjectVector(Object_Lives).size() > 1) {
+	if (manager->getObjectVector(Object_Life_P1).size() > 1) {
 		for (auto a : manager->getObjectTypeVector<BubbleObject>(Object_Bubble)) {
 			a->destroy();
 		}
 		for (auto & a : manager->getObjectTypeVector<PowerUpObject>(Object_PowerUp)) {
 			a->destroy();
 		}
+		
 		cleanObjects();
+		
 		for (auto &spike : *(manager->getObjectBaseVector(Object_Spike))) {
 			spike->hide();
 		}
@@ -182,7 +202,6 @@ void GameEngine::resetLevel() {
 			for(int i = 0; i < 3; i++) {
 			generateRandomBubble();
 		}
-
 		if (currentState == G_Infinite_1Player) {
 			auto player = manager->getObjectBaseVector(Object_Player)->front().get();
 			player->render_rect.x = playZone.x + playZone.w / 2 - player->render_rect.w / 2 - 5;
@@ -193,8 +212,8 @@ void GameEngine::resetLevel() {
 			auto player2 = manager->getObjectBaseVector(Object_Player)->at(1).get();
 			player1->getComponent<MovementHandler>()->setPosition(playZone.x + playZone.w / 4 - player1->render_rect.w / 2 - 5, player1->render_rect.y);
 			player2->getComponent<MovementHandler>()->setPosition(playZone.x + 3 * playZone.w / 4 - player2->render_rect.w / 2 - 5, player2->render_rect.y);
-
 		}
+		
 		score = 0;
 		stageTimer.start();
 		unpause();
@@ -208,31 +227,94 @@ void GameEngine::resetLevel() {
 
 }
 
-/// Method for condensing some code, updates each object while playing and do appropriate actions/processing.
-void GameEngine::playLogicUpdate() {
+bool GameEngine::handleCollision(GameObject * thing, GameObject * other) {
+	bool collides = false;
+	if (thing->type == Object_Bubble || other->type == Object_Bubble) {
+		collides = collidesWithCircle(thing->render_rect, other->render_rect);
+	}
+	else collides = collidesWithRect(thing->render_rect, other->render_rect);
 
-	manager->update();
+	if (collides) {
+		if (other->type == Object_Wall) {
+			switch (thing->type) {
+			case Object_Bubble:
+				if (thing->render_rect.x < other->render_rect.x) {
+					thing->getComponent<MovementHandler>()->velocity.x *= -1;
+				}
+				if (thing->render_rect.x + thing->render_rect.w > other->render_rect.x + other->render_rect.w) {
+					thing->getComponent<MovementHandler>()->velocity.x *= -1;
+				}
 
-	timerText->setText(std::to_string(stageTimer.getMillis() / 1000));
-	scoreText->setText(std::to_string(score));
-	scoreText->show();
-	timerText->show();
+				if (thing->render_rect.y < other->render_rect.y) {
+					thing->getComponent<MovementHandler>()->velocity.y = thing->getComponent<MovementHandler>()->baseVelocity.y;
+				}
+				if (thing->render_rect.y + thing->render_rect.h > other->render_rect.y + other->render_rect.h) {
+					thing->getComponent<MovementHandler>()->velocity.y = thing->getComponent<MovementHandler>()->baseVelocity.y*-1;
+				}
+				[[fallthrough]]; // Indicates that the next case statement will also be executed, and that it is intentional. Requires C++17.
 
-	for (auto& player : *(manager->getObjectBaseVector(Object_Player))) {
-		for (auto & bubble : (manager->getObjectTypeVector <BubbleObject>(Object_Bubble))) {
-			if (collidesWithCircle((player->render_rect), (bubble->render_rect))) {
-				auto life = manager->getObjectTypeVector<GameObject>(Object_Lives);
+			case Object_Player:
+				if (thing->render_rect.x < other->render_rect.x) {
+					thing->getComponent<MovementHandler>()->position.x = (double)other->render_rect.x;
+				}
+				if (thing->render_rect.x + thing->render_rect.w > other->render_rect.x + other->render_rect.w) {
+					thing->getComponent<MovementHandler>()->position.x = (double)(other->render_rect.x + other->render_rect.w - thing->render_rect.w);
+				}
+
+				if (thing->render_rect.y < other->render_rect.y) {
+					thing->getComponent<MovementHandler>()->position.y = (double)other->render_rect.y;
+				}
+				if (thing->render_rect.y + thing->render_rect.h > other->render_rect.y + other->render_rect.h) {
+					thing->getComponent<MovementHandler>()->position.y = (double)(other->render_rect.y + other->render_rect.h - thing->render_rect.h);
+				}
+
+				thing->render_rect.x = (int)thing->getComponent<MovementHandler>()->position.x;
+				thing->render_rect.y = (int)thing->getComponent<MovementHandler>()->position.y;
+				break;
+			case Object_Spike:
+				if (thing->render_rect.y < other->render_rect.y) {
+					thing->hide();
+				}
+				break;
+			case Object_Explosion:
+				break;
+
+			case Object_PowerUp:
+				if (thing->render_rect.x < other->render_rect.x) {
+					thing->getComponent<MovementHandler>()->position.x = (double)other->render_rect.x;
+				}
+				if (thing->render_rect.x + thing->render_rect.w > other->render_rect.x + other->render_rect.w) {
+					thing->getComponent<MovementHandler>()->position.x = (double)(other->render_rect.x + other->render_rect.w - thing->render_rect.w);
+				}
+
+				if (thing->render_rect.y < other->render_rect.y) {
+					thing->getComponent<MovementHandler>()->position.y = (double)other->render_rect.y;
+				}
+				if (thing->render_rect.y + thing->render_rect.h > other->render_rect.y + other->render_rect.h) {
+					thing->getComponent<MovementHandler>()->position.y = (double)(other->render_rect.y + other->render_rect.h - thing->render_rect.h);
+				}
+
+				thing->render_rect.x = (int)thing->getComponent<MovementHandler>()->position.x;
+				thing->render_rect.y = (int)thing->getComponent<MovementHandler>()->position.y;
+				break;
+			default:
+				break;
+			}
+		}
+		else if (other->type == Object_Player) {
+			switch (thing->type) {
+			case Object_Bubble:
 				Mix_HaltChannel(1);
-				player->getComponent<SoundHandler>()->play();
+				thing->getComponent<SoundHandler>()->play();
 
-				if (life.size() > 1) {
+				if (manager->getObjectBaseVector(Object_Life_P1)->size() > 1) {
 					std::cout << "WE COLLIDIN'\n";
 
-					life.back()->destroy();
+					manager->getObjectBaseVector(Object_Life_P1)->back()->destroy();
 				}
-				if (life.size() == 1) {
+				if (manager->getObjectBaseVector(Object_Life_P1)->size() <= 1) {
 					std::cout << "WE DEAD!\n";
-					life.back()->destroy();
+					manager->getObjectBaseVector(Object_Life_P1)->back()->destroy();
 				}
 #ifdef __linux__
 				nanosleep(1500 * 1000 * 1000);
@@ -242,66 +324,90 @@ void GameEngine::playLogicUpdate() {
 
 				resetLevel();
 
-			}
-		}
-
-		for (auto& a : manager->getObjectTypeVector<PowerUpObject>(Object_PowerUp)) {
-			//the code is placed here because, once the spike hits the bubble, isVisible() = false, hence in the next update call the if (spike->isVisible()) is never entered.
-			if (collidesWithRect(player->render_rect, a->render_rect)) {
+				break;
+			case Object_PowerUp:
 				std::cout << "powerup gained\n";
-				if (a->powerUpType == PU_Life && manager->getObjectBaseVector(Object_Lives)->size() <= 5) {
-					addLife();
+				if (static_cast<PowerUpObject*>(thing)->powerUpType == PU_Life && manager->getObjectBaseVector(Object_Life_P1)->size() <= 5) {
+					addLife(static_cast<PlayerObject*>(other)->playerType);
 				}
-				else if (a->powerUpType == PU_Coin)
+				else if (static_cast<PowerUpObject*>(thing)->powerUpType == PU_Coin)
 					score += 5;
 
-				a->destroy();
+				thing->destroy();
+				
+				break;
+			default:
+				break;
+			}
+		}
+		else if (other->type == Object_Spike) {
+			if (thing->type == Object_Bubble) {
+				other->hide();
+				thing->destroy();
+				score++;
+
+				Mix_HaltChannel(1);
+				thing->getComponent<SoundHandler>()->play();
+				auto explosionImage = manager->addObject<ExplosionObject>();
+
+				explosionImage->render_rect = thing->render_rect;
+				explosionImage->getComponent<MovementHandler>()->setPosition(explosionImage->render_rect.x, explosionImage->render_rect.y);
+
+				//Add power ups functionality here. If the spike hits the bubble, randomly make a powerup fall from the place where the spike has hit the bubbles.
+				//make sure the small bubbles doesn't contain any powerups
+				//add more power ups..like faster spikes, faster player movement etcc..
+
+				if ((randInt(1, 5) == 1) /* 20% chance */ && (dynamic_cast<BubbleObject*>(thing)->bubbleType != Bubble0)) {
+					std::size_t randint = randInt<std::size_t>(1, 10);
+					PowerUpType PUtype;
+					if (randint <= 3) PUtype = PU_Life; // 30% chance
+					else PUtype = PU_Coin;
+
+					auto powerUpObject = manager->addObject<PowerUpObject>(PUtype);
+					powerUpObject->getComponent<MovementHandler>()->setPosition(thing->render_rect.x, thing->render_rect.y);
+				}
+				
+				std::cout << "Bubble popped\n";
+				if (dynamic_cast<BubbleObject*>(thing)->pops > 0) {
+					std::size_t cindex = randInt<std::size_t>(0, bubbleTextures.size() - 1);
+					auto temp = addBubble(dynamic_cast<BubbleObject*>(thing)->getNextBubble(), thing->render_rect.x, thing->render_rect.y, 1, bubbleTextures[cindex].get());
+					temp->getComponent<MovementHandler>()->velocity.y = -abs(thing->getComponent<MovementHandler>()->baseVelocity.y)*0.6;
+
+					temp = addBubble(dynamic_cast<BubbleObject*>(thing)->getNextBubble(), thing->render_rect.x, thing->render_rect.y, -1, bubbleTextures[cindex].get());
+					temp->getComponent<MovementHandler>()->velocity.y = -abs(thing->getComponent<MovementHandler>()->baseVelocity.y)*0.6;
+				}
 			}
 		}
 	}
-	for (auto& spike : (*(manager->getObjectBaseVector(Object_Spike)))) {
+	return collides;
+}
 
+/// Method for condensing some code, updates each object while playing and do appropriate actions/processing.
+void GameEngine::playLogicUpdate() {
+	
+	manager->update();
+
+	timerText->setText(std::to_string(stageTimer.getMillis() / 1000));
+	scoreText->setText(std::to_string(score));
+	scoreText->show();
+	timerText->show();
+
+	for (auto& player : *(manager->getObjectBaseVector(Object_Player))) {
+		for (auto _bubble = manager->getObjectBaseVector(Object_Bubble)->begin(); _bubble != manager->getObjectBaseVector(Object_Bubble)->end(); ++_bubble) {
+			if(handleCollision((*_bubble).get(), player.get())) break;
+		}
+
+		for (auto& powerup : *(manager->getObjectBaseVector(Object_PowerUp))) {
+			//the code is placed here because, once the spike hits the bubble, isVisible() = false, hence in the next update call the if (spike->isVisible()) is never entered.
+			handleCollision(powerup.get(), player.get());
+		}
+	}
+	for (auto& spike : (*(manager->getObjectBaseVector(Object_Spike)))) {
+	
 		if (spike->isVisible()) {
 
-			for (auto& bubble : manager->getObjectTypeVector<BubbleObject>(Object_Bubble)) {
-				if (spike->isVisible() && collidesWithCircle((spike->render_rect), (bubble->render_rect))) {
-					Mix_HaltChannel(1);
-					bubble->getComponent<SoundHandler>()->play();
-
-					auto explosionImage = manager->addObject<ExplosionObject>();
-
-					explosionImage->render_rect = bubble->render_rect;
-					explosionImage->getComponent<MovementHandler>()->setPosition(explosionImage->render_rect.x, explosionImage->render_rect.y);
-
-					//Add power ups functionality here. If the spike hits the bubble, randomly make a powerup fall from the place where the spike has hit the bubbles.
-					//make sure the small bubbles doesn't contain any powerups
-					//add more power ups..like faster spikes, faster player movement etcc..
-
-					if ((randInt(1, 5) == 1) /* 20% chance */ && (bubble->bubbleType != Bubble0)) {
-						std::size_t randint = randInt<std::size_t>(1, 10);
-						PowerUpType PUtype;
-						if (randint <= 3) PUtype = PU_Life; // 30% chance
-						else PUtype = PU_Coin;
-
-						auto powerUpObject = manager->addObject<PowerUpObject>(PUtype);
-						powerUpObject->getComponent<MovementHandler>()->setPosition(bubble->render_rect.x, bubble->render_rect.y);
-					}
-
-					spike->hide();
-					bubble->destroy();
-
-					score++;
-					std::cout << "Bubble popped\n";
-					if (bubble->pops > 0) {
-						std::size_t cindex = randInt<std::size_t>(0, bubbleTextures.size() - 1);
-						auto temp = addBubble(bubble->getNextBubble(), bubble->render_rect.x, bubble->render_rect.y, 1, bubbleTextures[cindex].get());
-						temp->getComponent<MovementHandler>()->velocity.y = -abs(bubble->getComponent<MovementHandler>()->baseVelocity.y)*0.6;
-
-						temp = addBubble(bubble->getNextBubble(), bubble->render_rect.x, bubble->render_rect.y, -1, bubbleTextures[cindex].get());
-						temp->getComponent<MovementHandler>()->velocity.y = -abs(bubble->getComponent<MovementHandler>()->baseVelocity.y)*0.6;
-					}
-					break; //Break so that we pop only one bubble.
-				}
+			for (auto _bubble = manager->getObjectBaseVector(Object_Bubble)->begin(); _bubble != manager->getObjectBaseVector(Object_Bubble)->end(); ++_bubble){
+				if (handleCollision((*_bubble).get(), spike.get())) break;
 			}
 		}
 	}
@@ -434,7 +540,7 @@ void GameEngine::handleEvents() {
 	if (currentState == G_Infinite_1Player || currentState == G_Infinite_2Player || currentState == G_Level1 || currentState == G_Level2 || currentState == G_Level2 || currentState == G_Level3 || 
 		currentState == G_Level4|| currentState == G_Level5) {
 
-		if (keyMap[SDL_SCANCODE_P] && paused && !manager->getObjectBaseVector(Object_Lives)->empty()) {
+		if (keyMap[SDL_SCANCODE_P] && paused && !manager->getObjectBaseVector(Object_Life_P1)->empty()) {
 			unpause();
 		}
 
@@ -508,12 +614,40 @@ void GameEngine::handleEvents() {
 				setState(G_Infinite_2Player);
 				menu->menu.clear();
 				break;
+			case BID_Volume:
+				menu->pushMenu(M_Volume);
+				break;
+			case BID_Mute:
+				svolume = 0;
+				Mix_Volume(-1, svolume);
+				menu->popMenu();
+				menu->popMenu();
+				break;
+			case BID_Min:
+				svolume = 25;
+				Mix_Volume(-1, svolume);
+				menu->popMenu();
+				menu->popMenu();
+				break;
+			case BID_Med:
+				svolume = 50;
+				Mix_Volume(-1, svolume);
+				menu->popMenu();
+				menu->popMenu();
+				break;
+			case BID_Max:
+				svolume = 100;
+				Mix_Volume(-1, svolume);
+				menu->popMenu();
+				menu->popMenu();
+				break;
 			default:
 				break;
 			}
 		}
 		if (keyMap[SDL_SCANCODE_ESCAPE]) {
-			running = false;
+			if (menu->menu.size() > 0) menu->popMenu();
+			else running = false;
 		}
 	}
 }
@@ -544,6 +678,7 @@ void GameEngine::cleanObjects() {
 /// Set the game state
 void GameEngine::setState(GameStates state) {
 	currentState = state;
+	refresh();
 
 	switch (currentState) {
 	case G_Menu:
@@ -552,7 +687,6 @@ void GameEngine::setState(GameStates state) {
 		break;
 	case G_Infinite_1Player:
 
-		refresh();
 		initPlayingObjects();
 		stageTimer.start();
 		score = 0;
@@ -564,7 +698,6 @@ void GameEngine::setState(GameStates state) {
 		}
 		break;
 	case G_Infinite_2Player:
-		refresh();
 		initPlayingObjects();
 		stageTimer.start();
 		score = 0;
@@ -663,13 +796,24 @@ void inline GameEngine::generateRandomBubble() {
 }
 
 /// Add a life to the board
-void inline GameEngine::addLife() {
-	auto lives = manager->addObject(Object_Lives);
-	lives->addComponent<MovementHandler>(0, 0);
-	lives->addComponent<TileHandler>(heartTexture.get(), 1);
-	lives->init();
-	// set the position in the succession
-	lives->getComponent<MovementHandler>()->setPosition((double)(manager->getObjectBaseVector(Object_Lives)->size() - 1) * lives->render_rect.w + 10, 10);
+void inline GameEngine::addLife(PlayerNumber playerType) {
+	if (playerType == PLAYER2) {
+		auto lives = manager->addObject(Object_Life_P2);
+		lives->addComponent<MovementHandler>(0, 0);
+		lives->addComponent<TileHandler>(heartTexture.get(), 1);
+		lives->init();
+		// set the position in the succession
+		lives->getComponent<MovementHandler>()->setPosition((double)(manager->getObjectBaseVector(Object_Life_P2)->size() - 1) * lives->render_rect.w + 10, 60);
+	}
+	else {
+		auto lives = manager->addObject(Object_Life_P1);
+		lives->addComponent<MovementHandler>(0, 0);
+		lives->addComponent<TileHandler>(heartTexture.get(), 1);
+		lives->init();
+		// set the position in the succession
+		lives->getComponent<MovementHandler>()->setPosition((double)(manager->getObjectBaseVector(Object_Life_P1)->size() - 1) * lives->render_rect.w + 10, 10);
+
+	}
 }
 
 /// 

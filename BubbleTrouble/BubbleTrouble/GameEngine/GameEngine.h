@@ -49,8 +49,8 @@ private:
 	MillisTimer stageTimer;
 	std::unique_ptr<MenuManager> menu;
 
-
 public:
+	Uint8 svolume = 50;
 	std::map<Uint8, bool> keystates;
 	int score = 0;
 	/// Constructor creates the window and renderer
@@ -97,7 +97,7 @@ public:
 	void unpause();
 
 	/// Add a life to the board
-	void addLife();
+	void addLife(PlayerNumber playerType);
 
 	/// Set the State of the game, takes appropriate action.
 	void setState(GameStates state);
@@ -107,5 +107,7 @@ public:
 
 	/// Add a bubble to the bubble vector and initialize.
 	BubbleObject * addBubble(BubbleType type, int posX, int posY, int direction, TextureLoader * texture);
+
+	bool handleCollision(GameObject * thing, GameObject * other);
 	//BubbleObject * addBubble(int radius, int posX, int posY, double velocityX, double velocityY, double acceleration, int pops, TextureLoader * texture);
 };	
