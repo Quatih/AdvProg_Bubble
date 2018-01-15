@@ -5,11 +5,13 @@
 #include <map>
 
 
-enum MenuType {M_Main, M_PlayMode, M_Infinite, M_Options};
+enum MenuType {M_Main, M_PlayMode, M_Infinite, M_Options,M_Level};
 extern SDL_Window * window;
 extern TTF_Font * font;
-enum ButtonID : Uint64 {BID_PlayMode, BID_Options, BID_Exit, BID_Back, BID_Infinite, BID_Level, BID_1Player, BID_2Player};
-const std::string buttonText[] = {"Play", "Options", "Quit", "Back", "Infinite Mode", "Level Mode", "1 Player", "2 Player"};
+enum ButtonID : Uint64 {BID_PlayMode, BID_Options, BID_Exit, BID_Back, BID_Infinite, BID_Level, BID_1Player, BID_2Player,BID_Level1,BID_Level2, BID_Level3, 
+						BID_Level4, BID_Level5};
+const std::string buttonText[] = {"Play", "Options", "Quit", "Back", "Infinite Mode", "Stage Mode", "1 Player", "2 Player", "Level 1", "Level 2", "Level 3", "Level 4", 
+								  "Level 5" };
 
 /// Menu class that keeps track of all objects in the menu
 class BaseMenu {
@@ -67,6 +69,7 @@ public:
 		case M_PlayMode:
 			//addButton(BID_Level);
 			addButton(BID_Infinite);
+			addButton(BID_Level);
 			addButton(BID_Back);
 			break;
 		case M_Infinite:
@@ -74,6 +77,12 @@ public:
 			addButton(BID_2Player);
 			addButton(BID_Back);
 			break;
+		case M_Level:
+			addButton(BID_Level1);
+			addButton(BID_Level2);
+			addButton(BID_Level3);
+			addButton(BID_Level4);
+			addButton(BID_Level5);
 		case M_Options:
 			addButton(BID_Back);
 			break;

@@ -24,7 +24,7 @@ SDL_Rect playZone;
 GameEngine::GameEngine(std::string title, int winposx, int winposy, int winwidth, int winheight, SDL_WindowFlags flag) {
 	SDL_Init(SDL_INIT_EVERYTHING);
 	window = SDL_CreateWindow(title.c_str(), winposx, winposy, winwidth, winheight, flag);
-	
+
 	renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
 	std::cout << "Game Engine Constructed.\n";
 	running = true;
@@ -95,22 +95,25 @@ void GameEngine::init() {
 void GameEngine::initPlayingObjects() {
 	score = 0;
 
-	if (currentState == G_Infinite_1Player) {
-		auto spike = manager->addObject<SpikeObject>();
-		manager->addObject<PlayerObject>(spike, SINGLEPLAYER);
-	}
-	else if (currentState == G_Infinite_2Player) {
+
+	if (currentState == G_Infinite_2Player) {
 		auto spike1 = manager->addObject<SpikeObject>();
 		auto spike2 = manager->addObject<SpikeObject>();
 		manager->addObject<PlayerObject>(spike1, PLAYER1);
 		manager->addObject<PlayerObject>(spike2, PLAYER2);
 	}
 
+	else {
+		auto spike = manager->addObject<SpikeObject>();
+		manager->addObject<PlayerObject>(spike, SINGLEPLAYER);
+	}
+
 	for (auto& spike : *manager->getObjectBaseVector(Object_Spike)) {
 		spike->hide();
 	}
-	addLife(); 
-	addLife(); 
+
+	addLife();
+	addLife();
 	addLife();
 
 	SDL_Rect scorepos;
@@ -149,11 +152,38 @@ void GameEngine::resetLevel() {
 		for (auto &spike : *(manager->getObjectBaseVector(Object_Spike))) {
 			spike->hide();
 		}
-		for (int i = 0; i < 3; i++) {
+
+		if (currentState == G_Level1) {
+			for (int i = 0; i < 1; i++) {
+				generateRandomBubble();
+			}
+		}
+		if (currentState == G_Level2) {
+			for (int i = 0; i < 2; i++) {
+				generateRandomBubble();
+			}
+		}
+		if (currentState == G_Level3) {
+			for (int i = 0; i < 3; i++) {
+				generateRandomBubble();
+			}
+		}
+		if (currentState == G_Level4) {
+			for (int i = 0; i < 4; i++) {
+				generateRandomBubble();
+			}
+		}
+		if (currentState == G_Level5) {
+			for (int i = 0; i < 5; i++) {
+				generateRandomBubble();
+			}
+		}
+		else
+			for(int i = 0; i < 3; i++) {
 			generateRandomBubble();
 		}
 
-		if (currentState == G_Infinite_1Player) { 
+		if (currentState == G_Infinite_1Player) {
 			auto player = manager->getObjectBaseVector(Object_Player)->front().get();
 			player->render_rect.x = playZone.x + playZone.w / 2 - player->render_rect.w / 2 - 5;
 			player->getComponent<MovementHandler>()->setPosition(player->render_rect.x, player->render_rect.y);
@@ -180,7 +210,7 @@ void GameEngine::resetLevel() {
 
 /// Method for condensing some code, updates each object while playing and do appropriate actions/processing.
 void GameEngine::playLogicUpdate() {
-	
+
 	manager->update();
 
 	timerText->setText(std::to_string(stageTimer.getMillis() / 1000));
@@ -189,7 +219,7 @@ void GameEngine::playLogicUpdate() {
 	timerText->show();
 
 	for (auto& player : *(manager->getObjectBaseVector(Object_Player))) {
-		for (auto & bubble : *(manager->getObjectBaseVector(Object_Bubble))) {
+		for (auto & bubble : (manager->getObjectTypeVector <BubbleObject>(Object_Bubble))) {
 			if (collidesWithCircle((player->render_rect), (bubble->render_rect))) {
 				auto life = manager->getObjectTypeVector<GameObject>(Object_Lives);
 				Mix_HaltChannel(1);
@@ -230,7 +260,7 @@ void GameEngine::playLogicUpdate() {
 		}
 	}
 	for (auto& spike : (*(manager->getObjectBaseVector(Object_Spike)))) {
-	
+
 		if (spike->isVisible()) {
 
 			for (auto& bubble : manager->getObjectTypeVector<BubbleObject>(Object_Bubble)) {
@@ -277,11 +307,11 @@ void GameEngine::playLogicUpdate() {
 	}
 
 	// Re-populate the board if all the bubbles are popped.
-	if (manager->getObjectVector(Object_Bubble).empty()) {
+	/*if (manager->getObjectVector(Object_Bubble).empty()) {
 		for (int i = 0; i < 3; i++) {
 			generateRandomBubble();
 		}
-	}
+	}*/
 }
 
 
@@ -289,6 +319,8 @@ void GameEngine::playLogicUpdate() {
 void GameEngine::update() {
 
 	if (!paused) {
+		
+
 		switch (currentState) {
 		case G_Menu:
 			break;
@@ -299,14 +331,47 @@ void GameEngine::update() {
 			playLogicUpdate();
 			break;
 		case G_Level1:
+			playLogicUpdate();
+			if (manager->getObjectVector(Object_Bubble).empty()) {
+				setState(G_Level2);
+				pause();
+				SDL_Rect a = { playZone.w / 2 - 24, playZone.h / 2 - 50, 100, 48 };
+				auto text = manager->addObject<FontObject>(font, a, FontJustified_CENTER);
+				text->setText("Level 1 completed. Press Enter to start Level 2", BLACK);
+				text->show();
+			}
 			break;
 		case G_Level2:
+			playLogicUpdate();
+			if (manager->getObjectVector(Object_Bubble).empty()) {
+				setState(G_Level3);
+				pause();
+				
+			}
+
 			break;
 		case G_Level3:
+			playLogicUpdate();
+			if (manager->getObjectVector(Object_Bubble).empty()) {
+				setState(G_Level4);
+				pause();
+				
+			}
 			break;
 		case G_Level4:
+			playLogicUpdate();
+			if (manager->getObjectVector(Object_Bubble).empty()) {
+				setState(G_Level5);
+				pause();
+				
+			}
 			break;
 		case G_Level5:
+			playLogicUpdate();
+			if (manager->getObjectVector(Object_Bubble).empty()) {
+				pause();
+				
+			}
 			break;
 		case G_Level6:
 			break;
@@ -327,7 +392,7 @@ void GameEngine::update() {
 /// Render each object on the screen.
 void GameEngine::render() {
 	SDL_RenderClear(renderer);
-	if(menu->menu.empty()) manager->draw();
+	if (menu->menu.empty()) manager->draw();
 	else menu->draw();
 	SDL_RenderPresent(renderer);
 }
@@ -366,7 +431,8 @@ void GameEngine::handleEvents() {
 		}
 	}
 
-	if (currentState == G_Infinite_1Player || currentState == G_Infinite_2Player) {
+	if (currentState == G_Infinite_1Player || currentState == G_Infinite_2Player || currentState == G_Level1 || currentState == G_Level2 || currentState == G_Level2 || currentState == G_Level3 || 
+		currentState == G_Level4|| currentState == G_Level5) {
 
 		if (keyMap[SDL_SCANCODE_P] && paused && !manager->getObjectBaseVector(Object_Lives)->empty()) {
 			unpause();
@@ -412,6 +478,27 @@ void GameEngine::handleEvents() {
 				menu->pushMenu(M_Infinite);
 				break;
 			case BID_Level:
+				menu->pushMenu(M_Level);
+				break;
+			case BID_Level1:
+				setState(G_Level1);
+				menu->menu.clear();
+				break;
+			case BID_Level2:
+				setState(G_Level2);
+				menu->menu.clear();
+				break;
+			case BID_Level3:
+				setState(G_Level3);
+				menu->menu.clear();
+				break;
+			case BID_Level4:
+				setState(G_Level4);
+				menu->menu.clear();
+				break;
+			case BID_Level5:
+				setState(G_Level5);
+				menu->menu.clear();
 				break;
 			case BID_1Player:
 				setState(G_Infinite_1Player);
@@ -467,29 +554,86 @@ void GameEngine::setState(GameStates state) {
 
 		refresh();
 		initPlayingObjects();
-
 		stageTimer.start();
 		score = 0;
 		unpause();
+		if (manager->getObjectVector(Object_Bubble).empty()) {
+			for (int i = 0; i < 3; i++) {
+				generateRandomBubble();
+			}
+		}
 		break;
 	case G_Infinite_2Player:
-
 		refresh();
 		initPlayingObjects();
-
 		stageTimer.start();
 		score = 0;
 		unpause();
+		if (manager->getObjectVector(Object_Bubble).empty()) {
+			for (int i = 0; i < 3; i++) {
+				generateRandomBubble();
+			}
+		}
 		break;
 	case G_Level1:
+		refresh();
+		initPlayingObjects();
+		stageTimer.start();
+		score = 0;
+		unpause();
+		if (manager->getObjectVector(Object_Bubble).empty()) {
+			for (int i = 0; i < 1; i++) {
+				generateRandomBubble();
+			}
+		}
 		break;
 	case G_Level2:
+		refresh();
+		initPlayingObjects();
+		stageTimer.start();
+		score = 0;
+		unpause();
+		if (manager->getObjectVector(Object_Bubble).empty()) {
+			for (int i = 0; i < 2; i++) {
+				generateRandomBubble();
+			}
+		}
 		break;
 	case G_Level3:
+		refresh();
+		initPlayingObjects();
+		stageTimer.start();
+		score = 0;
+		unpause();
+		if (manager->getObjectVector(Object_Bubble).empty()) {
+			for (int i = 0; i < 3; i++) {
+				generateRandomBubble();
+			}
+		}
 		break;
 	case G_Level4:
+		refresh();
+		initPlayingObjects();
+		stageTimer.start();
+		score = 0;
+		unpause();
+		if (manager->getObjectVector(Object_Bubble).empty()) {
+			for (int i = 0; i < 4; i++) {
+				generateRandomBubble();
+			}
+		}
 		break;
 	case G_Level5:
+		refresh();
+		initPlayingObjects();
+		stageTimer.start();
+		score = 0;
+		unpause();
+		if (manager->getObjectVector(Object_Bubble).empty()) {
+			for (int i = 0; i < 5; i++) {
+				generateRandomBubble();
+			}
+		}
 		break;
 	case G_Level6:
 		break;
