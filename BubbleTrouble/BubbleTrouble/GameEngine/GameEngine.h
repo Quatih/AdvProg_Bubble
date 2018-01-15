@@ -105,6 +105,8 @@ public:
 	/// Generate a random bubble
 	void inline generateRandomBubble();
 
+	void inline generateRandomBubble(std::size_t type);
+
 	/// Add a bubble to the bubble vector and initialize.
 	BubbleObject * addBubble(BubbleType type, int posX, int posY, int direction, TextureLoader * texture);
 

@@ -161,18 +161,18 @@ void GameEngine::resetLevel() {
 		switch (currentState)
 		{
 		case G_Level1:
-			for (int i = 0; i < 1; i++) {
-				generateRandomBubble();
+			for (size_t i = 1; i > 1; --i) {
+				generateRandomBubble(i);
 			}
 			break;
 		case G_Level2:
-			for (int i = 0; i < 2; i++) {
-				generateRandomBubble();
+			for (size_t i = 2; i > 0; --i) {
+				generateRandomBubble(i);
 			}
 			break;
 		case G_Level3:
-			for (int i = 0; i < 3; i++) {
-				generateRandomBubble();
+			for (size_t i = 3; i > 0; --i) {
+				generateRandomBubble(i);
 			}
 			break;
 		case G_Level4:
@@ -390,7 +390,7 @@ void GameEngine::playLogicUpdate() {
 
 	for (auto& player : *(manager->getObjectBaseVector(Object_Player))) {
 		for (auto _bubble = manager->getObjectBaseVector(Object_Bubble)->begin(); _bubble != manager->getObjectBaseVector(Object_Bubble)->end(); ++_bubble) {
-			if (handleCollision((*_bubble).get(), player.get())) break;
+			if (handleCollision((*_bubble).get(), player.get())) break; 
 		}
 
 		for (auto& powerup : *(manager->getObjectBaseVector(Object_PowerUp))) {
@@ -679,7 +679,7 @@ void GameEngine::cleanObjects() {
 void GameEngine::setState(GameStates state) {
 	currentState = state;
 	refresh();
-
+	
 	switch (currentState) {
 	case G_Menu:
 		menu->pushMenu(M_Main);
@@ -695,7 +695,9 @@ void GameEngine::setState(GameStates state) {
 		if (manager->getObjectVector(Object_Bubble).empty()) {
 			for (int i = 0; i < 3; i++) {
 				generateRandomBubble();
+
 			}
+			
 		}
 		break;
 	case G_Infinite_2Player:
@@ -719,8 +721,8 @@ void GameEngine::setState(GameStates state) {
 		score = 0;
 		unpause();
 		if (manager->getObjectVector(Object_Bubble).empty()) {
-			for (int i = 0; i < 1; i++) {
-				generateRandomBubble();
+			for (size_t i = 1; i > 0; --i) {
+				generateRandomBubble(i);
 			}
 		}
 		break;
@@ -731,8 +733,8 @@ void GameEngine::setState(GameStates state) {
 		score = 0;
 		unpause();
 		if (manager->getObjectVector(Object_Bubble).empty()) {
-			for (int i = 0; i < 2; i++) {
-				generateRandomBubble();
+			for (size_t i = 2; i > 0; --i) {
+				generateRandomBubble(i);
 			}
 		}
 		break;
@@ -743,8 +745,8 @@ void GameEngine::setState(GameStates state) {
 		score = 0;
 		unpause();
 		if (manager->getObjectVector(Object_Bubble).empty()) {
-			for (int i = 0; i < 3; i++) {
-				generateRandomBubble();
+			for (size_t i = 3; i > 0; --i) {
+				generateRandomBubble(i);
 			}
 		}
 		break;
@@ -798,6 +800,19 @@ void inline GameEngine::generateRandomBubble() {
 		bubbleTextures[randInt<std::size_t>(0, bubbleTextures.size() - 1)].get()
 	);
 }
+
+///Generates specified type of bubbles upto level3
+void inline GameEngine::generateRandomBubble(std::size_t type) {
+	addBubble(
+		static_cast<BubbleType>(type),
+		randInt(0, playZone.w),
+		randInt((int)(playZone.h / 3.0),
+		(int)(playZone.h / 2.0)),
+		randMinusPlus(),
+		bubbleTextures[randInt<std::size_t>(0, bubbleTextures.size() - 1)].get()
+	);
+}
+
 
 /// Add a life to the board
 void inline GameEngine::addLife(PlayerNumber playerType) {
