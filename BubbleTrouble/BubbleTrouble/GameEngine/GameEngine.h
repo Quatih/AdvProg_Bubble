@@ -45,7 +45,8 @@ private:
 	/// Re-use heart Texture
 	std::unique_ptr<TextureLoader> heartTexture;
 	/// Class for stage timing
-	MillisTimer stageTimer;
+	MillisTimer stageTimer, pauseTimer;
+
 	std::unique_ptr<MenuManager> menu;
 	FontObject* scoreText;
 	FontObject* timerText;
@@ -108,6 +109,8 @@ public:
 
 	/// Generate a random bubble
 	void inline generateRandomBubble();
+
+	void removeLife(PlayerNumber playerNum);
 
 	/// Add a bubble to the bubble vector and initialize.
 	BubbleObject * addBubble(BubbleType type, int posX, int posY, int direction, TextureLoader * texture);

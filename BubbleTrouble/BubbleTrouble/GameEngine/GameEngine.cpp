@@ -159,45 +159,41 @@ void GameEngine::initPlayingObjects() {
 
 void GameEngine::resetLevel() {
 	fileHandling();
-	if (manager->getObjectVector(Object_Life_P1).size() > 1 && manager->getObjectVector(Object_Life_P2).size() > 1) {
-		for (auto a : manager->getObjectTypeVector<BubbleObject>(Object_Bubble)) {
-			a->destroy();
-		}
+	playing = true;
 
-		for (auto & a : manager->getObjectTypeVector<PowerUpObject>(Object_PowerUp)) {
-			a->destroy();
-		}
-		
-		cleanObjects();
-		
-		for (auto &spike : *(manager->getObjectBaseVector(Object_Spike))) {
-			spike->hide();
-		}
-		for (int i = 0; i < 3; i++) {
-			generateRandomBubble();
-		}
-		if (currentState == G_Infinite_1Player) { 
-			auto player = manager->getObjectBaseVector(Object_Player)->front().get();
-			player->render_rect.x = playZone.x + playZone.w / 2 - player->render_rect.w / 2 - 5;
-			player->getComponent<MovementHandler>()->setPosition(player->render_rect.x, player->render_rect.y);
-		}
-		else if (currentState == G_Infinite_2Player) {
-			auto player1 = manager->getObjectBaseVector(Object_Player)->at(0).get();
-			auto player2 = manager->getObjectBaseVector(Object_Player)->at(1).get();
-			player1->getComponent<MovementHandler>()->setPosition(playZone.x + playZone.w / 4 - player1->render_rect.w / 2 - 5, player1->render_rect.y);
-			player2->getComponent<MovementHandler>()->setPosition(playZone.x + 3 * playZone.w / 4 - player2->render_rect.w / 2 - 5, player2->render_rect.y);
-		}
-		
-		score = 0;
-		stageTimer.start();
-		unpause();
+	for (auto a : manager->getObjectTypeVector<BubbleObject>(Object_Bubble)) {
+		a->destroy();
 	}
-	else {
-		SDL_Rect a = { playZone.w / 2 - 24, playZone.h / 2 - 50, 100, 48 };
-		auto text = manager->addObject<FontObject>(font, a, FontJustified_CENTER);
-		text->setText("You died! Press Enter to restart.", BLACK);
-		pause();
+
+	for (auto & a : manager->getObjectTypeVector<PowerUpObject>(Object_PowerUp)) {
+		a->destroy();
 	}
+		
+	cleanObjects();
+		
+	for (auto &spike : *(manager->getObjectBaseVector(Object_Spike))) {
+		spike->hide();
+	}
+	for (int i = 0; i < 3; i++) {
+		generateRandomBubble();
+	}
+	if (currentState == G_Infinite_1Player) { 
+		auto player = manager->getObjectBaseVector(Object_Player)->front().get();
+		player->render_rect.x = playZone.x + playZone.w / 2 - player->render_rect.w / 2 - 5;
+		player->getComponent<MovementHandler>()->setPosition(player->render_rect.x, player->render_rect.y);
+	}
+	else if (currentState == G_Infinite_2Player) {
+		auto player1 = manager->getObjectBaseVector(Object_Player)->at(0).get();
+		auto player2 = manager->getObjectBaseVector(Object_Player)->at(1).get();
+		player1->getComponent<MovementHandler>()->setPosition(playZone.x + playZone.w / 4 - player1->render_rect.w / 2 - 5, player1->render_rect.y);
+		player2->getComponent<MovementHandler>()->setPosition(playZone.x + 3 * playZone.w / 4 - player2->render_rect.w / 2 - 5, player2->render_rect.y);
+	}
+	manager->getObjectBaseVector(Object_Font)->back()->destroy();
+
+	score = 0;
+	
+	stageTimer.start();
+	unpause();
 
 }
 
@@ -210,33 +206,33 @@ bool GameEngine::handleCollision(GameObject * thing, GameObject * other) {
 
 	if (collides) {
 		if (other->type == Object_Player) {
+			auto player = static_cast<PlayerObject*>(other);
 			switch (thing->type) {
 			case Object_Bubble:
 				Mix_HaltChannel(1);
-				other->getComponent<SoundHandler>()->play();
+				player->getComponent<SoundHandler>()->play();
 
-				if (manager->getObjectBaseVector(Object_Life_P1)->size() > 1) {
+				removeLife(player->playerType);
+				cleanObjects();
+				if (manager->getObjectBaseVector(Object_Life_P1)->size() > 0 && (manager->getObjectBaseVector(Object_Life_P2)->size() > 0 || currentState != G_Infinite_2Player)) {
 					std::cout << "WE COLLIDIN'\n";
-
-					manager->getObjectBaseVector(Object_Life_P1)->back()->destroy();
+					manager->addObject<FontObject>(font, SDL_Rect{ playZone.w / 2 - 50, playZone.h / 2 - 12, 100, 48 }, FontJustified_CENTER)->setText("You died!", BLACK);
 				}
-				if (manager->getObjectBaseVector(Object_Life_P1)->size() <= 1) {
+				else {
 					std::cout << "WE DEAD!\n";
-					manager->getObjectBaseVector(Object_Life_P1)->back()->destroy();
+					playing = false;
+					manager->addObject<FontObject>(font, SDL_Rect{ playZone.w / 2 - 50, playZone.h / 2 - 12, 100, 48 }, FontJustified_CENTER)->setText("Game Over!", BLACK);
 				}
-#ifdef __linux__
-				nanosleep(1500 * 1000 * 1000);
-#else
-				Sleep(1500);
-#endif
-
-				resetLevel();
-
+				pauseTimer.reset();
+				pauseTimer.start();
 				break;
 			case Object_PowerUp:
 				std::cout << "powerup gained\n";
-				if (static_cast<PowerUpObject*>(thing)->powerUpType == PU_Life && manager->getObjectBaseVector(Object_Life_P1)->size() <= 5) {
-					addLife(static_cast<PlayerObject*>(other)->playerType);
+				if (static_cast<PowerUpObject*>(thing)->powerUpType == PU_Life && 
+					((player->playerType == PLAYER1 || player->playerType == SINGLEPLAYER && manager->getObjectBaseVector(Object_Life_P1)->size() <= 5)
+						||
+					(player->playerType == PLAYER2 && manager->getObjectBaseVector(Object_Life_P1)->size() <= 5))) {
+					addLife(player->playerType);
 				}
 				else if (static_cast<PowerUpObject*>(thing)->powerUpType == PU_Coin)
 					score += 5;
@@ -338,7 +334,7 @@ void GameEngine::playLogicUpdate() {
 /// Updates the game state, all objects.
 void GameEngine::update() {
 
-	if (!paused) {
+	if (!paused && pauseTimer.paused) {
 		switch (currentState) {
 		case G_Menu:
 			break;
@@ -372,12 +368,21 @@ void GameEngine::update() {
 			break;
 		}
 	}
+	else if (pauseTimer.getMillis() > 2000 && playing == false) {
+		pauseTimer.reset();
+		pause();
+		setState(G_Menu);
+	}
+	else if (pauseTimer.getMillis() > 1000 && playing == true) {
+		pauseTimer.reset();
+		resetLevel();
+	}
 }
 
 /// Render each object on the screen.
 void GameEngine::render() {
 	SDL_RenderClear(renderer);
-	if(menu->menu.empty()) manager->draw();
+	if(currentState != G_Menu) manager->draw();
 	else menu->draw();
 	SDL_RenderPresent(renderer);
 }
@@ -418,21 +423,17 @@ void GameEngine::handleEvents() {
 
 	// If we're in playmode
 	if (currentState == G_Infinite_1Player || currentState == G_Infinite_2Player) {
-
-		if (keyMap[SDL_SCANCODE_P] && paused && !manager->getObjectBaseVector(Object_Life_P1)->empty() 
+		// Pause or unpause
+		if (keyMap[SDL_SCANCODE_P]) {
+			pause();
+		}
+		else if (keyMap[SDL_SCANCODE_P] && paused && !manager->getObjectBaseVector(Object_Life_P1)->empty()
 			&& !manager->getObjectBaseVector(Object_Life_P2)->empty()) {
 			unpause();
 		}
 
-		else if (keyMap[SDL_SCANCODE_P]) {
-			pause();
-		}
-
-		if (keyMap[SDL_SCANCODE_RETURN] && paused) {
-			setState(currentState);
-		}
+		// Set to menu
 		if (keyMap[SDL_SCANCODE_ESCAPE]) {
-
 			pause();
 			setState(G_Menu);
 		}
@@ -440,6 +441,7 @@ void GameEngine::handleEvents() {
 
 	// If we're in the menu
 	else if (currentState == G_Menu) {
+		// Next or previous button
 		if (keyMap[SDL_SCANCODE_DOWN]) {
 			menu->nextButton();
 		}
@@ -447,6 +449,7 @@ void GameEngine::handleEvents() {
 			menu->previousButton(); 
 		}
 
+		// If a button is selected
 		if (keyMap[SDL_SCANCODE_RETURN] || keyMap[SDL_SCANCODE_SPACE]) {
 			ButtonID ID = menu->activeButtonID();
 			switch (ID) {
@@ -501,7 +504,7 @@ void GameEngine::handleEvents() {
 				menu->popMenu();
 				break;
 			case BID_Max:
-				svolume = 100;
+				svolume = 128;
 				Mix_Volume(-1, svolume);
 				menu->popMenu();
 				menu->popMenu();
@@ -623,6 +626,15 @@ void inline GameEngine::generateRandomBubble() {
 		randMinusPlus(),
 		bubbleTextures[randInt<std::size_t>(0, bubbleTextures.size() - 1)].get()
 	);
+}
+
+void GameEngine::removeLife(PlayerNumber playerNum) {
+	if (playerNum == PLAYER2) {
+		if (!manager->getObjectBaseVector(Object_Life_P2)->empty()) manager->getObjectBaseVector(Object_Life_P2)->back()->destroy();
+	}
+	else {
+		if (!manager->getObjectBaseVector(Object_Life_P1)->empty()) manager->getObjectBaseVector(Object_Life_P1)->back()->destroy();
+	}
 }
 
 /// Add a life to the board

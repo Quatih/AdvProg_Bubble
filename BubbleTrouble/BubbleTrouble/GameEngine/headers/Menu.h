@@ -21,8 +21,7 @@ protected:
 
 	TextureLoader * buttonTexture;
 	TextureLoader * activeButtonTexture;
-
-	std::unique_ptr<FontObject> titleText;
+	std::vector<std::unique_ptr<FontObject>> textVec;
 public:
 	MenuType type;
 	/// Active button index in the buttonIDs vector.
@@ -42,11 +41,11 @@ public:
 		buttons.clear();
 	}
 
-	virtual void init() {
+	void init() {
 		backgroundObject = std::make_unique<GameObject>(Object_StaticImage);
 		backgroundObject->addComponent<TileHandler>("assets/square.png", 1);
 		backgroundObject->init();
-		backgroundObject->getComponent<TileHandler>()->applyColor({ 200, 0, 0 });
+		backgroundObject->getComponent<TileHandler>()->applyColor({ 200, 0, 0 , 0});
 		int h;
 		int w;
 		SDL_GetWindowSize(window, &w, &h);
@@ -58,8 +57,7 @@ public:
 		titleRect.x = backgroundObject->render_rect.w / 2 - titleRect.w/2;
 		titleRect.y = backgroundObject->render_rect.h / 4 - titleRect.h/2;
 
-		titleText = std::make_unique<FontObject>("assets/FreeSansBold.ttf", 80, titleRect, FontJustified_CENTER);
-		titleText->setText("Bubble Trouble", BLACK);
+		auto titleText = std::make_unique<FontObject>("assets/FreeSansBold.ttf", 80, titleRect, FontJustified_CENTER);
 
 
 		switch (type) {
@@ -68,21 +66,26 @@ public:
 			addButton(BID_High_Scores);
 			addButton(BID_Options);
 			addButton(BID_Quit);
-			
+			titleText->setText("Bubble Trouble", BLACK);
+
 			break;
 		case M_PlayMode:
 			//addButton(BID_Level);
 			addButton(BID_Infinite);
 			addButton(BID_Back);
+			titleText->setText(buttonText[BID_PlayMode], BLACK);
+
 			break;
 		case M_Infinite:
 			addButton(BID_1Player);
 			addButton(BID_2Player);
 			addButton(BID_Back);
+			titleText->setText(buttonText[BID_Infinite], BLACK);
 			break;
 		case M_Options:
 			addButton(BID_Volume);
 			addButton(BID_Back);
+			titleText->setText(buttonText[BID_Options], BLACK);
 			break;
 		case M_Volume:
 			addButton(BID_Min);
@@ -90,9 +93,10 @@ public:
 			addButton(BID_Max);
 			addButton(BID_Mute);
 			addButton(BID_Back);
+			titleText->setText(buttonText[BID_Volume], BLACK);
 			break;
 		case M_HighScore:
-			titleText->setText("High Score");
+			titleText->setText("High Score", BLACK);
 			addButton(BID_Back, 550);
 			break;
 		case M_Paused:
@@ -101,11 +105,14 @@ public:
 			addButton(BID_High_Scores);
 			addButton(BID_Options);
 			addButton(BID_Quit);
+			titleText->setText("Paused", BLACK);
 			break;
 
 		default:
 			break;
 		}
+
+		textVec.emplace_back(std::move(titleText));
 		setActiveButton(0);
 	}
 
@@ -159,6 +166,10 @@ public:
 			buttons[buttonIDs[activeButton]].first->getComponent<TileHandler>()->setTextureLoader(buttonTexture);
 			setActiveButton(activeButton + 1);
 		}
+		else {
+			buttons[buttonIDs[activeButton]].first->getComponent<TileHandler>()->setTextureLoader(buttonTexture);
+			setActiveButton(0);
+		}
 	}
 
 	/// Set the previous button as the active button
@@ -167,6 +178,10 @@ public:
 		if (activeButton > 0) {
 			buttons[buttonIDs[activeButton]].first->getComponent<TileHandler>()->setTextureLoader(buttonTexture);
 			setActiveButton(activeButton - 1);
+		}
+		else {
+			buttons[buttonIDs[activeButton]].first->getComponent<TileHandler>()->setTextureLoader(buttonTexture);
+			setActiveButton(buttonIDs.size()-1);
 		}
 	}
 
@@ -182,7 +197,9 @@ public:
 			buttons[a].first->draw();
 			buttons[a].second->draw();
 		}
-		titleText->draw();
+		for (auto & text : textVec) {
+			text->draw();
+		}
 	}
 };
 
@@ -191,7 +208,6 @@ protected:
 	std::vector<std::pair<std::unique_ptr<FontObject>, std::unique_ptr<FontObject>>> scoreList;
 
 public:
-
 
 	ScoreMenu(MenuType type, TextureLoader * button, TextureLoader * activeButton) : BaseMenu(type, button, activeButton) {
 		makeScoreBoard();
@@ -223,7 +239,7 @@ public:
 		}
 		SDL_Rect arect = { backgroundObject->render_rect.w/2 - 100, backgroundObject->render_rect.h / 2 - 50, 200, 24 };
 
-		for (int j = 0; j < 10 && j < fScore.size(); j++) {
+		for (int j = 0; j < 8 && j < fScore.size(); j++) {
 			
 			auto decText = new FontObject(font, arect, FontJustified_LEFT);
 			decText->setText(std::to_string(j+1), BLACK);
@@ -233,9 +249,7 @@ public:
 			std::unique_ptr<FontObject> uDec{ decText };
 			arect.y += 30;
 			scoreList.emplace_back(std::make_pair(std::move(uDec), std::move(uScore)));
-
 		}
-
 	}
 
 	void draw() override {

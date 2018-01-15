@@ -84,6 +84,12 @@ public:
 		SDL_SetTextureColorMod(texture, applied.red, applied.green, applied.blue);
 	}
 
+	/// Apply a color and alpha modification on the already loaded texture
+	void applyColor(SDL_Color applied) {
+		SDL_SetTextureColorMod(texture, applied.r, applied.g, applied.b);
+		SDL_SetTextureAlphaMod(texture, applied.a);
+	}
+
 	/// Return an SDL rect of the loaded image's size.
 	const SDL_Rect & getRect() const {
 		return img_rect;

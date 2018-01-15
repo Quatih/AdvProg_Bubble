@@ -1,0 +1,128 @@
+﻿'BubbleTrouble.exe' (Win32): Loaded 'C:\Users\Hvati\source\repos\AdvProg_Bubble\BubbleTrouble\x64\Debug\BubbleTrouble.exe'. Symbols loaded.
+'BubbleTrouble.exe' (Win32): Loaded 'C:\Windows\System32\ntdll.dll'. Cannot find or open the PDB file.
+'BubbleTrouble.exe' (Win32): Loaded 'C:\Windows\System32\kernel32.dll'. Cannot find or open the PDB file.
+'BubbleTrouble.exe' (Win32): Loaded 'C:\Windows\System32\KernelBase.dll'. Cannot find or open the PDB file.
+'BubbleTrouble.exe' (Win32): Loaded 'C:\Windows\System32\apphelp.dll'. Cannot find or open the PDB file.
+'BubbleTrouble.exe' (Win32): Loaded 'C:\Users\Hvati\source\repos\AdvProg_Bubble\BubbleTrouble\BubbleTrouble\SDL2_image.dll'. Module was built without symbols.
+'BubbleTrouble.exe' (Win32): Loaded 'C:\Users\Hvati\source\repos\AdvProg_Bubble\BubbleTrouble\BubbleTrouble\SDL2_ttf.dll'. Module was built without symbols.
+'BubbleTrouble.exe' (Win32): Loaded 'C:\Users\Hvati\source\repos\AdvProg_Bubble\BubbleTrouble\BubbleTrouble\SDL2.dll'. Module was built without symbols.
+'BubbleTrouble.exe' (Win32): Loaded 'C:\Users\Hvati\source\repos\AdvProg_Bubble\BubbleTrouble\BubbleTrouble\SDL2_mixer.dll'. Module was built without symbols.
+'BubbleTrouble.exe' (Win32): Loaded 'C:\Windows\System32\msvcrt.dll'. Cannot find or open the PDB file.
+'BubbleTrouble.exe' (Win32): Loaded 'C:\Windows\System32\msvcrt.dll'. Cannot find or open the PDB file.
+'BubbleTrouble.exe' (Win32): Loaded 'C:\Windows\System32\advapi32.dll'. Cannot find or open the PDB file.
+'BubbleTrouble.exe' (Win32): Unloaded 'C:\Windows\System32\msvcrt.dll'
+'BubbleTrouble.exe' (Win32): Loaded 'C:\Windows\System32\msvcrt.dll'. Cannot find or open the PDB file.
+'BubbleTrouble.exe' (Win32): Unloaded 'C:\Windows\System32\msvcrt.dll'
+'BubbleTrouble.exe' (Win32): Loaded 'C:\Windows\System32\sechost.dll'. Cannot find or open the PDB file.
+'BubbleTrouble.exe' (Win32): Loaded 'C:\Windows\System32\msvcp140d.dll'. Cannot find or open the PDB file.
+'BubbleTrouble.exe' (Win32): Loaded 'C:\Windows\System32\vcruntime140d.dll'. Cannot find or open the PDB file.
+'BubbleTrouble.exe' (Win32): Loaded 'C:\Windows\System32\ucrtbased.dll'. Cannot find or open the PDB file.
+'BubbleTrouble.exe' (Win32): Loaded 'C:\Windows\System32\rpcrt4.dll'. Cannot find or open the PDB file.
+'BubbleTrouble.exe' (Win32): Loaded 'C:\Users\Hvati\source\repos\AdvProg_Bubble\BubbleTrouble\BubbleTrouble\libfreetype-6.dll'. Module was built without symbols.
+'BubbleTrouble.exe' (Win32): Loaded 'C:\Windows\System32\gdi32.dll'. Cannot find or open the PDB file.
+'BubbleTrouble.exe' (Win32): Loaded 'C:\Windows\System32\winmm.dll'. Cannot find or open the PDB file.
+'BubbleTrouble.exe' (Win32): Loaded 'C:\Windows\System32\gdi32full.dll'. Cannot find or open the PDB file.
+'BubbleTrouble.exe' (Win32): Loaded 'C:\Windows\System32\msvcp_win.dll'. Cannot find or open the PDB file.
+'BubbleTrouble.exe' (Win32): Loaded 'C:\Windows\System32\winmmbase.dll'. Cannot find or open the PDB file.
+'BubbleTrouble.exe' (Win32): Loaded 'C:\Windows\System32\winmmbase.dll'. Cannot find or open the PDB file.
+'BubbleTrouble.exe' (Win32): Unloaded 'C:\Windows\System32\winmmbase.dll'
+'BubbleTrouble.exe' (Win32): Loaded 'C:\Windows\System32\ucrtbase.dll'. Cannot find or open the PDB file.
+'BubbleTrouble.exe' (Win32): Loaded 'C:\Users\Hvati\source\repos\AdvProg_Bubble\BubbleTrouble\BubbleTrouble\zlib1.dll'. Module was built without symbols.
+'BubbleTrouble.exe' (Win32): Loaded 'C:\Windows\System32\cfgmgr32.dll'. Cannot find or open the PDB file.
+'BubbleTrouble.exe' (Win32): Loaded 'C:\Windows\System32\user32.dll'. Cannot find or open the PDB file.
+'BubbleTrouble.exe' (Win32): Loaded 'C:\Windows\System32\win32u.dll'. Cannot find or open the PDB file.
+'BubbleTrouble.exe' (Win32): Loaded 'C:\Windows\System32\imm32.dll'. Cannot find or open the PDB file.
+'BubbleTrouble.exe' (Win32): Loaded 'C:\Windows\System32\combase.dll'. Cannot find or open the PDB file.
+'BubbleTrouble.exe' (Win32): Loaded 'C:\Windows\System32\bcryptprimitives.dll'. Cannot find or open the PDB file.
+'BubbleTrouble.exe' (Win32): Loaded 'C:\Windows\System32\ole32.dll'. Cannot find or open the PDB file.
+'BubbleTrouble.exe' (Win32): Loaded 'C:\Windows\System32\oleaut32.dll'. Cannot find or open the PDB file.
+'BubbleTrouble.exe' (Win32): Loaded 'C:\Windows\System32\shell32.dll'. Cannot find or open the PDB file.
+'BubbleTrouble.exe' (Win32): Loaded 'C:\Windows\System32\SHCore.dll'. Cannot find or open the PDB file.
+'BubbleTrouble.exe' (Win32): Loaded 'C:\Windows\System32\windows.storage.dll'. Cannot find or open the PDB file.
+'BubbleTrouble.exe' (Win32): Loaded 'C:\Windows\System32\shlwapi.dll'. Cannot find or open the PDB file.
+'BubbleTrouble.exe' (Win32): Loaded 'C:\Windows\System32\kernel.appcore.dll'. Cannot find or open the PDB file.
+'BubbleTrouble.exe' (Win32): Loaded 'C:\Windows\System32\powrprof.dll'. Cannot find or open the PDB file.
+'BubbleTrouble.exe' (Win32): Loaded 'C:\Windows\System32\profapi.dll'. Cannot find or open the PDB file.
+'BubbleTrouble.exe' (Win32): Loaded 'C:\Windows\System32\version.dll'. Cannot find or open the PDB file.
+'BubbleTrouble.exe' (Win32): Loaded 'C:\Windows\System32\cryptbase.dll'. Cannot find or open the PDB file.
+'BubbleTrouble.exe' (Win32): Loaded 'C:\Windows\System32\uxtheme.dll'. Cannot find or open the PDB file.
+'BubbleTrouble.exe' (Win32): Loaded 'C:\Windows\System32\dwmapi.dll'. Cannot find or open the PDB file.
+'BubbleTrouble.exe' (Win32): Loaded 'C:\Windows\System32\clbcatq.dll'. Cannot find or open the PDB file.
+'BubbleTrouble.exe' (Win32): Loaded 'C:\Windows\System32\MMDevAPI.dll'. Cannot find or open the PDB file.
+'BubbleTrouble.exe' (Win32): Loaded 'C:\Windows\System32\propsys.dll'. Cannot find or open the PDB file.
+'BubbleTrouble.exe' (Win32): Loaded 'C:\Windows\System32\devobj.dll'. Cannot find or open the PDB file.
+'BubbleTrouble.exe' (Win32): Loaded 'C:\Windows\System32\avrt.dll'. Cannot find or open the PDB file.
+'BubbleTrouble.exe' (Win32): Loaded 'C:\Windows\System32\dinput8.dll'. Cannot find or open the PDB file.
+'BubbleTrouble.exe' (Win32): Loaded 'C:\Windows\System32\InputHost.dll'. Cannot find or open the PDB file.
+'BubbleTrouble.exe' (Win32): Loaded 'C:\Windows\System32\CoreMessaging.dll'. Cannot find or open the PDB file.
+'BubbleTrouble.exe' (Win32): Loaded 'C:\Windows\System32\CoreUIComponents.dll'. Cannot find or open the PDB file.
+'BubbleTrouble.exe' (Win32): Loaded 'C:\Windows\System32\ntmarta.dll'. Cannot find or open the PDB file.
+'BubbleTrouble.exe' (Win32): Loaded 'C:\Windows\System32\WinTypes.dll'. Cannot find or open the PDB file.
+'BubbleTrouble.exe' (Win32): Loaded 'C:\Windows\System32\WinTypes.dll'. Cannot find or open the PDB file.
+'BubbleTrouble.exe' (Win32): Unloaded 'C:\Windows\System32\WinTypes.dll'
+'BubbleTrouble.exe' (Win32): Loaded 'C:\Windows\System32\hid.dll'. Cannot find or open the PDB file.
+'BubbleTrouble.exe' (Win32): Loaded 'C:\Windows\System32\setupapi.dll'. Cannot find or open the PDB file.
+'BubbleTrouble.exe' (Win32): Loaded 'C:\Windows\System32\wintrust.dll'. Cannot find or open the PDB file.
+'BubbleTrouble.exe' (Win32): Loaded 'C:\Windows\System32\msasn1.dll'. Cannot find or open the PDB file.
+'BubbleTrouble.exe' (Win32): Loaded 'C:\Windows\System32\crypt32.dll'. Cannot find or open the PDB file.
+'BubbleTrouble.exe' (Win32): Loaded 'C:\Windows\System32\XInput1_4.dll'. Cannot find or open the PDB file.
+'BubbleTrouble.exe' (Win32): Loaded 'C:\Windows\System32\msctf.dll'. Cannot find or open the PDB file.
+'BubbleTrouble.exe' (Win32): Loaded 'C:\Windows\System32\d3d9.dll'. Cannot find or open the PDB file.
+'BubbleTrouble.exe' (Win32): Loaded 'C:\Windows\System32\DriverStore\FileRepository\nv_dispi.inf_amd64_5601d21ccd639df9\nvldumdx.dll'. Cannot find or open the PDB file.
+'BubbleTrouble.exe' (Win32): Loaded 'C:\Windows\System32\imagehlp.dll'. Cannot find or open the PDB file.
+'BubbleTrouble.exe' (Win32): Loaded 'C:\Windows\System32\cryptsp.dll'. Cannot find or open the PDB file.
+'BubbleTrouble.exe' (Win32): Loaded 'C:\Windows\System32\rsaenh.dll'. Cannot find or open the PDB file.
+'BubbleTrouble.exe' (Win32): Loaded 'C:\Windows\System32\bcrypt.dll'. Cannot find or open the PDB file.
+'BubbleTrouble.exe' (Win32): Loaded 'C:\Windows\System32\DriverStore\FileRepository\nv_dispi.inf_amd64_5601d21ccd639df9\nvd3dumx.dll'. Cannot find or open the PDB file.
+'BubbleTrouble.exe' (Win32): Loaded 'C:\Windows\System32\nvspcap64.dll'. Cannot find or open the PDB file.
+The thread 0x4fb8 has exited with code 0 (0x0).
+'BubbleTrouble.exe' (Win32): Loaded 'C:\Windows\System32\ResourcePolicyClient.dll'. Cannot find or open the PDB file.
+'BubbleTrouble.exe' (Win32): Unloaded 'C:\Windows\System32\ResourcePolicyClient.dll'
+'BubbleTrouble.exe' (Win32): Loaded 'C:\Program Files\NVIDIA Corporation\Ansel\Tools\NvCameraWhitelisting64.dll'. Cannot find or open the PDB file.
+'BubbleTrouble.exe' (Win32): Unloaded 'C:\Program Files\NVIDIA Corporation\Ansel\Tools\NvCameraWhitelisting64.dll'
+'BubbleTrouble.exe' (Win32): Loaded 'C:\Windows\System32\TextInputFramework.dll'. Cannot find or open the PDB file.
+'BubbleTrouble.exe' (Win32): Loaded 'C:\Windows\System32\AudioSes.dll'. Cannot find or open the PDB file.
+'BubbleTrouble.exe' (Win32): Loaded 'C:\Users\Hvati\source\repos\AdvProg_Bubble\BubbleTrouble\BubbleTrouble\libFLAC-8.dll'. Module was built without symbols.
+'BubbleTrouble.exe' (Win32): Loaded 'C:\Users\Hvati\source\repos\AdvProg_Bubble\BubbleTrouble\BubbleTrouble\libogg-0.dll'. Module was built without symbols.
+'BubbleTrouble.exe' (Win32): Loaded 'C:\Users\Hvati\source\repos\AdvProg_Bubble\BubbleTrouble\BubbleTrouble\libvorbisfile-3.dll'. Module was built without symbols.
+'BubbleTrouble.exe' (Win32): Loaded 'C:\Users\Hvati\source\repos\AdvProg_Bubble\BubbleTrouble\BubbleTrouble\libvorbis-0.dll'. Module was built without symbols.
+'BubbleTrouble.exe' (Win32): Loaded 'C:\Users\Hvati\source\repos\AdvProg_Bubble\BubbleTrouble\BubbleTrouble\libmpg123-0.dll'. Module was built without symbols.
+'BubbleTrouble.exe' (Win32): Loaded 'C:\Users\Hvati\source\repos\AdvProg_Bubble\BubbleTrouble\BubbleTrouble\libmodplug-1.dll'. Module was built without symbols.
+'BubbleTrouble.exe' (Win32): Loaded 'C:\Users\Hvati\source\repos\AdvProg_Bubble\BubbleTrouble\BubbleTrouble\libpng16-16.dll'. Module was built without symbols.
+Debug Assertion Failed!
+
+Program: C:\WINDOWS\SYSTEM32\MSVCP140D.dll
+File: c:\program files (x86)\microsoft visual studio\2017\enterprise\vc\tools\msvc\14.12.25827\include\vector
+Line: 1885
+
+Expression: back() called on empty vector
+
+For information on how your program can cause an assertion
+failure, see the Visual C++ documentation on asserts.
+
+(Press Retry to debug the application)
+The thread 0x50b4 has exited with code 3 (0x3).
+The thread 0x384c has exited with code 3 (0x3).
+The thread 0x1ea0 has exited with code 3 (0x3).
+The thread 0x4234 has exited with code 3 (0x3).
+The thread 0x37dc has exited with code 3 (0x3).
+The thread 0x4eb8 has exited with code 3 (0x3).
+The thread 0x48a4 has exited with code 3 (0x3).
+The thread 0x3678 has exited with code 3 (0x3).
+The thread 0x2cc has exited with code 3 (0x3).
+The thread 0x4338 has exited with code 3 (0x3).
+The thread 0x56bc has exited with code 3 (0x3).
+The thread 0x3860 has exited with code 3 (0x3).
+The thread 0x5450 has exited with code 3 (0x3).
+The thread 0x2940 has exited with code 3 (0x3).
+The thread 0x4614 has exited with code 3 (0x3).
+The thread 0x3ed4 has exited with code 3 (0x3).
+The thread 0x1cb8 has exited with code 3 (0x3).
+The thread 0x1e38 has exited with code 3 (0x3).
+The thread 0x5048 has exited with code 3 (0x3).
+The thread 0x2500 has exited with code 3 (0x3).
+The thread 0x509c has exited with code 3 (0x3).
+The thread 0x2344 has exited with code 3 (0x3).
+The thread 0x3d98 has exited with code 3 (0x3).
+The thread 0x42f4 has exited with code 3 (0x3).
+The program '[15132] BubbleTrouble.exe' has exited with code 3 (0x3).
