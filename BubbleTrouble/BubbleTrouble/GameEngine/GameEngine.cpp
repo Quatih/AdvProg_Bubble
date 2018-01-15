@@ -98,6 +98,9 @@ void GameEngine::initPlayingObjects() {
 	if (currentState == G_Infinite_1Player) {
 		auto spike = manager->addObject<SpikeObject>();
 		manager->addObject<PlayerObject>(spike, SINGLEPLAYER);
+		addLife(SINGLEPLAYER);
+		addLife(SINGLEPLAYER);
+		addLife(SINGLEPLAYER);
 	}
 	else if (currentState == G_Infinite_2Player) {
 		auto spike1 = manager->addObject<SpikeObject>();
@@ -120,8 +123,14 @@ void GameEngine::initPlayingObjects() {
 	for (auto& spike : *manager->getObjectBaseVector(Object_Spike)) {
 		spike->hide();
 	}
-	addLife(); 
-	addLife(); 
+<<<<<<< .mine
+
+	addLife();
+=======
+
+
+>>>>>>> .theirs
+	addLife();
 	addLife();
 
 
@@ -163,11 +172,37 @@ void GameEngine::resetLevel() {
 		for (auto &spike : *(manager->getObjectBaseVector(Object_Spike))) {
 			spike->hide();
 		}
-		for (int i = 0; i < 3; i++) {
+
+		if (currentState == G_Level1) {
+			for (int i = 0; i < 1; i++) {
+				generateRandomBubble();
+			}
+		}
+		if (currentState == G_Level2) {
+			for (int i = 0; i < 2; i++) {
+				generateRandomBubble();
+			}
+		}
+		if (currentState == G_Level3) {
+			for (int i = 0; i < 3; i++) {
+				generateRandomBubble();
+			}
+		}
+		if (currentState == G_Level4) {
+			for (int i = 0; i < 4; i++) {
+				generateRandomBubble();
+			}
+		}
+		if (currentState == G_Level5) {
+			for (int i = 0; i < 5; i++) {
+				generateRandomBubble();
+			}
+		}
+		else
+			for(int i = 0; i < 3; i++) {
 			generateRandomBubble();
 		}
-
-		if (currentState == G_Infinite_1Player) { 
+		if (currentState == G_Infinite_1Player) {
 			auto player = manager->getObjectBaseVector(Object_Player)->front().get();
 			player->render_rect.x = playZone.x + playZone.w / 2 - player->render_rect.w / 2 - 5;
 			player->getComponent<MovementHandler>()->setPosition(player->render_rect.x, player->render_rect.y);
@@ -192,10 +227,23 @@ void GameEngine::resetLevel() {
 
 }
 
-/// Method for condensing some code, updates each object while playing and do appropriate actions/processing.
-void GameEngine::playLogicUpdate() {
-	
-	manager->update();
+bool GameEngine::handleCollision(GameObject * thing, GameObject * other) {
+	bool collides = false;
+	if (thing->type == Object_Bubble || other->type == Object_Bubble) {
+		collides = collidesWithCircle(thing->render_rect, other->render_rect);
+	}
+	else collides = collidesWithRect(thing->render_rect, other->render_rect);
+
+	if (collides) {
+		if (other->type == Object_Wall) {
+			switch (thing->type) {
+			case Object_Bubble:
+				if (thing->render_rect.x < other->render_rect.x) {
+					thing->getComponent<MovementHandler>()->velocity.x *= -1;
+				}
+				if (thing->render_rect.x + thing->render_rect.w > other->render_rect.x + other->render_rect.w) {
+					thing->getComponent<MovementHandler>()->velocity.x *= -1;
+				}
 
 				if (thing->render_rect.y < other->render_rect.y) {
 					thing->getComponent<MovementHandler>()->velocity.y = thing->getComponent<MovementHandler>()->baseVelocity.y;
@@ -205,10 +253,57 @@ void GameEngine::playLogicUpdate() {
 				}
 				[[fallthrough]]; // Indicates that the next case statement will also be executed, and that it is intentional. Requires C++17.
 
-	for (auto& player : *(manager->getObjectBaseVector(Object_Player))) {
-		for (auto & bubble : *(manager->getObjectBaseVector(Object_Bubble))) {
-			if (collidesWithCircle((player->render_rect), (bubble->render_rect))) {
-				auto life = manager->getObjectTypeVector<GameObject>(Object_Lives);
+			case Object_Player:
+				if (thing->render_rect.x < other->render_rect.x) {
+					thing->getComponent<MovementHandler>()->position.x = (double)other->render_rect.x;
+				}
+				if (thing->render_rect.x + thing->render_rect.w > other->render_rect.x + other->render_rect.w) {
+					thing->getComponent<MovementHandler>()->position.x = (double)(other->render_rect.x + other->render_rect.w - thing->render_rect.w);
+				}
+
+				if (thing->render_rect.y < other->render_rect.y) {
+					thing->getComponent<MovementHandler>()->position.y = (double)other->render_rect.y;
+				}
+				if (thing->render_rect.y + thing->render_rect.h > other->render_rect.y + other->render_rect.h) {
+					thing->getComponent<MovementHandler>()->position.y = (double)(other->render_rect.y + other->render_rect.h - thing->render_rect.h);
+				}
+
+				thing->render_rect.x = (int)thing->getComponent<MovementHandler>()->position.x;
+				thing->render_rect.y = (int)thing->getComponent<MovementHandler>()->position.y;
+				break;
+			case Object_Spike:
+				if (thing->render_rect.y < other->render_rect.y) {
+					thing->hide();
+				}
+				break;
+			case Object_Explosion:
+				break;
+
+			case Object_PowerUp:
+				if (thing->render_rect.x < other->render_rect.x) {
+					thing->getComponent<MovementHandler>()->position.x = (double)other->render_rect.x;
+				}
+				if (thing->render_rect.x + thing->render_rect.w > other->render_rect.x + other->render_rect.w) {
+					thing->getComponent<MovementHandler>()->position.x = (double)(other->render_rect.x + other->render_rect.w - thing->render_rect.w);
+				}
+
+				if (thing->render_rect.y < other->render_rect.y) {
+					thing->getComponent<MovementHandler>()->position.y = (double)other->render_rect.y;
+				}
+				if (thing->render_rect.y + thing->render_rect.h > other->render_rect.y + other->render_rect.h) {
+					thing->getComponent<MovementHandler>()->position.y = (double)(other->render_rect.y + other->render_rect.h - thing->render_rect.h);
+				}
+
+				thing->render_rect.x = (int)thing->getComponent<MovementHandler>()->position.x;
+				thing->render_rect.y = (int)thing->getComponent<MovementHandler>()->position.y;
+				break;
+			default:
+				break;
+			}
+		}
+		else if (other->type == Object_Player) {
+			switch (thing->type) {
+			case Object_Bubble:
 				Mix_HaltChannel(1);
 				thing->getComponent<SoundHandler>()->play();
 
@@ -238,13 +333,18 @@ void GameEngine::playLogicUpdate() {
 				else if (static_cast<PowerUpObject*>(thing)->powerUpType == PU_Coin)
 					score += 5;
 
-				a->destroy();
+				thing->destroy();
+				
+				break;
+			default:
+				break;
 			}
 		}
-	}
-	for (auto& spike : (*(manager->getObjectBaseVector(Object_Spike)))) {
-	
-		if (spike->isVisible()) {
+		else if (other->type == Object_Spike) {
+			if (thing->type == Object_Bubble) {
+				other->hide();
+				thing->destroy();
+				score++;
 
 				Mix_HaltChannel(1);
 				thing->getComponent<SoundHandler>()->play();
@@ -598,8 +698,6 @@ void GameEngine::setState(GameStates state) {
 		}
 		break;
 	case G_Infinite_2Player:
-
-		refresh();
 		initPlayingObjects();
 		stageTimer.start();
 		score = 0;
