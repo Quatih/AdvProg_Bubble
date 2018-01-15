@@ -3,23 +3,28 @@
 #include "ObjectManager.h"
 #include "Components.h"
 #include <map>
+#include <fstream>
 
-
-enum MenuType {M_Main, M_PlayMode, M_Infinite, M_Options, M_Volume};
+enum MenuType {M_Main, M_PlayMode, M_Infinite, M_Options, M_Volume, M_HighScore, M_Paused};
 extern SDL_Window * window;
 extern TTF_Font * font;
-enum ButtonID : Uint64 {BID_PlayMode, BID_Options, BID_Exit, BID_Back, BID_Infinite, BID_Level, BID_1Player, BID_2Player, BID_Volume, BID_Min, BID_Med, BID_Max, BID_Mute};
-const std::string buttonText[] = {"Play", "Options", "Quit", "Back", "Infinite Mode", "Level Mode", "1 Player", "2 Player", "Volume", "Minimum", "Medium", "Maximum", "Mute"};
+enum ButtonID : Uint64 {BID_PlayMode, BID_Options, BID_Quit, BID_Back, BID_Infinite, 
+	BID_Level, BID_1Player, BID_2Player, BID_Volume, BID_Min, BID_Med, BID_Max, BID_Mute, BID_High_Scores, BID_Continue};
+static const std::string buttonText[] = {"Play", "Options", "Quit", "Back", "Infinite Mode", 
+	"Level Mode", "1 Player", "2 Player", "Volume", "Minimum", "Medium", "Maximum", "Mute", "High Scores", "Continue"};
 
 /// Menu class that keeps track of all objects in the menu
 class BaseMenu {
-private:
-	MenuType type;
-public:
+protected:
+
 	std::unique_ptr<GameObject> backgroundObject;
+
 	TextureLoader * buttonTexture;
 	TextureLoader * activeButtonTexture;
+
 	std::unique_ptr<FontObject> titleText;
+public:
+	MenuType type;
 	/// Active button index in the buttonIDs vector.
 	Uint64 activeButton = 0;
 	/// Map using the buttonIds to store a pair of objects, a button image and font
@@ -37,11 +42,11 @@ public:
 		buttons.clear();
 	}
 
-	void init() {
+	virtual void init() {
 		backgroundObject = std::make_unique<GameObject>(Object_StaticImage);
 		backgroundObject->addComponent<TileHandler>("assets/square.png", 1);
 		backgroundObject->init();
-		backgroundObject->getComponent<TileHandler>()->applyColor({ 180, 0, 0 });
+		backgroundObject->getComponent<TileHandler>()->applyColor({ 200, 0, 0 });
 		int h;
 		int w;
 		SDL_GetWindowSize(window, &w, &h);
@@ -60,8 +65,9 @@ public:
 		switch (type) {
 		case M_Main:
 			addButton(BID_PlayMode);
+			addButton(BID_High_Scores);
 			addButton(BID_Options);
-			addButton(BID_Exit);
+			addButton(BID_Quit);
 			
 			break;
 		case M_PlayMode:
@@ -85,6 +91,18 @@ public:
 			addButton(BID_Mute);
 			addButton(BID_Back);
 			break;
+		case M_HighScore:
+			titleText->setText("High Score");
+			addButton(BID_Back, 550);
+			break;
+		case M_Paused:
+			addButton(BID_Continue);
+			addButton(BID_PlayMode);
+			addButton(BID_High_Scores);
+			addButton(BID_Options);
+			addButton(BID_Quit);
+			break;
+
 		default:
 			break;
 		}
@@ -113,6 +131,28 @@ public:
 		buttonIDs.push_back(ID);
 	}
 
+	void addButton(ButtonID ID, int posY) {
+		GameObject * button;
+		FontObject * fontobject;
+
+		button = new GameObject(Object_StaticImage);
+		button->addComponent<TileHandler>(buttonTexture, 0.8);
+		button->addComponent<MovementHandler>(0, 0);
+
+		button->init();
+		button->getComponent<MovementHandler>()->setPosition(double(backgroundObject->render_rect.w / 2 - button->render_rect.w / 2),
+			(double)(posY));
+		SDL_Rect rect = button->render_rect;
+		fontobject = new FontObject(font, rect, FontJustified_CENTER);
+		fontobject->setText(buttonText[ID]);
+		std::unique_ptr<GameObject> uButton{ button };
+		std::unique_ptr<FontObject> uFont{ fontobject };
+
+		buttons[ID] = std::make_pair(std::move(uButton), std::move(uFont));
+		buttonIDs.push_back(ID);
+	}
+
+
 	/// Set the next button as the active button
 	void nextButton() {
 		if (activeButton < buttonIDs.size() - 1) {
@@ -136,13 +176,74 @@ public:
 		activeButton = number;
 	}
 
-	void draw() {
+	virtual void draw() {
 		backgroundObject->draw();
 		for (auto& a : buttonIDs) {
 			buttons[a].first->draw();
 			buttons[a].second->draw();
 		}
 		titleText->draw();
+	}
+};
+
+class ScoreMenu : public BaseMenu {
+protected:
+	std::vector<std::pair<std::unique_ptr<FontObject>, std::unique_ptr<FontObject>>> scoreList;
+
+public:
+
+
+	ScoreMenu(MenuType type, TextureLoader * button, TextureLoader * activeButton) : BaseMenu(type, button, activeButton) {
+		makeScoreBoard();
+	}
+
+	struct greater {
+		template<class T>
+		bool operator()(T const &a, T const &b) const { return a > b; }
+	};
+
+	void makeScoreBoard() {
+
+		std::cout << "score\n";
+
+		std::cout << "newScore\n";
+		std::vector <int> fScore;
+		std::string line;
+		std::ifstream myfile("scoreboard.txt");
+		if (myfile.is_open()) {
+			while (getline(myfile, line)) {
+				fScore.push_back(std::stoi(line));
+			}
+			myfile.close();
+
+			std::sort(fScore.begin(), fScore.end(), greater());
+			//for (auto &fScore_print : fScore) {
+			//	std::cout << "score = " << fScore_print << std::endl;
+			//}
+		}
+		SDL_Rect arect = { backgroundObject->render_rect.w/2 - 100, backgroundObject->render_rect.h / 2 - 50, 200, 24 };
+
+		for (int j = 0; j < 10 && j < fScore.size(); j++) {
+			
+			auto decText = new FontObject(font, arect, FontJustified_LEFT);
+			decText->setText(std::to_string(j+1), BLACK);
+			auto scoreText = new FontObject(font, arect, FontJustified_RIGHT);
+			scoreText->setText(std::to_string(fScore.at(j)), BLACK);
+			std::unique_ptr<FontObject> uScore{ scoreText };
+			std::unique_ptr<FontObject> uDec{ decText };
+			arect.y += 30;
+			scoreList.emplace_back(std::make_pair(std::move(uDec), std::move(uScore)));
+
+		}
+
+	}
+
+	void draw() override {
+		BaseMenu::draw();
+		for (auto& a : scoreList) {
+			a.first->draw();
+			a.second->draw();
+		}
 	}
 };
 
@@ -184,8 +285,15 @@ public:
 
 	/// Add a new menu of the type to the stack
 	void pushMenu(MenuType type) {
-		BaseMenu * pushedmenu = new BaseMenu(type, buttonTexture.get(), activeButtonTexture.get());
-		menu.emplace_back(std::move(pushedmenu));
+		if (type == M_HighScore) {
+			ScoreMenu * pushedmenu = new ScoreMenu(type, buttonTexture.get(), activeButtonTexture.get());
+			menu.emplace_back(std::move(pushedmenu));
+		}
+		else {
+			BaseMenu * pushedmenu = new BaseMenu(type, buttonTexture.get(), activeButtonTexture.get());
+			menu.emplace_back(std::move(pushedmenu));
+		}
+		
 	}
 
 	/// Pop a menu from the stack.
@@ -195,9 +303,7 @@ public:
 
 	/// Clear all the menus
 	void clearMenu() {
-		while (!menu.empty()) {
-			menu.pop_back();
-		}
+		menu.clear();
 	}
 
 };

@@ -5,7 +5,7 @@
 #include "headers/SoundHandler.h"
 #include "headers/CollisionChecks.h"
 #include <string>
-
+#include <fstream>
 #ifdef __linux__
 #include <unistd.h>
 #else
@@ -29,7 +29,7 @@ GameEngine::GameEngine(std::string title, int winposx, int winposy, int winwidth
 	std::cout << "Game Engine Constructed.\n";
 	running = true;
 	paused = false;
-
+	playing = false;
 	playZone.x = 0;
 	playZone.y = 0;
 	playZone.h = winheight;
@@ -91,6 +91,20 @@ void GameEngine::init() {
 
 }
 
+void GameEngine::fileHandling(void) {
+
+	//std::time_t result = std::time(nullptr);
+	std::ofstream myfile("scoreboard.txt", std::ios::app);
+	if (myfile.is_open()) {
+		if (score) {
+			myfile << score << std::endl;
+			//myfile << std::asctime(std::localtime(&result)) << std::endl;
+			//myfile << "    " << dt << std::endl;
+			myfile.close();
+		}
+	}
+}
+
 /// Initialise objects for playing the game
 void GameEngine::initPlayingObjects() {
 	score = 0;
@@ -119,7 +133,6 @@ void GameEngine::initPlayingObjects() {
 		spike->hide();
 	}
 
-
 	SDL_Rect scorepos;
 	scorepos.h = 48;
 	scorepos.w = 100;
@@ -145,10 +158,12 @@ void GameEngine::initPlayingObjects() {
 }
 
 void GameEngine::resetLevel() {
-	if (manager->getObjectVector(Object_Life_P1).size() > 1) {
+	fileHandling();
+	if (manager->getObjectVector(Object_Life_P1).size() > 1 && manager->getObjectVector(Object_Life_P2).size() > 1) {
 		for (auto a : manager->getObjectTypeVector<BubbleObject>(Object_Bubble)) {
 			a->destroy();
 		}
+
 		for (auto & a : manager->getObjectTypeVector<PowerUpObject>(Object_PowerUp)) {
 			a->destroy();
 		}
@@ -194,77 +209,11 @@ bool GameEngine::handleCollision(GameObject * thing, GameObject * other) {
 	else collides = collidesWithRect(thing->render_rect, other->render_rect);
 
 	if (collides) {
-		if (other->type == Object_Wall) {
-			switch (thing->type) {
-			case Object_Bubble:
-				if (thing->render_rect.x < other->render_rect.x) {
-					thing->getComponent<MovementHandler>()->velocity.x *= -1;
-				}
-				if (thing->render_rect.x + thing->render_rect.w > other->render_rect.x + other->render_rect.w) {
-					thing->getComponent<MovementHandler>()->velocity.x *= -1;
-				}
-
-				if (thing->render_rect.y < other->render_rect.y) {
-					thing->getComponent<MovementHandler>()->velocity.y = thing->getComponent<MovementHandler>()->baseVelocity.y;
-				}
-				if (thing->render_rect.y + thing->render_rect.h > other->render_rect.y + other->render_rect.h) {
-					thing->getComponent<MovementHandler>()->velocity.y = thing->getComponent<MovementHandler>()->baseVelocity.y*-1;
-				}
-				[[fallthrough]]; // Indicates that the next case statement will also be executed, and that it is intentional. Requires C++17.
-
-			case Object_Player:
-				if (thing->render_rect.x < other->render_rect.x) {
-					thing->getComponent<MovementHandler>()->position.x = (double)other->render_rect.x;
-				}
-				if (thing->render_rect.x + thing->render_rect.w > other->render_rect.x + other->render_rect.w) {
-					thing->getComponent<MovementHandler>()->position.x = (double)(other->render_rect.x + other->render_rect.w - thing->render_rect.w);
-				}
-
-				if (thing->render_rect.y < other->render_rect.y) {
-					thing->getComponent<MovementHandler>()->position.y = (double)other->render_rect.y;
-				}
-				if (thing->render_rect.y + thing->render_rect.h > other->render_rect.y + other->render_rect.h) {
-					thing->getComponent<MovementHandler>()->position.y = (double)(other->render_rect.y + other->render_rect.h - thing->render_rect.h);
-				}
-
-				thing->render_rect.x = (int)thing->getComponent<MovementHandler>()->position.x;
-				thing->render_rect.y = (int)thing->getComponent<MovementHandler>()->position.y;
-				break;
-			case Object_Spike:
-				if (thing->render_rect.y < other->render_rect.y) {
-					thing->hide();
-				}
-				break;
-			case Object_Explosion:
-				break;
-
-			case Object_PowerUp:
-				if (thing->render_rect.x < other->render_rect.x) {
-					thing->getComponent<MovementHandler>()->position.x = (double)other->render_rect.x;
-				}
-				if (thing->render_rect.x + thing->render_rect.w > other->render_rect.x + other->render_rect.w) {
-					thing->getComponent<MovementHandler>()->position.x = (double)(other->render_rect.x + other->render_rect.w - thing->render_rect.w);
-				}
-
-				if (thing->render_rect.y < other->render_rect.y) {
-					thing->getComponent<MovementHandler>()->position.y = (double)other->render_rect.y;
-				}
-				if (thing->render_rect.y + thing->render_rect.h > other->render_rect.y + other->render_rect.h) {
-					thing->getComponent<MovementHandler>()->position.y = (double)(other->render_rect.y + other->render_rect.h - thing->render_rect.h);
-				}
-
-				thing->render_rect.x = (int)thing->getComponent<MovementHandler>()->position.x;
-				thing->render_rect.y = (int)thing->getComponent<MovementHandler>()->position.y;
-				break;
-			default:
-				break;
-			}
-		}
-		else if (other->type == Object_Player) {
+		if (other->type == Object_Player) {
 			switch (thing->type) {
 			case Object_Bubble:
 				Mix_HaltChannel(1);
-				thing->getComponent<SoundHandler>()->play();
+				other->getComponent<SoundHandler>()->play();
 
 				if (manager->getObjectBaseVector(Object_Life_P1)->size() > 1) {
 					std::cout << "WE COLLIDIN'\n";
@@ -346,8 +295,14 @@ void GameEngine::playLogicUpdate() {
 	
 	manager->update();
 
-	timerText->setText(std::to_string(stageTimer.getMillis() / 1000));
-	scoreText->setText(std::to_string(score));
+
+	std::string timerstr = std::to_string(stageTimer.getMillis() / 1000);
+	timerText->setText(timerstr, timerText->color);
+	
+	std::string scorestr = std::to_string(score);
+	std::string scorestr2 = std::to_string(score);
+	std::string scorestr3 = std::to_string(0);
+	scoreText->setText(scorestr, scoreText->color);
 	scoreText->show();
 	timerText->show();
 
@@ -361,7 +316,7 @@ void GameEngine::playLogicUpdate() {
 			handleCollision(powerup.get(), player.get());
 		}
 	}
-	for (auto& spike : (*(manager->getObjectBaseVector(Object_Spike)))) {
+	for (auto& spike : *(manager->getObjectBaseVector(Object_Spike))) {
 	
 		if (spike->isVisible()) {
 
@@ -461,9 +416,11 @@ void GameEngine::handleEvents() {
 		}
 	}
 
+	// If we're in playmode
 	if (currentState == G_Infinite_1Player || currentState == G_Infinite_2Player) {
 
-		if (keyMap[SDL_SCANCODE_P] && paused && !manager->getObjectBaseVector(Object_Life_P1)->empty()) {
+		if (keyMap[SDL_SCANCODE_P] && paused && !manager->getObjectBaseVector(Object_Life_P1)->empty() 
+			&& !manager->getObjectBaseVector(Object_Life_P2)->empty()) {
 			unpause();
 		}
 
@@ -475,17 +432,19 @@ void GameEngine::handleEvents() {
 			setState(currentState);
 		}
 		if (keyMap[SDL_SCANCODE_ESCAPE]) {
+
 			pause();
 			setState(G_Menu);
 		}
 	}
 
+	// If we're in the menu
 	else if (currentState == G_Menu) {
 		if (keyMap[SDL_SCANCODE_DOWN]) {
 			menu->nextButton();
 		}
 		else if (keyMap[SDL_SCANCODE_UP]) {
-			menu->previousButton();
+			menu->previousButton(); 
 		}
 
 		if (keyMap[SDL_SCANCODE_RETURN] || keyMap[SDL_SCANCODE_SPACE]) {
@@ -497,8 +456,10 @@ void GameEngine::handleEvents() {
 			case BID_Options:
 				menu->pushMenu(M_Options);
 				break;
-			case BID_Exit:
+			case BID_Quit:
 				running = false;
+
+				fileHandling();
 				break;
 			case BID_Back:
 				menu->popMenu();
@@ -511,10 +472,12 @@ void GameEngine::handleEvents() {
 			case BID_1Player:
 				setState(G_Infinite_1Player);
 				menu->menu.clear();
+				playing = true;
 				break;
 			case BID_2Player:
 				setState(G_Infinite_2Player);
 				menu->menu.clear();
+				playing = true;
 				break;
 			case BID_Volume:
 				menu->pushMenu(M_Volume);
@@ -543,13 +506,32 @@ void GameEngine::handleEvents() {
 				menu->popMenu();
 				menu->popMenu();
 				break;
+			case BID_High_Scores:
+				menu->pushMenu(M_HighScore);
+				break;
+			case BID_Continue:
+
+				menu->clearMenu();
+				currentState = previousState;
+				unpause();
+
+				break;
 			default:
 				break;
 			}
 		}
 		if (keyMap[SDL_SCANCODE_ESCAPE]) {
-			if (menu->menu.size() > 0) menu->popMenu();
-			else running = false;
+			if (menu->menu.size() > 1) menu->popMenu();
+			else if(playing) {
+				menu->clearMenu();
+				currentState = previousState;
+				unpause();
+
+			}
+			else {
+				running = false;
+				fileHandling();
+			}
 		}
 	}
 }
@@ -579,16 +561,18 @@ void GameEngine::cleanObjects() {
 
 /// Set the game state
 void GameEngine::setState(GameStates state) {
+	previousState = currentState;
 	currentState = state;
-	refresh();
 
 	switch (currentState) {
 	case G_Menu:
-		menu->pushMenu(M_Main);
-		break;
+		if (playing) menu->pushMenu(M_Paused);
+		else menu->pushMenu(M_Main);
+
 		break;
 	case G_Infinite_1Player:
 
+		refresh();
 		initPlayingObjects();
 
 		stageTimer.start();
@@ -597,6 +581,7 @@ void GameEngine::setState(GameStates state) {
 		break;
 	case G_Infinite_2Player:
 
+		refresh();
 		initPlayingObjects();
 
 		stageTimer.start();

@@ -62,8 +62,16 @@ public:
 			std::cout << "Error loading text surface\n";
 		}
 
+		message = SDL_CreateTextureFromSurface(renderer, surface);
+		if (message == NULL) {
+			std::cout << "Errorloading text\n";
+		}
+
 		img_rect.w = surface->clip_rect.w;
 		img_rect.h = surface->clip_rect.h;
+
+		SDL_FreeSurface(surface);
+
 
 		switch (justification) {
 		case FontJustified_LEFT:
@@ -81,13 +89,6 @@ public:
 			break;
 		}
 
-		message = SDL_CreateTextureFromSurface(renderer, surface);
-		if (message == NULL) {
-			std::cout << "Error loading text\n";
-		}
-
-		SDL_FreeSurface(surface);
-		
 	}
 	
 
