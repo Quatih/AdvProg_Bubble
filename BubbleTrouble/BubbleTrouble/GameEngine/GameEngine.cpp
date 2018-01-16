@@ -158,7 +158,7 @@ void GameEngine::resetLevel() {
 	end = false;
 	dead = false;
 
-	for (auto a : manager->getObjectTypeVector<BubbleObject>(Object_Bubble)) {
+	for (auto & a : manager->getObjectTypeVector<BubbleObject>(Object_Bubble)) {
 		a->destroy();
 	}
 
@@ -474,14 +474,14 @@ void GameEngine::handleEvents() {
 	}
 
 	std::map<Uint8, bool> keyMap;
-	for (auto key : keystates) {
+	for (auto& key : keystates) {
 		keyMap[key.first] = false;
 	}
 
 	const Uint8* currentKeyStates = SDL_GetKeyboardState(NULL);
 	if (events.type == SDL_KEYDOWN && events.key.repeat == 0) {
 		// Only want to allow one action per keypress
-		for (auto key : keystates) {
+		for (auto& key : keystates) {
 			if (!key.second && currentKeyStates[key.first]) {
 				keyMap[key.first] = true;
 				keystates[key.first] = true;
@@ -491,7 +491,7 @@ void GameEngine::handleEvents() {
 	else if (events.type == SDL_KEYUP && events.key.repeat == 0) {
 		// reset the keypress action if applicable
 
-		for (auto key : keystates) {
+		for (auto& key : keystates) {
 			if (key.second && currentKeyStates[key.first] == 0) {
 				keystates[key.first] = false;
 			}

@@ -64,10 +64,10 @@ public:
 		bool left = false;
 		bool right = false;
 
-		for (auto moveleft : MOVELEFT) {
+		for (auto& moveleft : MOVELEFT) {
 			if (currentKeyStates[moveleft]) left = true;
 		}
-		for (auto moveright : MOVERIGHT) {
+		for (auto& moveright : MOVERIGHT) {
 			if (currentKeyStates[moveright]) right = true;
 		}
 
@@ -87,7 +87,7 @@ public:
 
 
 		bool spikeshoot = false;
-		for (auto shoot : SHOOTSPIKE) {
+		for (auto& shoot : SHOOTSPIKE) {
 			if (currentKeyStates[shoot]) spikeshoot = true;
 		}
 
@@ -106,10 +106,10 @@ public:
 		bool down = false;
 		bool up = false;
 
-		for (auto movedown : MOVEDOWN) {
+		for (auto& movedown : MOVEDOWN) {
 			if (currentKeyStates[movedown]) down = true;
 		}
-		for (auto moveup : MOVEUP) {
+		for (auto& moveup : MOVEUP) {
 			if (currentKeyStates[moveup]) up = true;
 		}
 
