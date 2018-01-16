@@ -9,10 +9,8 @@ extern SDL_Renderer * renderer;
 /// Object that renders text
 class FontObject : public GameObject {
 private:
-
 public:
 	SDL_Texture * message = NULL;
-	SDL_Rect dimensions;
 	TTF_Font * font;
 	std::string text;
 	SDL_Color color { 0,0,0,0 };
@@ -21,22 +19,22 @@ public:
 	bool loadedFont = false;
 
 	/// Load object with a specific font
-	FontObject(std::string fontpath, int size, SDL_Rect dimensions, FontJustified justified) : GameObject(Object_Font) {
-
-		this->dimensions = dimensions;
-		img_rect.x = dimensions.x;
-		img_rect.y = dimensions.y;
+	FontObject(std::string fontpath, int size, SDL_Rect render_rect, FontJustified justified) : GameObject(Object_Font) {
+		this->render_rect = render_rect;
+		img_rect.x = render_rect.x;
+		img_rect.y = render_rect.y;
 		//this->bgcolor.r = bgcolor.red;
 		//this->bgcolor.b = bgcolor.blue;
 		//this->bgcolor.g = bgcolor.green;
 		justification = justified;
 		loadFont(fontpath, size);
 	}
+
 	/// Load object with existing font reference.
-	FontObject(TTF_Font * font, SDL_Rect dimensions, FontJustified justified) : GameObject(Object_Font) {
-		this->dimensions = dimensions;
-		img_rect.x = dimensions.x;
-		img_rect.y = dimensions.y;
+	FontObject(TTF_Font * font, SDL_Rect render_rect, FontJustified justified) : GameObject(Object_Font) {
+		this->render_rect = render_rect;
+		img_rect.x = render_rect.x;
+		img_rect.y = render_rect.y;
 		//this->bgcolor.r = bgcolor.red;
 		//this->bgcolor.b = bgcolor.blue;
 		//this->bgcolor.g = bgcolor.green;
@@ -75,15 +73,15 @@ public:
 
 		switch (justification) {
 		case FontJustified_LEFT:
-			//imgrect.y = dimensions.y + (dimensions.h - surface->clip_rect.h); // top justified
+			//imgrect.y = render_rect.y + (render_rect.h - surface->clip_rect.h); // top justified
 			break;
 		case FontJustified_CENTER:
-			img_rect.x = dimensions.x + (dimensions.w / 2 - surface->clip_rect.w / 2);
-			img_rect.y = dimensions.y + (dimensions.h / 2 - surface->clip_rect.h / 2); // center justified
+			img_rect.x = render_rect.x + (render_rect.w / 2 - surface->clip_rect.w / 2);
+			img_rect.y = render_rect.y + (render_rect.h / 2 - surface->clip_rect.h / 2); // center justified
 			break;
 		case FontJustified_RIGHT:
-			img_rect.x = dimensions.x + (dimensions.w - surface->clip_rect.w);
-			//imgrect.y = dimensions.y + (dimensions.h - surface->clip_rect.h); // bottom justified
+			img_rect.x = render_rect.x + (render_rect.w - surface->clip_rect.w);
+			//imgrect.y = render_rect.y + (render_rect.h - surface->clip_rect.h); // bottom justified
 			break;
 		default:
 			break;
@@ -114,6 +112,7 @@ public:
 		setText(text, color);
 	}
 
+	/// Load a font at the path 
 	void loadFont(std::string path, int size) {
 		if (loadedFont) TTF_CloseFont(font);
 		font = TTF_OpenFont(path.c_str(), size);
@@ -129,6 +128,7 @@ public:
 		setText(text, color);
 	};
 
+	/// Draw this font object
 	void draw() override {
 		if(visible) SDL_RenderCopyEx(renderer, message, NULL, &img_rect, 0, 0, SDL_FLIP_NONE);
 	}

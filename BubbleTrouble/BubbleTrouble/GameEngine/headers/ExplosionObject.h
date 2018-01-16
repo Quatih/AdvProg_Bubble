@@ -13,7 +13,7 @@ public:
 		addComponent<MovementHandler>(0.0, 0.0);
 		init();
 	}
-
+	/// render only the set number of frames, otherwise destroy this object.
 	void update() override {
 		if (isVisible()) {
 			if (renderedFrames < visibleFrames) {

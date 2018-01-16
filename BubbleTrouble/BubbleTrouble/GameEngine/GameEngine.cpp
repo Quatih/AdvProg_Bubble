@@ -6,11 +6,6 @@
 #include "headers/CollisionChecks.h"
 #include <string>
 #include <fstream>
-#ifdef __linux__
-#include <unistd.h>
-#else
-#include <windows.h>
-#endif
 
 SDL_Renderer * renderer;
 SDL_Window * window;
@@ -92,6 +87,7 @@ void GameEngine::init() {
 
 }
 
+/// Print the current score into the scoreboard file.
 void GameEngine::fileHandling(void) {
 
 	//std::time_t result = std::time(nullptr);
@@ -155,6 +151,7 @@ void GameEngine::initPlayingObjects() {
 
 }
 
+/// Reset all objects, for death purposes only
 void GameEngine::resetLevel() {
 	fileHandling();
 	playing = true;
@@ -195,6 +192,7 @@ void GameEngine::resetLevel() {
 	unpause();
 }
 
+/// Handle collision between the two objects.
 bool GameEngine::handleCollision(GameObject * thing, GameObject * other) {
 	bool collides = false;
 	if (thing->type == Object_Bubble || other->type == Object_Bubble) {
@@ -314,8 +312,8 @@ void GameEngine::playLogicUpdate() {
 	
 		if (spike->isVisible()) {
 
-			for (auto _bubble = manager->getObjectBaseVector(Object_Bubble)->begin(); _bubble != manager->getObjectBaseVector(Object_Bubble)->end(); ++_bubble) {
-				if (handleCollision((*_bubble).get(), spike.get())) break;
+			for (auto& bubble : *(manager->getObjectBaseVector(Object_Bubble))) {
+				if (handleCollision(bubble.get(), spike.get())) break;
 			}
 		}
 	}
@@ -706,6 +704,7 @@ void GameEngine::setState(GameStates state) {
 	}
 }
 
+/// Initiate the bubbles for the current state
 void GameEngine::setInitialBubbles(){
 	switch (currentState) {
 	case G_Menu:
@@ -780,6 +779,7 @@ void inline GameEngine::generateRandomBubble() {
 		bubbleTextures[randInt<std::size_t>(0, bubbleTextures.size() - 1)].get()
 	);
 }
+
 /// Generate a randomly positioned bubble of a specific type
 void inline GameEngine::generateRandomBubble(BubbleType type) {
 	addBubble(
@@ -792,6 +792,7 @@ void inline GameEngine::generateRandomBubble(BubbleType type) {
 	);
 }
 
+/// Add a life for the correct player
 void GameEngine::removeLife(PlayerNumber playerNum) {
 	if (playerNum == PLAYER2) {
 		if (!manager->getObjectBaseVector(Object_Life_P2)->empty()) manager->getObjectBaseVector(Object_Life_P2)->back()->destroy();
@@ -822,7 +823,7 @@ void inline GameEngine::addLife(PlayerNumber playerType) {
 	}
 }
 
-/// 
+/// Add a bubble 
 BubbleObject * GameEngine::addBubble(BubbleType type, int posX, int posY, int direction, TextureLoader * texture) {
 	auto bubble = manager->addObject<BubbleObject>(type, posX, posY, direction, texture, bubbleExplosion);
 	return bubble;

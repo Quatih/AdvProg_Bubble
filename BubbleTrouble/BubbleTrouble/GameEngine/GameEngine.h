@@ -109,6 +109,7 @@ public:
 	/// Set the State of the game, takes appropriate action.
 	void setState(GameStates state);
 
+	/// Initiate the bubbles for the current state
 	void setInitialBubbles();
 
 	/// Generate a random bubble
@@ -117,8 +118,6 @@ public:
 	void generateRandomBubble(BubbleType type);
 
 	void removeLife(PlayerNumber playerNum);
-
-	void inline generateRandomBubble(std::size_t type);
 
 	/// Add a bubble to the bubble vector and initialize.
 	BubbleObject * addBubble(BubbleType type, int posX, int posY, int direction, TextureLoader * texture);
