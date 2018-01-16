@@ -46,4 +46,10 @@ public:
 			return pausedMillis;
 		}
 	}
+
+	void reset() {
+		paused = true;
+		startMillis = 0;
+		pausedMillis = 0;
+	}
 };

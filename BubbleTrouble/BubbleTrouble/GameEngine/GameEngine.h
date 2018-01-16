@@ -25,15 +25,14 @@ enum GameStates : std::size_t { G_Menu, G_Infinite_1Player, G_Infinite_2Player,
 /// Handles all the game logic
 class GameEngine {
 private:
-	GameStates currentState;
+	GameStates currentState, previousState;
 
 	std::unique_ptr<ObjectManager> manager;
 
-	FontObject* scoreText;
-	FontObject* timerText;
+
 
 	SDL_Event events;
-	bool running, paused;
+	bool running, paused, playing;
 
 	/// Re-use the explosion audio clip
 	Mix_Chunk * bubbleExplosion;
@@ -46,8 +45,11 @@ private:
 	/// Re-use heart Texture
 	std::unique_ptr<TextureLoader> heartTexture;
 	/// Class for stage timing
-	MillisTimer stageTimer;
+	MillisTimer stageTimer, pauseTimer;
+
 	std::unique_ptr<MenuManager> menu;
+	FontObject* scoreText;
+	FontObject* timerText;
 
 public:
 	Uint8 svolume = 50;
@@ -65,6 +67,9 @@ public:
 
 	/// Initialize player, spike and bubbles.
 	void init();
+
+	/// Prints score into scoreboard file.
+	void fileHandling(void);
 
 	/// Initialize player, spike and bubbles.
 	void initPlayingObjects();
@@ -104,6 +109,8 @@ public:
 
 	/// Generate a random bubble
 	void inline generateRandomBubble();
+
+	void removeLife(PlayerNumber playerNum);
 
 	void inline generateRandomBubble(std::size_t type);
 

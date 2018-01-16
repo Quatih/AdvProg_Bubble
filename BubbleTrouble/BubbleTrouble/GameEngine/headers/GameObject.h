@@ -39,7 +39,7 @@ public:
 /// Hold the different types of objects
 // Order of enums determines the order in which they are drawn.
 enum ObjectType : std::size_t { Object_Spike, Object_Player, Object_Bubble, 
-	Object_Explosion, Object_Life_P1, Object_Life_P2, Object_PowerUp, Object_Wall, Object_StaticImage, Object_Font, MAX_OBJECTS};
+	Object_Explosion, Object_Life_P1, Object_Life_P2, Object_PowerUp, Object_StaticImage, Object_Font, MAX_OBJECTS};
 
 const std::size_t maxComponents = 6;
 
@@ -129,9 +129,7 @@ public:
 	}
 
 	/// Return pointer to the stored component of type T.
-	/// Returns nullptr if the Object does not contain a component of type T.
 	template <typename T> T* getComponent() {
 		return static_cast<T*>(componentsArray[getComponentID<T>()]);
-		//else throw std::exception("Requested Component is non-existent");
 	}
 };

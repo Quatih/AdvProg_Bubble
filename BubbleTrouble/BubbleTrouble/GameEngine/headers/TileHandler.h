@@ -84,4 +84,10 @@ public:
 	void applyColor(Color applied) {
 		texture->applyColor(applied);
 	}
+
+	/// Apply a color and alpha modification to the loaded texture.
+	void applyColor(SDL_Color applied) {
+		texture->applyColor(applied);
+	}
+
 };

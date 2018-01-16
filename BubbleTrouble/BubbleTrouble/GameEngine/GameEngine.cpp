@@ -5,7 +5,7 @@
 #include "headers/SoundHandler.h"
 #include "headers/CollisionChecks.h"
 #include <string>
-
+#include <fstream>
 #ifdef __linux__
 #include <unistd.h>
 #else
@@ -29,7 +29,7 @@ GameEngine::GameEngine(std::string title, int winposx, int winposy, int winwidth
 	std::cout << "Game Engine Constructed.\n";
 	running = true;
 	paused = false;
-
+	playing = false;
 	playZone.x = 0;
 	playZone.y = 0;
 	playZone.h = winheight;
@@ -91,6 +91,20 @@ void GameEngine::init() {
 
 }
 
+void GameEngine::fileHandling(void) {
+
+	//std::time_t result = std::time(nullptr);
+	std::ofstream myfile("scoreboard.txt", std::ios::app);
+	if (myfile.is_open()) {
+		if (score) {
+			myfile << score << std::endl;
+			//myfile << std::asctime(std::localtime(&result)) << std::endl;
+			//myfile << "    " << dt << std::endl;
+			myfile.close();
+		}
+	}
+}
+
 /// Initialise objects for playing the game
 void GameEngine::initPlayingObjects() {
 	score = 0;
@@ -118,7 +132,6 @@ void GameEngine::initPlayingObjects() {
 		spike->hide();
 	}
 
-
 	SDL_Rect scorepos;
 	scorepos.h = 48;
 	scorepos.w = 100;
@@ -144,82 +157,69 @@ void GameEngine::initPlayingObjects() {
 }
 
 void GameEngine::resetLevel() {
-	if (manager->getObjectVector(Object_Life_P1).size() > 1) {
-		for (auto a : manager->getObjectTypeVector<BubbleObject>(Object_Bubble)) {
-			a->destroy();
-		}
-		for (auto & a : manager->getObjectTypeVector<PowerUpObject>(Object_PowerUp)) {
-			a->destroy();
-		}
+	fileHandling();
+	playing = true;
 
-		cleanObjects();
-
-		for (auto &spike : *(manager->getObjectBaseVector(Object_Spike))) {
-			spike->hide();
-		}
-
-		switch (currentState)
-		{
-		case G_Level1:
-			for (size_t i = 1; i > 1; --i) {
-				generateRandomBubble(i);
-			}
-			break;
-		case G_Level2:
-			for (size_t i = 2; i > 0; --i) {
-				generateRandomBubble(i);
-			}
-			break;
-		case G_Level3:
-			for (size_t i = 3; i > 0; --i) {
-				generateRandomBubble(i);
-			}
-			break;
-		case G_Level4:
-			for (int i = 0; i < 4; i++) {
-				generateRandomBubble();
-			}
-			break;
-		case G_Level5:
-			for (int i = 0; i < 5; i++) {
-				generateRandomBubble();
-			}
-			break;
-		default:
-			break;
-		}
-
-		if (currentState == G_Infinite_2Player) {
-			auto player1 = manager->getObjectBaseVector(Object_Player)->at(0).get();
-			auto player2 = manager->getObjectBaseVector(Object_Player)->at(1).get();
-			player1->getComponent<MovementHandler>()->setPosition(playZone.x + playZone.w / 4 - player1->render_rect.w / 2 - 5, player1->render_rect.y);
-			player2->getComponent<MovementHandler>()->setPosition(playZone.x + 3 * playZone.w / 4 - player2->render_rect.w / 2 - 5, player2->render_rect.y);
-			if (manager->getObjectVector(Object_Bubble).empty()) {
-				for (int i = 0; i < 3; i++) {
-					generateRandomBubble();
-				}
-			}
-		}
-		else if (currentState == G_Infinite_1Player) {
-			auto player = manager->getObjectBaseVector(Object_Player)->front().get();
-			player->render_rect.x = playZone.x + playZone.w / 2 - player->render_rect.w / 2 - 5;
-			player->getComponent<MovementHandler>()->setPosition(player->render_rect.x, player->render_rect.y);
-			if (manager->getObjectVector(Object_Bubble).empty()) {
-				for (int i = 0; i < 3; i++) {
-					generateRandomBubble();
-				}
-			}
-		}
-		score = 0;
-		stageTimer.start();
-		unpause();
+	for (auto a : manager->getObjectTypeVector<BubbleObject>(Object_Bubble)) {
+		a->destroy();
 	}
-	else {
-		SDL_Rect a = { playZone.w / 2 - 24, playZone.h / 2 - 50, 100, 48 };
-		auto text = manager->addObject<FontObject>(font, a, FontJustified_CENTER);
-		text->setText("You died! Press Enter to restart.", BLACK);
-		pause();
+
+	for (auto & a : manager->getObjectTypeVector<PowerUpObject>(Object_PowerUp)) {
+		a->destroy();
 	}
+		
+	cleanObjects();
+		
+	for (auto &spike : *(manager->getObjectBaseVector(Object_Spike))) {
+		spike->hide();
+	}
+	switch (currentState)
+	{
+	case G_Level1:
+		for (size_t i = 1; i > 1; --i) {
+			generateRandomBubble(i);
+		}
+		break;
+	case G_Level2:
+		for (size_t i = 2; i > 0; --i) {
+			generateRandomBubble(i);
+		}
+		break;
+	case G_Level3:
+		for (size_t i = 3; i > 0; --i) {
+			generateRandomBubble(i);
+		}
+		break;
+	case G_Level4:
+		for (int i = 0; i < 4; i++) {
+			generateRandomBubble();
+		}
+		break;
+	case G_Level5:
+		for (int i = 0; i < 5; i++) {
+			generateRandomBubble();
+		}
+		break;
+	default:
+		break;
+	}
+	if (currentState == G_Infinite_1Player) { 
+		auto player = manager->getObjectBaseVector(Object_Player)->front().get();
+		player->render_rect.x = playZone.x + playZone.w / 2 - player->render_rect.w / 2 - 5;
+		player->getComponent<MovementHandler>()->setPosition(player->render_rect.x, player->render_rect.y);
+	}
+	else if (currentState == G_Infinite_2Player) {
+		auto player1 = manager->getObjectBaseVector(Object_Player)->at(0).get();
+		auto player2 = manager->getObjectBaseVector(Object_Player)->at(1).get();
+		player1->getComponent<MovementHandler>()->setPosition(playZone.x + playZone.w / 4 - player1->render_rect.w / 2 - 5, player1->render_rect.y);
+		player2->getComponent<MovementHandler>()->setPosition(playZone.x + 3 * playZone.w / 4 - player2->render_rect.w / 2 - 5, player2->render_rect.y);
+	}
+	manager->getObjectBaseVector(Object_Font)->back()->destroy();
+
+	score = 0;
+	
+	stageTimer.start();
+	unpause();
 
 }
 
@@ -231,100 +231,34 @@ bool GameEngine::handleCollision(GameObject * thing, GameObject * other) {
 	else collides = collidesWithRect(thing->render_rect, other->render_rect);
 
 	if (collides) {
-		if (other->type == Object_Wall) {
-			switch (thing->type) {
-			case Object_Bubble:
-				if (thing->render_rect.x < other->render_rect.x) {
-					thing->getComponent<MovementHandler>()->velocity.x *= -1;
-				}
-				if (thing->render_rect.x + thing->render_rect.w > other->render_rect.x + other->render_rect.w) {
-					thing->getComponent<MovementHandler>()->velocity.x *= -1;
-				}
-
-				if (thing->render_rect.y < other->render_rect.y) {
-					thing->getComponent<MovementHandler>()->velocity.y = thing->getComponent<MovementHandler>()->baseVelocity.y;
-				}
-				if (thing->render_rect.y + thing->render_rect.h > other->render_rect.y + other->render_rect.h) {
-					thing->getComponent<MovementHandler>()->velocity.y = thing->getComponent<MovementHandler>()->baseVelocity.y*-1;
-				}
-				[[fallthrough]]; // Indicates that the next case statement will also be executed, and that it is intentional. Requires C++17.
-
-			case Object_Player:
-				if (thing->render_rect.x < other->render_rect.x) {
-					thing->getComponent<MovementHandler>()->position.x = (double)other->render_rect.x;
-				}
-				if (thing->render_rect.x + thing->render_rect.w > other->render_rect.x + other->render_rect.w) {
-					thing->getComponent<MovementHandler>()->position.x = (double)(other->render_rect.x + other->render_rect.w - thing->render_rect.w);
-				}
-
-				if (thing->render_rect.y < other->render_rect.y) {
-					thing->getComponent<MovementHandler>()->position.y = (double)other->render_rect.y;
-				}
-				if (thing->render_rect.y + thing->render_rect.h > other->render_rect.y + other->render_rect.h) {
-					thing->getComponent<MovementHandler>()->position.y = (double)(other->render_rect.y + other->render_rect.h - thing->render_rect.h);
-				}
-
-				thing->render_rect.x = (int)thing->getComponent<MovementHandler>()->position.x;
-				thing->render_rect.y = (int)thing->getComponent<MovementHandler>()->position.y;
-				break;
-			case Object_Spike:
-				if (thing->render_rect.y < other->render_rect.y) {
-					thing->hide();
-				}
-				break;
-			case Object_Explosion:
-				break;
-
-			case Object_PowerUp:
-				if (thing->render_rect.x < other->render_rect.x) {
-					thing->getComponent<MovementHandler>()->position.x = (double)other->render_rect.x;
-				}
-				if (thing->render_rect.x + thing->render_rect.w > other->render_rect.x + other->render_rect.w) {
-					thing->getComponent<MovementHandler>()->position.x = (double)(other->render_rect.x + other->render_rect.w - thing->render_rect.w);
-				}
-
-				if (thing->render_rect.y < other->render_rect.y) {
-					thing->getComponent<MovementHandler>()->position.y = (double)other->render_rect.y;
-				}
-				if (thing->render_rect.y + thing->render_rect.h > other->render_rect.y + other->render_rect.h) {
-					thing->getComponent<MovementHandler>()->position.y = (double)(other->render_rect.y + other->render_rect.h - thing->render_rect.h);
-				}
-
-				thing->render_rect.x = (int)thing->getComponent<MovementHandler>()->position.x;
-				thing->render_rect.y = (int)thing->getComponent<MovementHandler>()->position.y;
-				break;
-			default:
-				break;
-			}
-		}
-		else if (other->type == Object_Player) {
+		if (other->type == Object_Player) {
+			auto player = static_cast<PlayerObject*>(other);
 			switch (thing->type) {
 			case Object_Bubble:
 				Mix_HaltChannel(1);
-				thing->getComponent<SoundHandler>()->play();
+				player->getComponent<SoundHandler>()->play();
 
-				if (manager->getObjectBaseVector(Object_Life_P1)->size() > 1) {
+				removeLife(player->playerType);
+				cleanObjects();
+				if (manager->getObjectBaseVector(Object_Life_P1)->size() > 0 && (manager->getObjectBaseVector(Object_Life_P2)->size() > 0 || currentState != G_Infinite_2Player)) {
 					std::cout << "WE COLLIDIN'\n";
-
-					manager->getObjectBaseVector(Object_Life_P1)->back()->destroy();
+					manager->addObject<FontObject>(font, SDL_Rect{ playZone.w / 2 - 50, playZone.h / 2 - 12, 100, 48 }, FontJustified_CENTER)->setText("You died!", BLACK);
 				}
-				if (manager->getObjectBaseVector(Object_Life_P1)->size() <= 1) {
+				else {
 					std::cout << "WE DEAD!\n";
-					manager->getObjectBaseVector(Object_Life_P1)->back()->destroy();
+					playing = false;
+					manager->addObject<FontObject>(font, SDL_Rect{ playZone.w / 2 - 50, playZone.h / 2 - 12, 100, 48 }, FontJustified_CENTER)->setText("Game Over!", BLACK);
 				}
-#ifdef __linux__
-				nanosleep(1500 * 1000 * 1000);
-#else
-				Sleep(1500);
-#endif
-
-				resetLevel();
-
+				pauseTimer.reset();
+				pauseTimer.start();
 				break;
 			case Object_PowerUp:
 				std::cout << "powerup gained\n";
-				if (static_cast<PowerUpObject*>(thing)->powerUpType == PU_Life && manager->getObjectBaseVector(Object_Life_P1)->size() <= 5) {
-					addLife(static_cast<PlayerObject*>(other)->playerType);
+				if (static_cast<PowerUpObject*>(thing)->powerUpType == PU_Life && 
+					((player->playerType == PLAYER1 || player->playerType == SINGLEPLAYER && manager->getObjectBaseVector(Object_Life_P1)->size() <= 5)
+						||
+					(player->playerType == PLAYER2 && manager->getObjectBaseVector(Object_Life_P1)->size() <= 5))) {
+					addLife(player->playerType);
 				}
 				else if (static_cast<PowerUpObject*>(thing)->powerUpType == PU_Coin)
 					score += 5;
@@ -383,8 +317,14 @@ void GameEngine::playLogicUpdate() {
 
 	manager->update();
 
-	timerText->setText(std::to_string(stageTimer.getMillis() / 1000));
-	scoreText->setText(std::to_string(score));
+
+	std::string timerstr = std::to_string(stageTimer.getMillis() / 1000);
+	timerText->setText(timerstr, timerText->color);
+	
+	std::string scorestr = std::to_string(score);
+	std::string scorestr2 = std::to_string(score);
+	std::string scorestr3 = std::to_string(0);
+	scoreText->setText(scorestr, scoreText->color);
 	scoreText->show();
 	timerText->show();
 
@@ -398,8 +338,8 @@ void GameEngine::playLogicUpdate() {
 			handleCollision(powerup.get(), player.get());
 		}
 	}
-	for (auto& spike : (*(manager->getObjectBaseVector(Object_Spike)))) {
-
+	for (auto& spike : *(manager->getObjectBaseVector(Object_Spike))) {
+	
 		if (spike->isVisible()) {
 
 			for (auto _bubble = manager->getObjectBaseVector(Object_Bubble)->begin(); _bubble != manager->getObjectBaseVector(Object_Bubble)->end(); ++_bubble) {
@@ -414,7 +354,7 @@ void GameEngine::playLogicUpdate() {
 /// Updates the game state, all objects.
 void GameEngine::update() {
 
-	if (!paused) {
+	if (!paused && pauseTimer.paused) {
 		switch (currentState) {
 		case G_Menu:
 			break;
@@ -493,12 +433,21 @@ void GameEngine::update() {
 			break;
 		}
 	}
+	else if (pauseTimer.getMillis() > 2000 && playing == false) {
+		pauseTimer.reset();
+		pause();
+		setState(G_Menu);
+	}
+	else if (pauseTimer.getMillis() > 1000 && playing == true) {
+		pauseTimer.reset();
+		resetLevel();
+	}
 }
 
 /// Render each object on the screen.
 void GameEngine::render() {
 	SDL_RenderClear(renderer);
-	if (menu->menu.empty()) manager->draw();
+	if(currentState != G_Menu) manager->draw();
 	else menu->draw();
 	SDL_RenderPresent(renderer);
 }
@@ -537,34 +486,35 @@ void GameEngine::handleEvents() {
 		}
 	}
 
-	if (currentState == G_Infinite_1Player || currentState == G_Infinite_2Player || currentState == G_Level1 || currentState == G_Level2 || currentState == G_Level2 || currentState == G_Level3 ||
-		currentState == G_Level4 || currentState == G_Level5) {
-
-		if (keyMap[SDL_SCANCODE_P] && paused && !manager->getObjectBaseVector(Object_Life_P1)->empty()) {
+	// If we're in playmode
+	if (currentState == G_Infinite_1Player || currentState == G_Infinite_2Player) {
+		// Pause or unpause
+		if (keyMap[SDL_SCANCODE_P]) {
+			pause();
+		}
+		else if (keyMap[SDL_SCANCODE_P] && paused && !manager->getObjectBaseVector(Object_Life_P1)->empty()
+			&& !manager->getObjectBaseVector(Object_Life_P2)->empty()) {
 			unpause();
 		}
 
-		else if (keyMap[SDL_SCANCODE_P]) {
-			pause();
-		}
-
-		if (keyMap[SDL_SCANCODE_RETURN] && paused) {
-			setState(currentState);
-		}
+		// Set to menu
 		if (keyMap[SDL_SCANCODE_ESCAPE]) {
 			pause();
 			setState(G_Menu);
 		}
 	}
 
+	// If we're in the menu
 	else if (currentState == G_Menu) {
+		// Next or previous button
 		if (keyMap[SDL_SCANCODE_DOWN]) {
 			menu->nextButton();
 		}
 		else if (keyMap[SDL_SCANCODE_UP]) {
-			menu->previousButton();
+			menu->previousButton(); 
 		}
 
+		// If a button is selected
 		if (keyMap[SDL_SCANCODE_RETURN] || keyMap[SDL_SCANCODE_SPACE]) {
 			ButtonID ID = menu->activeButtonID();
 			switch (ID) {
@@ -574,8 +524,10 @@ void GameEngine::handleEvents() {
 			case BID_Options:
 				menu->pushMenu(M_Options);
 				break;
-			case BID_Exit:
+			case BID_Quit:
 				running = false;
+
+				fileHandling();
 				break;
 			case BID_Back:
 				menu->popMenu();
@@ -609,10 +561,12 @@ void GameEngine::handleEvents() {
 			case BID_1Player:
 				setState(G_Infinite_1Player);
 				menu->menu.clear();
+				playing = true;
 				break;
 			case BID_2Player:
 				setState(G_Infinite_2Player);
 				menu->menu.clear();
+				playing = true;
 				break;
 			case BID_Volume:
 				menu->pushMenu(M_Volume);
@@ -636,18 +590,37 @@ void GameEngine::handleEvents() {
 				menu->popMenu();
 				break;
 			case BID_Max:
-				svolume = 100;
+				svolume = 128;
 				Mix_Volume(-1, svolume);
 				menu->popMenu();
 				menu->popMenu();
+				break;
+			case BID_High_Scores:
+				menu->pushMenu(M_HighScore);
+				break;
+			case BID_Continue:
+
+				menu->clearMenu();
+				currentState = previousState;
+				unpause();
+
 				break;
 			default:
 				break;
 			}
 		}
 		if (keyMap[SDL_SCANCODE_ESCAPE]) {
-			if (menu->menu.size() > 0) menu->popMenu();
-			else running = false;
+			if (menu->menu.size() > 1) menu->popMenu();
+			else if(playing) {
+				menu->clearMenu();
+				currentState = previousState;
+				unpause();
+
+			}
+			else {
+				running = false;
+				fileHandling();
+			}
 		}
 	}
 }
@@ -677,16 +650,19 @@ void GameEngine::cleanObjects() {
 
 /// Set the game state
 void GameEngine::setState(GameStates state) {
+	previousState = currentState;
 	currentState = state;
 	refresh();
 	
 	switch (currentState) {
 	case G_Menu:
-		menu->pushMenu(M_Main);
-		break;
+		if (playing) menu->pushMenu(M_Paused);
+		else menu->pushMenu(M_Main);
+
 		break;
 	case G_Infinite_1Player:
 
+		refresh();
 		initPlayingObjects();
 
 		stageTimer.start();
@@ -702,6 +678,7 @@ void GameEngine::setState(GameStates state) {
 		break;
 	case G_Infinite_2Player:
 
+		refresh();
 		initPlayingObjects();
 
 		stageTimer.start();
@@ -813,6 +790,14 @@ void inline GameEngine::generateRandomBubble(std::size_t type) {
 	);
 }
 
+void GameEngine::removeLife(PlayerNumber playerNum) {
+	if (playerNum == PLAYER2) {
+		if (!manager->getObjectBaseVector(Object_Life_P2)->empty()) manager->getObjectBaseVector(Object_Life_P2)->back()->destroy();
+	}
+	else {
+		if (!manager->getObjectBaseVector(Object_Life_P1)->empty()) manager->getObjectBaseVector(Object_Life_P1)->back()->destroy();
+	}
+}
 
 /// Add a life to the board
 void inline GameEngine::addLife(PlayerNumber playerType) {
