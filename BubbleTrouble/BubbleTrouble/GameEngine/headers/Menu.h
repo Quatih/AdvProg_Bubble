@@ -45,6 +45,7 @@ public:
 
 	void init() {
 		backgroundObject = std::make_unique<GameObject>(Object_StaticImage);
+		backgroundObject->addComponent<MovementHandler>(0, 0);
 		backgroundObject->addComponent<TileHandler>("assets/square.png", 1);
 		backgroundObject->init();
 		backgroundObject->getComponent<TileHandler>()->applyColor({ 200, 0, 0 , 150});
@@ -161,7 +162,7 @@ public:
 			(double)(posY));
 		SDL_Rect rect = button->render_rect;
 		fontobject = new FontObject(font, rect, FontJustified_CENTER);
-		fontobject->setText(buttonText[ID]);
+		fontobject->setText(buttonText[ID], BLACK);
 		std::unique_ptr<GameObject> uButton{ button };
 		std::unique_ptr<FontObject> uFont{ fontobject };
 

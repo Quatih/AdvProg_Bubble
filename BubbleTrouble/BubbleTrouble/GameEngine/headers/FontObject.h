@@ -15,7 +15,7 @@ public:
 	SDL_Rect dimensions;
 	TTF_Font * font;
 	std::string text;
-	SDL_Color color;
+	SDL_Color color { 0,0,0,0 };
 	//SDL_Color bgcolor;
 	FontJustified justification;
 	bool loadedFont = false;
