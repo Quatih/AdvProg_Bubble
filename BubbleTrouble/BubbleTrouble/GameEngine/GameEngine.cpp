@@ -25,6 +25,7 @@ GameEngine::GameEngine(std::string title, int winposx, int winposy, int winwidth
 	window = SDL_CreateWindow(title.c_str(), winposx, winposy, winwidth, winheight, flag);
 
 	renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+	
 	std::cout << "Game Engine Constructed.\n";
 	running = true;
 	paused = false;
