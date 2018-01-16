@@ -33,8 +33,6 @@ private:
 
 	std::unique_ptr<ObjectManager> manager;
 
-
-
 	SDL_Event events;
 	bool running, paused, playing, dead, end;
 
