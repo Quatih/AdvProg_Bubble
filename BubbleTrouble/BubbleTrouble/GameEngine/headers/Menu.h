@@ -5,7 +5,7 @@
 #include <map>
 #include <fstream>
 
-enum MenuType {M_Main, M_PlayMode, M_Infinite, M_Levels, M_Options, M_Volume, M_HighScore, M_Paused};
+enum MenuType {M_Main, M_PlayMode, M_Infinite, M_Level, M_Options, M_Volume, M_HighScore, M_Paused};
 extern SDL_Window * window;
 extern TTF_Font * font;
 enum ButtonID : Uint64 {BID_PlayMode, BID_Options, BID_Quit, BID_Back, BID_Infinite, 
@@ -40,13 +40,14 @@ public:
 
 	~BaseMenu() {
 		buttons.clear();
+		textVec.clear();
 	}
 
 	void init() {
 		backgroundObject = std::make_unique<GameObject>(Object_StaticImage);
 		backgroundObject->addComponent<TileHandler>("assets/square.png", 1);
 		backgroundObject->init();
-		backgroundObject->getComponent<TileHandler>()->applyColor({ 200, 0, 0 , 0});
+		backgroundObject->getComponent<TileHandler>()->applyColor({ 200, 0, 0 , 150});
 		int h;
 		int w;
 		SDL_GetWindowSize(window, &w, &h);
@@ -59,7 +60,6 @@ public:
 		titleRect.y = backgroundObject->render_rect.h / 4 - titleRect.h/2;
 
 		auto titleText = std::make_unique<FontObject>("assets/FreeSansBold.ttf", 80, titleRect, FontJustified_CENTER);
-
 
 		switch (type) {
 		case M_Main:
@@ -78,11 +78,13 @@ public:
 
 			break;
 		case M_Level:
+			titleText->setText("Level Select", BLACK);
 			addButton(BID_Level1);
 			addButton(BID_Level2);
 			addButton(BID_Level3);
 			addButton(BID_Level4);
 			addButton(BID_Level5);
+			addButton(BID_Back);
 			break;
 		case M_Infinite:
 			addButton(BID_1Player);
@@ -220,7 +222,11 @@ public:
 	ScoreMenu(MenuType type, TextureLoader * button, TextureLoader * activeButton) : BaseMenu(type, button, activeButton) {
 		makeScoreBoard();
 	}
-
+	~ScoreMenu() {
+		scoreList.clear();
+		buttons.clear();
+		textVec.clear();
+	}
 	struct greater {
 		template<class T>
 		bool operator()(T const &a, T const &b) const { return a > b; }
@@ -230,7 +236,6 @@ public:
 
 		std::cout << "score\n";
 
-		std::cout << "newScore\n";
 		std::vector <int> fScore;
 		std::string line;
 		std::ifstream myfile("scoreboard.txt");
@@ -281,6 +286,9 @@ public:
 	MenuManager() {
 		buttonTexture = std::make_unique<TextureLoader>("assets/MenuItem.png");
 		activeButtonTexture = std::make_unique<TextureLoader>("assets/MenuSelected.png");
+	}
+	~MenuManager() {
+		menu.clear();
 	}
 
 	/// Set the next button below

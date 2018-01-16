@@ -22,6 +22,10 @@ enum GameStates : std::size_t { G_Menu, G_Infinite_1Player, G_Infinite_2Player,
 	G_Level1, G_Level2, G_Level3, G_Level4, G_Level5, G_Level6, G_Level7, G_Level8, G_Level9, G_Level10
 };
 
+static const std::string stateText[] = { "Menu", "Infinite", "Infinite 2 Player", "Level 1", "Level 2",
+"Level 3", "Level 4", "Level 5"};
+
+
 /// Handles all the game logic
 class GameEngine {
 private:
@@ -32,7 +36,7 @@ private:
 
 
 	SDL_Event events;
-	bool running, paused, playing;
+	bool running, paused, playing, dead, end;
 
 	/// Re-use the explosion audio clip
 	Mix_Chunk * bubbleExplosion;
@@ -107,8 +111,12 @@ public:
 	/// Set the State of the game, takes appropriate action.
 	void setState(GameStates state);
 
+	void setInitialBubbles();
+
 	/// Generate a random bubble
 	void inline generateRandomBubble();
+
+	void generateRandomBubble(BubbleType type);
 
 	void removeLife(PlayerNumber playerNum);
 

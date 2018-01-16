@@ -12,7 +12,7 @@ public:
 	Uint32 startMillis = 0;
 	Uint32 pausedMillis = 0;
 
-	bool paused = false;
+	bool paused = true;
 
 	/// Start the timer
 	void start() {
