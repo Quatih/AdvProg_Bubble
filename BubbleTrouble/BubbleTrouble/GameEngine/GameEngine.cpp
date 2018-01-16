@@ -801,18 +801,6 @@ void inline GameEngine::generateRandomBubble(BubbleType type) {
 	);
 }
 
-///Generates specified type of bubbles upto level3
-void inline GameEngine::generateRandomBubble(std::size_t type) {
-	addBubble(
-		static_cast<BubbleType>(type),
-		randInt(0, playZone.w),
-		randInt((int)(playZone.h / 3.0),
-		(int)(playZone.h / 2.0)),
-		randMinusPlus(),
-		bubbleTextures[randInt<std::size_t>(0, bubbleTextures.size() - 1)].get()
-	);
-}
-
 void GameEngine::removeLife(PlayerNumber playerNum) {
 	if (playerNum == PLAYER2) {
 		if (!manager->getObjectBaseVector(Object_Life_P2)->empty()) manager->getObjectBaseVector(Object_Life_P2)->back()->destroy();
