@@ -8,38 +8,14 @@ int main(int /*argc*/, char ** /*argv*/) {
 	std::unique_ptr<GameEngine> Game = std::make_unique<GameEngine>("Bubble Trouble", SDL_WINDOWPOS_CENTERED,
 		SDL_WINDOWPOS_CENTERED,  1024, 600, SDL_WINDOW_HIDDEN);
 	
-	if (SDL_HINT_RENDER_VSYNC) {
-		// Main game loop
-		while (Game->isRunning()) {
-			//Handle events on queue
-			Game->handleEvents();
-			Game->update();
-			Game->cleanObjects();
-			Game->render();
-		}
-	}
-	else {
-		const Uint32 FRAMES_PER_SECOND = 20;
-		const Uint32 frameDelay = 1000 / 60;
-		Uint32 frameStart;
-		Uint32 frameTime;
 
-		/// Main game loop
-		while (Game->isRunning())
-		{
-			frameStart = SDL_GetTicks();
-			//Handle events on queue
-
-			Game->handleEvents();
-			Game->update();
-			Game->cleanObjects();
-			Game->render();
-			frameTime = SDL_GetTicks() - frameStart;
-			std::cout << frameTime << std::endl;
-			if (frameDelay > frameTime) {
-				SDL_Delay(frameDelay - frameTime);
-			}
-		}
+	// Main game loop
+	while (Game->isRunning()) {
+		//Handle events on queue
+		Game->handleEvents();
+		Game->update();
+		Game->cleanObjects();
+		Game->render();
 	}
 
 	return 0;

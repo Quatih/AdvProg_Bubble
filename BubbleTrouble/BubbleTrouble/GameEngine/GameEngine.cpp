@@ -88,7 +88,6 @@ void GameEngine::init() {
 	keystates[SDL_SCANCODE_DOWN] = false;
 	keystates[SDL_SCANCODE_RETURN] = false;
 	keystates[SDL_SCANCODE_ESCAPE] = false;
-	keystates[SDL_SCANCODE_P] = false;
 	keystates[SDL_SCANCODE_SPACE] = false;
 
 }
@@ -501,6 +500,7 @@ void GameEngine::handleEvents() {
 		}
 	}
 
+	// If we're in the menu
 	if (currentState == G_Menu) {
 		// Next or previous button
 		if (keyMap[SDL_SCANCODE_DOWN]) {
@@ -625,14 +625,6 @@ void GameEngine::handleEvents() {
 	}
 	// If we're in playmode
 	else {
-		// Pause or unpause
-		if (keyMap[SDL_SCANCODE_P]) {
-			pause();
-		}
-		else if (keyMap[SDL_SCANCODE_P] && paused && !manager->getObjectBaseVector(Object_Life_P1)->empty()
-			&& !manager->getObjectBaseVector(Object_Life_P2)->empty()) {
-			unpause();
-		}
 
 		// Set to menu
 		if (keyMap[SDL_SCANCODE_ESCAPE]) {
@@ -641,8 +633,6 @@ void GameEngine::handleEvents() {
 		}
 	}
 
-	// If we're in the menu
-	
 }
 
 
