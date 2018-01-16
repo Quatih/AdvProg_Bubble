@@ -47,6 +47,7 @@ public:
 		}
 	}
 
+	/// Reset and stop the timer.
 	void reset() {
 		paused = true;
 		startMillis = 0;

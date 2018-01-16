@@ -233,6 +233,7 @@ public:
 		bool operator()(T const &a, T const &b) const { return a > b; }
 	};
 
+	/// Create the high score 
 	void makeScoreBoard() {
 
 		std::cout << "score\n";
