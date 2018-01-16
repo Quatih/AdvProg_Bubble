@@ -19,8 +19,8 @@ public:
 	bool loadedFont = false;
 
 	/// Load object with a specific font
-	FontObject(std::string fontpath, int size, SDL_Rect render_rect, FontJustified justified) : GameObject(Object_Font) {
-		this->render_rect = render_rect;
+	FontObject(std::string fontpath, int size, SDL_Rect rect, FontJustified justified) : GameObject(Object_Font) {
+		render_rect = rect;
 		img_rect.x = render_rect.x;
 		img_rect.y = render_rect.y;
 		//this->bgcolor.r = bgcolor.red;

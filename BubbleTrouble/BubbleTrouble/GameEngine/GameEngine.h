@@ -18,8 +18,9 @@
 const std::string initString = "string";
 
 /// Different states for each different presentation 
-enum GameStates : std::size_t { G_Menu, G_Infinite_1Player, G_Infinite_2Player,
-	G_Level1, G_Level2, G_Level3, G_Level4, G_Level5, G_Level6, G_Level7, G_Level8, G_Level9, G_Level10
+enum GameStates : std::size_t { 
+	G_Menu, G_Infinite_1Player, G_Infinite_2Player,
+	G_Level1, G_Level2, G_Level3, G_Level4, G_Level5
 };
 
 static const std::string stateText[] = { "Menu", "Infinite", "Infinite 2 Player", "Level 1", "Level 2",

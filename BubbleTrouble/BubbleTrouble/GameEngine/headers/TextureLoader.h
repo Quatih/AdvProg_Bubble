@@ -56,11 +56,7 @@ public:
 			std::cout << "Image at path " << "\"" << path.c_str() << "\" failed to load\n";
 		}
 
-		img_rect.h = loadedSurface->clip_rect.h;
-		img_rect.w = loadedSurface->clip_rect.w;
-		img_rect.x = 0;
-		img_rect.y = 0;
-
+		img_rect = loadedSurface->clip_rect;
 		texture = SDL_CreateTextureFromSurface(renderer, loadedSurface);
 
 		SDL_FreeSurface(loadedSurface);

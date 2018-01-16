@@ -34,9 +34,6 @@ GameEngine::GameEngine(std::string title, int winposx, int winposy, int winwidth
 
 	init();
 	setState(G_Menu);
-
-	// Set render quality to 1, so that scaled objects are dithered a little
-	//SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "1");
 }
 
 /// Free all allocated memory, hopefully.
@@ -47,6 +44,7 @@ GameEngine::~GameEngine() {
 	TTF_Quit();
 
 	bubbleTextures.clear();
+	Mix_FreeChunk(bubbleExplosion);
 	Mix_CloseAudio();
 
 	SDL_DestroyWindow(window);
@@ -121,11 +119,7 @@ void GameEngine::initPlayingObjects() {
 		spike->hide();
 	}
 
-	SDL_Rect scorepos;
-	scorepos.h = 48;
-	scorepos.w = 100;
-	scorepos.x = playZone.w - scorepos.w - 10;
-	scorepos.y = 10;
+	SDL_Rect scorepos = { playZone.w - 110, 10, 100, 24 };
 	scoreText = manager->addObject<FontObject>(font, scorepos, FontJustified_RIGHT);
 
 	scoreText->setText(initString, BLACK);
@@ -143,7 +137,7 @@ void GameEngine::initPlayingObjects() {
 	temptext = manager->addObject<FontObject>(font, scorepos, FontJustified_LEFT);
 	temptext->setText("Time: ", BLACK);
 
-	auto level = manager->addObject<FontObject>("assets/FreeSansBold.ttf", 40, SDL_Rect{ playZone.w / 2 - 25, 40, 50, 40 }, FontJustified_CENTER);
+	auto level = manager->addObject<FontObject>("assets/FreeSansBold.ttf", 40, SDL_Rect{ playZone.w / 2 - 25, 30, 50, 40 }, FontJustified_CENTER);
 	level->setText(stateText[currentState], BLACK);
 	playing = true;
 	end = false;
@@ -245,39 +239,39 @@ bool GameEngine::handleCollision(GameObject * thing, GameObject * other) {
 		}
 		else if (other->type == Object_Spike) {
 			if (thing->type == Object_Bubble) {
+				auto bubble = static_cast<BubbleObject*>(thing);
 				other->hide();
-				thing->destroy();
+				bubble->destroy();
 				score++;
 
 				Mix_HaltChannel(1);
-				thing->getComponent<SoundHandler>()->play();
+				bubble->getComponent<SoundHandler>()->play();
 				auto explosionImage = manager->addObject<ExplosionObject>();
 
-				explosionImage->render_rect = thing->render_rect;
+				explosionImage->render_rect = bubble->render_rect;
 				explosionImage->getComponent<MovementHandler>()->setPosition(explosionImage->render_rect.x, explosionImage->render_rect.y);
 
 				//Add power ups functionality here. If the spike hits the bubble, randomly make a powerup fall from the place where the spike has hit the bubbles.
 				//make sure the small bubbles doesn't contain any powerups
 				//add more power ups..like faster spikes, faster player movement etcc..
-
-				if ((randInt(1, 5) == 1) /* 20% chance */ && (dynamic_cast<BubbleObject*>(thing)->bubbleType != Bubble0)) {
+				if ((randInt(1, 5) == 1) /* 20% chance */ && (bubble->bubbleType != Bubble0)) {
 					std::size_t randint = randInt<std::size_t>(1, 10);
 					PowerUpType PUtype;
 					if (randint <= 3) PUtype = PU_Life; // 30% chance
 					else PUtype = PU_Coin;
 
 					auto powerUpObject = manager->addObject<PowerUpObject>(PUtype);
-					powerUpObject->getComponent<MovementHandler>()->setPosition(thing->render_rect.x, thing->render_rect.y);
+					powerUpObject->getComponent<MovementHandler>()->setPosition(bubble->render_rect.x, bubble->render_rect.y);
 				}
 
 				std::cout << "Bubble popped\n";
-				if (dynamic_cast<BubbleObject*>(thing)->pops > 0) {
+				if (bubble->pops > 0) {
 					std::size_t cindex = randInt<std::size_t>(0, bubbleTextures.size() - 1);
-					auto temp = addBubble(dynamic_cast<BubbleObject*>(thing)->getNextBubble(), thing->render_rect.x, thing->render_rect.y, 1, bubbleTextures[cindex].get());
-					temp->getComponent<MovementHandler>()->velocity.y = -abs(thing->getComponent<MovementHandler>()->baseVelocity.y)*0.6;
+					auto temp = addBubble(bubble->getNextBubble(), bubble->render_rect.x, bubble->render_rect.y, 1, bubbleTextures[cindex].get());
+					temp->getComponent<MovementHandler>()->velocity.y = -abs(bubble->getComponent<MovementHandler>()->baseVelocity.y)*0.6;
 
-					temp = addBubble(dynamic_cast<BubbleObject*>(thing)->getNextBubble(), thing->render_rect.x, thing->render_rect.y, -1, bubbleTextures[cindex].get());
-					temp->getComponent<MovementHandler>()->velocity.y = -abs(thing->getComponent<MovementHandler>()->baseVelocity.y)*0.6;
+					temp = addBubble(bubble->getNextBubble(), bubble->render_rect.x, bubble->render_rect.y, -1, bubbleTextures[cindex].get());
+					temp->getComponent<MovementHandler>()->velocity.y = -abs(bubble->getComponent<MovementHandler>()->baseVelocity.y)*0.6;
 				}
 			}
 		}
@@ -323,98 +317,39 @@ void GameEngine::playLogicUpdate() {
 /// Updates the game state, all objects.
 void GameEngine::update() {
 
-	if (!paused && pauseTimer.paused) {
-		switch (currentState) {
-		case G_Menu:
-			break;
-		case G_Infinite_1Player:
-			playLogicUpdate();
-
+	if (!paused && pauseTimer.paused && currentState != G_Menu) {
+		playLogicUpdate();
+		if (currentState == G_Infinite_1Player || currentState == G_Infinite_2Player) {
+			
 			setInitialBubbles();
-
-			break;
-		case G_Infinite_2Player:
-			playLogicUpdate();
-
-			setInitialBubbles();
-
-			break;
-		case G_Level1:
-			playLogicUpdate();
-			if (manager->getObjectVector(Object_Bubble).empty()) {
-
-				end = true;
-				pauseTimer.start();
-				SDL_Rect a = { playZone.w / 2 - 50, playZone.h / 2 - 24, 100, 24 };
-				auto text = manager->addObject<FontObject>(font, a, FontJustified_CENTER);
+		}
+		else if (manager->getObjectVector(Object_Bubble).empty()) {
+			end = true;
+			pauseTimer.start();
+			SDL_Rect a = { playZone.w / 2 - 50, playZone.h / 2 - 24, 100, 24 };
+			auto text = manager->addObject<FontObject>(font, a, FontJustified_CENTER);
+			if (currentState == G_Level1) {
 				text->setText("Level 1 completed", BLACK);
-				text->show();
-
 			}
-			break;
-		case G_Level2:
-			playLogicUpdate();
-			if (manager->getObjectVector(Object_Bubble).empty()) {
-
-				end = true;
-				pauseTimer.start();
-				SDL_Rect a = { playZone.w / 2 - 50, playZone.h / 2 - 24, 100, 24 };
-				auto text = manager->addObject<FontObject>(font, a, FontJustified_CENTER);
+			else if (currentState == G_Level2) {
 				text->setText("Level 2 completed", BLACK);
-				text->show();
 			}
-			break;
-		case G_Level3:
-			playLogicUpdate();
-			if (manager->getObjectVector(Object_Bubble).empty()) {
-				end = true;
-				pauseTimer.start();
-				SDL_Rect a = { playZone.w / 2 - 50, playZone.h / 2 - 24, 100, 24 };
-				auto text = manager->addObject<FontObject>(font, a, FontJustified_CENTER);
+			else if (currentState == G_Level3) {
 				text->setText("Level 3 completed", BLACK);
-				text->show();
 			}
-			break;
-		case G_Level4:
-			playLogicUpdate();
-			if (manager->getObjectVector(Object_Bubble).empty()) {
-				end = true;
-				pauseTimer.start();
-				SDL_Rect a = { playZone.w / 2 - 50, playZone.h / 2 - 24, 100, 24 };
-				auto text = manager->addObject<FontObject>(font, a, FontJustified_CENTER);
+			else if (currentState == G_Level4) {
 				text->setText("Level 4 completed", BLACK);
-				text->show();
 			}
-			break;
-		case G_Level5:
-			playLogicUpdate();
-			if (manager->getObjectVector(Object_Bubble).empty()) {
-				end = true;
-				pauseTimer.start();
-				SDL_Rect a = { playZone.w / 2 - 50, playZone.h / 2 - 24, 100, 24};
-				auto text = manager->addObject<FontObject>(font, a, FontJustified_CENTER);
+			else if (currentState == G_Level5) {
 				text->setText("Level 5 completed, you've won!", BLACK);
-				text->show();
+				playing = false;
 			}
-			break;
-		case G_Level6:
-			break;
-		case G_Level7:
-			break;
-		case G_Level8:
-			break;
-		case G_Level9:
-			break;
-		case G_Level10:
-			break;
-		default:
-			break;
 		}
 	}
 	else if (!pauseTimer.paused) {
 		if (currentState == G_Level5 || currentState == G_Infinite_1Player || currentState == G_Infinite_2Player) {
 			// end of level reached
-			if (pauseTimer.getMillis() > 2000 && end) {
+			if (pauseTimer.getMillis() > 3000 && end) {
 				pauseTimer.reset();
 				pause();
 				setState(G_Menu);
@@ -433,7 +368,6 @@ void GameEngine::update() {
 			}
 		}
 		else {
-
 			// end of level reached
 			if (pauseTimer.getMillis() > 2000 && end ) {
 				pauseTimer.reset();
@@ -490,7 +424,6 @@ void GameEngine::handleEvents() {
 	}
 	else if (events.type == SDL_KEYUP && events.key.repeat == 0) {
 		// reset the keypress action if applicable
-
 		for (auto& key : keystates) {
 			if (key.second && currentKeyStates[key.first] == 0) {
 				keystates[key.first] = false;
@@ -623,7 +556,6 @@ void GameEngine::handleEvents() {
 	}
 	// If we're in playmode
 	else {
-
 		// Set to menu
 		if (keyMap[SDL_SCANCODE_ESCAPE]) {
 			pause();
@@ -679,7 +611,6 @@ void GameEngine::setState(GameStates state) {
 			}
 		}
 		else if(playing) {
-			
 			for (std::size_t i = 0; i < lives; i++) {
 				addLife(SINGLEPLAYER);
 			}
@@ -713,9 +644,7 @@ void GameEngine::setInitialBubbles(){
 		if (manager->getObjectVector(Object_Bubble).empty()) {
 			for (int i = 0; i < 3; i++) {
 				generateRandomBubble();
-
 			}
-			
 		}
 		break;
 	case G_Infinite_2Player:
@@ -752,16 +681,6 @@ void GameEngine::setInitialBubbles(){
 		for (int i = 0; i < 3; i++) {
 			generateRandomBubble(Bubble4);
 		}
-		break;
-	case G_Level6:
-		break;
-	case G_Level7:
-		break;
-	case G_Level8:
-		break;
-	case G_Level9:
-		break;
-	case G_Level10:
 		break;
 	default:
 		break;
@@ -804,23 +723,19 @@ void GameEngine::removeLife(PlayerNumber playerNum) {
 
 /// Add a life to the board
 void inline GameEngine::addLife(PlayerNumber playerType) {
+	ObjectType life;
 	if (playerType == PLAYER2) {
-		auto lives = manager->addObject(Object_Life_P2);
-		lives->addComponent<MovementHandler>(0, 0);
-		lives->addComponent<TileHandler>(heartTexture.get(), 1);
-		lives->init();
-		// set the position in the succession
-		lives->getComponent<MovementHandler>()->setPosition((double)(manager->getObjectBaseVector(Object_Life_P2)->size() - 1) * lives->render_rect.w + 10, 60);
+		life = Object_Life_P2;
 	}
 	else {
-		auto lives = manager->addObject(Object_Life_P1);
-		lives->addComponent<MovementHandler>(0, 0);
-		lives->addComponent<TileHandler>(heartTexture.get(), 1);
-		lives->init();
-		// set the position in the succession
-		lives->getComponent<MovementHandler>()->setPosition((double)(manager->getObjectBaseVector(Object_Life_P1)->size() - 1) * lives->render_rect.w + 10, 10);
-
+		life = Object_Life_P1;
 	}
+	auto lives = manager->addObject(life);
+	lives->addComponent<MovementHandler>(0, 0);
+	lives->addComponent<TileHandler>(heartTexture.get(), 1);
+	lives->init();
+	// set the position in the succession
+	lives->getComponent<MovementHandler>()->setPosition((double)(manager->getObjectBaseVector(life)->size() - 1) * lives->render_rect.w + 10, 10);
 }
 
 /// Add a bubble 

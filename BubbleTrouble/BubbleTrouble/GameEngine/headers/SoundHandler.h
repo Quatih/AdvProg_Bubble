@@ -63,6 +63,4 @@ public:
 			std::cout << "Error playing sound\n";
 		}
 	}
-
-
 };

@@ -29,13 +29,6 @@ public:
 		init();
 	}
 
-
-	~PowerUpObject() {
-		
-		
-	}
-
-
 	void update() override {
 		if (isVisible()) {
 				for (auto& comps : components) {
@@ -43,8 +36,5 @@ public:
 			}
 		}
 		if (powerUpTimer.getMillis() >= 3000) this->destroy();
-
 	}
-
-	
 };

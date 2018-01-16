@@ -14,6 +14,8 @@ enum ButtonID : Uint64 {BID_PlayMode, BID_Options, BID_Quit, BID_Back, BID_Infin
 static const std::string buttonText[] = {"Play", "Options", "Quit", "Back", "Infinite Mode", 
 	"Level Mode", "1 Player", "2 Player", "Volume", "Minimum", "Medium", "Maximum", "Mute", "High Scores", "Continue", "Level1","Level2" ,"Level3" ,"Level4" ,"Level5"};
 
+static const double buttonScale = 0.8;
+
 /// Menu class that keeps track of all objects in the menu
 class BaseMenu {
 protected:
@@ -49,17 +51,12 @@ public:
 		backgroundObject->addComponent<TileHandler>("assets/square.png", 1);
 		backgroundObject->init();
 		backgroundObject->getComponent<TileHandler>()->applyColor({ 200, 0, 0 , 150});
-		int h;
-		int w;
+		int h, w;
 		SDL_GetWindowSize(window, &w, &h);
 		backgroundObject->render_rect.h = h;
 		backgroundObject->render_rect.w = w;
-		SDL_Rect titleRect;
-		titleRect.h = 50;
-		titleRect.w = 10;
-		titleRect.x = backgroundObject->render_rect.w / 2 - titleRect.w/2;
-		titleRect.y = backgroundObject->render_rect.h / 4 - titleRect.h/2;
 
+		SDL_Rect titleRect{ backgroundObject->render_rect.w / 2 - 5, backgroundObject->render_rect.h / 4 - 25, 10, 50 };
 		auto titleText = std::make_unique<FontObject>("assets/FreeSansBold.ttf", 80, titleRect, FontJustified_CENTER);
 
 		switch (type) {
@@ -118,8 +115,9 @@ public:
 			addButton(BID_Quit);
 			titleText->setText("Paused", BLACK);
 			break;
-
 		default:
+			addButton(BID_Quit);
+			titleText->setText("Bubble Trouble", BLACK);
 			break;
 		}
 
@@ -127,34 +125,13 @@ public:
 		setActiveButton(0);
 	}
 
-	/// Add a button to the map with the specific ID.
-	void addButton(ButtonID ID) {
-		GameObject * button;
-		FontObject * fontobject;
-
-		button = new GameObject(Object_StaticImage);
-		button->addComponent<TileHandler>(buttonTexture, 0.8);
-		button->addComponent<MovementHandler>(0, 0);
-
-		button->init();
-		button->getComponent<MovementHandler>()->setPosition(double(backgroundObject->render_rect.w / 2 - button->render_rect.w / 2),
-			(double)(backgroundObject->render_rect.h / 2 - button->render_rect.h / 2 + buttons.size()*(button->render_rect.h + 10)));
-		SDL_Rect rect = button->render_rect;
-		fontobject = new FontObject(font, rect, FontJustified_CENTER);
-		fontobject->setText(buttonText[ID]);
-		std::unique_ptr<GameObject> uButton { button };
-		std::unique_ptr<FontObject> uFont { fontobject};
-
-		buttons[ID] = std::make_pair(std::move(uButton), std::move(uFont));
-		buttonIDs.push_back(ID);
-	}
 
 	void addButton(ButtonID ID, int posY) {
 		GameObject * button;
 		FontObject * fontobject;
 
 		button = new GameObject(Object_StaticImage);
-		button->addComponent<TileHandler>(buttonTexture, 0.8);
+		button->addComponent<TileHandler>(buttonTexture, buttonScale);
 		button->addComponent<MovementHandler>(0, 0);
 
 		button->init();
@@ -171,6 +148,15 @@ public:
 	}
 
 
+	/// Add a button to the map with the specific ID.
+	void addButton(ButtonID ID) {
+		addButton(ID, 
+			(int)(backgroundObject->render_rect.h / 2 - 
+				buttonTexture->getRect().h*buttonScale / 2 + 
+				buttons.size()*((buttonTexture->getRect().h*buttonScale) + 10))
+		);
+	}
+
 	/// Set the next button as the active button
 	void nextButton() {
 		if (activeButton < buttonIDs.size() - 1) {
@@ -185,7 +171,6 @@ public:
 
 	/// Set the previous button as the active button
 	void previousButton() {
-		
 		if (activeButton > 0) {
 			buttons[buttonIDs[activeButton]].first->getComponent<TileHandler>()->setTextureLoader(buttonTexture);
 			setActiveButton(activeButton - 1);
@@ -202,6 +187,7 @@ public:
 		activeButton = number;
 	}
 
+	/// Draw each object
 	virtual void draw() {
 		backgroundObject->draw();
 		for (auto& a : buttonIDs) {
@@ -228,6 +214,7 @@ public:
 		buttons.clear();
 		textVec.clear();
 	}
+
 	struct greater {
 		template<class T>
 		bool operator()(T const &a, T const &b) const { return a > b; }
@@ -289,6 +276,7 @@ public:
 		buttonTexture = std::make_unique<TextureLoader>("assets/MenuItem.png");
 		activeButtonTexture = std::make_unique<TextureLoader>("assets/MenuSelected.png");
 	}
+
 	~MenuManager() {
 		menu.clear();
 	}
