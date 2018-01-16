@@ -97,7 +97,7 @@ void GameEngine::fileHandling(void) {
 	//std::time_t result = std::time(nullptr);
 	std::ofstream myfile("scoreboard.txt", std::ios::app);
 	if (myfile.is_open()) {
-		if (score) {
+		if (score > 0) {
 			myfile << score << std::endl;
 			//myfile << std::asctime(std::localtime(&result)) << std::endl;
 			//myfile << "    " << dt << std::endl;
