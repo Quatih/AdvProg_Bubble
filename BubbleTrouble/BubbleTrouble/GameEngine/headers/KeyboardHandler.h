@@ -31,7 +31,8 @@ public:
 			SHOOTSPIKE.push_back(SDL_SCANCODE_RSHIFT);
 			MOVEUP.push_back(SDL_SCANCODE_UP);
 			MOVEDOWN.push_back(SDL_SCANCODE_DOWN);
-			[[fallthrough]];
+			//[[fallthrough]];
+			// fall through
 		case PLAYER1:
 			MOVELEFT.push_back(SDL_SCANCODE_A);
 			MOVERIGHT.push_back(SDL_SCANCODE_D);

@@ -228,9 +228,9 @@ bool GameEngine::handleCollision(GameObject * thing, GameObject * other) {
 			case Object_PowerUp:
 				std::cout << "powerup gained\n";
 				if (static_cast<PowerUpObject*>(thing)->powerUpType == PU_Life && 
-					((player->playerType == PLAYER1 || player->playerType == SINGLEPLAYER && manager->getObjectBaseVector(Object_Life_P1)->size() <= 5)
+					((player->playerType == PLAYER1 || (player->playerType == SINGLEPLAYER && manager->getObjectBaseVector(Object_Life_P1)->size() <= 5))
 						||
-					(player->playerType == PLAYER2 && manager->getObjectBaseVector(Object_Life_P1)->size() <= 5))) {
+					(player->playerType == PLAYER2 && (manager->getObjectBaseVector(Object_Life_P1)->size() <= 5)))) {
 					addLife(player->playerType);
 				}
 				else if (static_cast<PowerUpObject*>(thing)->powerUpType == PU_Coin)
@@ -680,7 +680,7 @@ void GameEngine::setState(GameStates state) {
 		}
 		else if(playing) {
 			
-			for (auto i = 0; i < lives; i++) {
+			for (std::size_t i = 0; i < lives; i++) {
 				addLife(SINGLEPLAYER);
 			}
 		}

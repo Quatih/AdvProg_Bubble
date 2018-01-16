@@ -254,7 +254,7 @@ public:
 		}
 		SDL_Rect arect = { backgroundObject->render_rect.w/2 - 100, backgroundObject->render_rect.h / 2 - 50, 200, 24 };
 
-		for (int j = 0; j < 8 && j < fScore.size(); j++) {
+		for (std::size_t j = 0; j < 8 && j < fScore.size(); j++) {
 			
 			auto decText = new FontObject(font, arect, FontJustified_LEFT);
 			decText->setText(std::to_string(j+1), BLACK);

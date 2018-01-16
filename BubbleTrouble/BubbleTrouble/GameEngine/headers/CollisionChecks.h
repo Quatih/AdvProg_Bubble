@@ -8,7 +8,7 @@
 #endif
 
 /// Checks the collision bounds of two SDL_Rects and returns true if the rectangles collide.
-bool const collidesWithRect(const SDL_Rect check, const SDL_Rect other) {
+bool collidesWithRect(const SDL_Rect check, const SDL_Rect other) {
 	if (check.x + check.w >= other.x && other.x + other.w >= check.x &&
 		check.y + check.h >= other.y && other.y + other.h >= check.y) {
 		return true;
@@ -18,7 +18,7 @@ bool const collidesWithRect(const SDL_Rect check, const SDL_Rect other) {
 
 
 /// Checks the collision bounds of a rectangle and a circle, using the distance from the center of the circle.
-bool const collidesWithCircle(const SDL_Rect rect, const SDL_Rect circle) {
+bool collidesWithCircle(const SDL_Rect rect, const SDL_Rect circle) {
 	int cx = circle.x + circle.w / 2;
 	int cy = circle.y + circle.h / 2;
 	double ch = circle.h;

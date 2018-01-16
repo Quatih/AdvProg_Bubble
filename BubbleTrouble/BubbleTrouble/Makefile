@@ -2,7 +2,7 @@ OBJS = main.cpp GameEngine/GameEngine.cpp
 
 CC = g++
 
-COMPILER_FLAGS = -w -std=c++17 -std=gnu++17
+COMPILER_FLAGS = -std=c++17 -std=gnu++17 -Wall
 
 LINKER_FLAGS = -lSDL2 -lSDL2_image -lSDL2_mixer -lSDL2_ttf
 
