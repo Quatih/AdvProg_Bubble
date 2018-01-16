@@ -313,8 +313,9 @@ void GameEngine::playLogicUpdate() {
 	for (auto& spike : *(manager->getObjectBaseVector(Object_Spike))) {
 	
 		if (spike->isVisible()) {
-			for (auto& bubble : *(manager->getObjectBaseVector(Object_Bubble))) {
-				if (handleCollision(bubble.get(), spike.get())) break;
+
+			for (auto _bubble = manager->getObjectBaseVector(Object_Bubble)->begin(); _bubble != manager->getObjectBaseVector(Object_Bubble)->end(); ++_bubble) {
+				if (handleCollision((*_bubble).get(), spike.get())) break;
 			}
 		}
 	}
@@ -722,7 +723,9 @@ void GameEngine::setInitialBubbles(){
 		if (manager->getObjectVector(Object_Bubble).empty()) {
 			for (int i = 0; i < 3; i++) {
 				generateRandomBubble();
+
 			}
+			
 		}
 		break;
 	case G_Infinite_2Player:
@@ -790,6 +793,18 @@ void inline GameEngine::generateRandomBubble() {
 void inline GameEngine::generateRandomBubble(BubbleType type) {
 	addBubble(
 		type,
+		randInt(0, playZone.w),
+		randInt((int)(playZone.h / 3.0),
+		(int)(playZone.h / 2.0)),
+		randMinusPlus(),
+		bubbleTextures[randInt<std::size_t>(0, bubbleTextures.size() - 1)].get()
+	);
+}
+
+///Generates specified type of bubbles upto level3
+void inline GameEngine::generateRandomBubble(std::size_t type) {
+	addBubble(
+		static_cast<BubbleType>(type),
 		randInt(0, playZone.w),
 		randInt((int)(playZone.h / 3.0),
 		(int)(playZone.h / 2.0)),
