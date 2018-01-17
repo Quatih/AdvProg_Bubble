@@ -13,7 +13,7 @@ public:
 		addComponent<TileHandler>("assets/duder4.png", 0.9);
 		addComponent<CollisionHandler>();
 		addComponent<SoundHandler>("assets/hit.wav");
-
+		init();
 		render_rect.y = playZone.y + playZone.h - render_rect.h;
 		playerType = playerNumber;
 		switch (playerNumber) {
@@ -33,7 +33,7 @@ public:
 		getComponent<MovementHandler>()->setPosition(render_rect.x, render_rect.y);
 		getComponent<MovementHandler>()->setAcceleration(0, Base_BubbleY_acceleration);
 
-		init();
+
 	}
 
 };

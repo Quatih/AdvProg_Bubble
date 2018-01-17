@@ -22,7 +22,7 @@ constexpr double Base_BubbleY_velocity = 7.5;
 constexpr double Base_BubbleY_acceleration = 0.15;
 
 ///Vector with the bubble properties
-const std::vector<BubbleProperties> Properties = {
+static const std::vector<BubbleProperties> Properties = {
 { 8,	0, Base_BubbleX_velocity, Base_BubbleY_velocity,		0, Base_BubbleY_acceleration },
 { 14,	1, Base_BubbleX_velocity, Base_BubbleY_velocity + 0.5,	0, Base_BubbleY_acceleration },
 { 20,	2, Base_BubbleX_velocity, Base_BubbleY_velocity + 1,	0, Base_BubbleY_acceleration },
