@@ -602,6 +602,7 @@ void GameEngine::setState(GameStates state) {
 			addLife(SINGLEPLAYER);
 			addLife(SINGLEPLAYER);
 		}
+
 		else if (currentState == G_Infinite_2Player){
 			for (auto i = 0; i < 3; i++) {
 				addLife(PLAYER1);
@@ -724,18 +725,21 @@ void GameEngine::removeLife(PlayerNumber playerNum) {
 /// Add a life to the board
 void inline GameEngine::addLife(PlayerNumber playerType) {
 	ObjectType life;
+	int ypos;
 	if (playerType == PLAYER2) {
 		life = Object_Life_P2;
+		ypos = 60;
 	}
 	else {
 		life = Object_Life_P1;
+		ypos = 10;
 	}
 	auto lives = manager->addObject(life);
 	lives->addComponent<MovementHandler>(0, 0);
 	lives->addComponent<TileHandler>(heartTexture.get(), 1);
 	lives->init();
 	// set the position in the succession
-	lives->getComponent<MovementHandler>()->setPosition((double)(manager->getObjectBaseVector(life)->size() - 1) * lives->render_rect.w + 10, 10);
+	lives->getComponent<MovementHandler>()->setPosition((double)(manager->getObjectBaseVector(life)->size() - 1) * lives->render_rect.w + 10, ypos);
 }
 
 /// Add a bubble 
